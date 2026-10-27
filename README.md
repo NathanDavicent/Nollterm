@@ -1,6 +1,8 @@
 # Nollterm
 
-Kursportal för mina kurser: lektioner, frågor, slumpade prov med rättning och ett kodlabb. Finns i två versioner som byggs från samma filer:
+Kursportal för mina kurser: lektioner, frågor, slumpade prov med rättning och ett kodlabb.
+
+Skapad av **Nathanael** ([@NathanDavicent](https://github.com/NathanDavicent)), byggd tillsammans med Claude. Finns i två versioner som byggs från samma filer:
 
 | | Webbversion | Desktop-app (Windows) |
 |---|---|---|
