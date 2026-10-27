@@ -1,0 +1,73 @@
+name: Desktop-app (Windows)
+
+# Builds the Windows installer with g++ (w64devkit) bundled.
+# Runs on every pushed tag like v1.0.0, or manually from the Actions tab.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  W64DEVKIT_VERSION: v2.9.1
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Ladda ner g++ (w64devkit ${{ env.W64DEVKIT_VERSION }})
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download $env:W64DEVKIT_VERSION -R skeeto/w64devkit -p "w64devkit-x64-*" -D w64dl
+          if (-not $?) { gh release download $env:W64DEVKIT_VERSION -R skeeto/w64devkit -p "*x64*" -D w64dl }
+          $sfx = Get-ChildItem w64dl | Select-Object -First 1
+          Write-Host "Packar upp $($sfx.Name)"
+          7z x $sfx.FullName -ow64tmp -y | Out-Null
+          $gxx = Get-ChildItem w64tmp -Recurse -Filter g++.exe | Where-Object { $_.Directory.Name -eq "bin" } | Select-Object -First 1
+          if (-not $gxx) { Get-ChildItem w64tmp -Depth 2; throw "g++.exe hittades inte efter uppackning" }
+          $kit = $gxx.Directory.Parent.FullName
+          New-Item -ItemType Directory -Force desktop\vendor | Out-Null
+          Move-Item $kit desktop\vendor\w64devkit
+          desktop\vendor\w64devkit\bin\g++.exe --version
+
+      - name: Sätt appens version från taggen
+        if: startsWith(github.ref, 'refs/tags/v')
+        working-directory: desktop
+        shell: pwsh
+        run: npm version "$("${{ github.ref_name }}".TrimStart('v'))" --no-git-tag-version --allow-same-version
+
+      - name: Installera beroenden
+        working-directory: desktop
+        run: npm ci
+
+      - name: Självtest av g++-bryggan
+        working-directory: desktop
+        run: node scripts/selftest.js
+
+      - name: Bygg installationsfilen
+        working-directory: desktop
+        run: npm run dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nollterm-Windows
+          path: desktop/dist/*.exe
+
+      - name: Lägg upp på GitHub Releases
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: desktop/dist/*.exe
+          generate_release_notes: true

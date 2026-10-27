@@ -1,0 +1,13 @@
+{
+  "name": "nollterm-site",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.mjs",
+    "build:runner": "esbuild src/worker-src.js --bundle --minify --format=iife --platform=browser --alias:util=./src/shims/util.js --alias:stream=./src/shims/stream.js --alias:fs=./src/shims/fs.js --outfile=web/cpp-runner.js",
+    "serve": "npx http-server web -p 8080 -c-1"
+  },
+  "devDependencies": {
+    "JSCPP": "2.0.9",
+    "esbuild": "0.20.2"
+  }
+}
