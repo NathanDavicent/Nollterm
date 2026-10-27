@@ -1,7 +1,8 @@
 name: Desktop-app (Windows)
 
-# Builds the Windows installer with g++ (w64devkit) bundled.
-# Runs on every pushed tag like v1.0.0, or manually from the Actions tab.
+# Builds the Windows installer with g++ (w64devkit) bundled and publishes it on Releases
+# as v<version from desktop/package.json>. Start it from the Actions tab ("Run workflow"),
+# or by pushing a tag like v1.2.0.
 on:
   push:
     tags: ["v*"]
@@ -48,6 +49,12 @@ jobs:
         shell: pwsh
         run: npm version "$("${{ github.ref_name }}".TrimStart('v'))" --no-git-tag-version --allow-same-version
 
+      - name: Läs versionsnummer
+        id: ver
+        working-directory: desktop
+        shell: pwsh
+        run: echo "version=$((Get-Content package.json | ConvertFrom-Json).version)" >> $env:GITHUB_OUTPUT
+
       - name: Installera beroenden
         working-directory: desktop
         run: npm ci
@@ -66,8 +73,11 @@ jobs:
           path: desktop/dist/*.exe
 
       - name: Lägg upp på GitHub Releases
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Nollterm ${{ steps.ver.outputs.version }}
           files: desktop/dist/*.exe
           generate_release_notes: true
+          make_latest: true

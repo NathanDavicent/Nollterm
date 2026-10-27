@@ -16,12 +16,7 @@ Kursportal för mina kurser: lektioner, frågor, slumpade prov med rättning och
 ## Kom igång första gången
 
 1. **Slå på GitHub Pages:** *Settings → Pages → Build and deployment → Source: GitHub Actions*. Kör sedan workflowen *Webbversion (GitHub Pages)* under *Actions* (eller pusha en ändring i `web/`).
-2. **Bygg första versionen av appen:**
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-   Workflowen *Desktop-app (Windows)* laddar ner g++, kör ett självtest, bygger installationsfilen och lägger upp den under Releases (tar ca 5–10 min).
+2. **Bygg appen:** *Actions → Desktop-app (Windows) → Run workflow*. Den laddar ner g++, kör ett självtest, bygger installationsfilen och lägger upp den under Releases som `v<version>` från `desktop/package.json` (tar ca 5–10 min).
 3. **Installera:** Windows kan varna eftersom appen inte är signerad. Klicka *Mer information → Kör ändå*.
 4. **Mobilen:** öppna webblänken. iPhone: Safari → Dela → *Lägg till på hemskärmen*. Android: Chrome → ⋮ → *Installera app*.
 
@@ -45,7 +40,7 @@ Sidan känner av om den körs i appen (`window.nollterm` finns). Då går all ko
 1. Redigera filerna i `src/parts/` (lektioner i `p2_content_*.js`, frågor i `p2_questions.js`, kurslistan i `p3a_core.js`).
 2. Bygg: `node src/build.mjs`
 3. Commit och push. Webbversionen uppdateras automatiskt.
-4. Ny app-version: skapa en ny tagg, t.ex. `git tag v1.1.0 && git push origin v1.1.0`.
+4. Ny app-version: höj `version` i `desktop/package.json` (t.ex. `1.1.0`), pusha och kör *Desktop-app (Windows)* under Actions igen.
 
 ## Köra lokalt
 
