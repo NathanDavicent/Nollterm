@@ -4,6 +4,28 @@ const COURSES = [
     id: "cpp", badge: "C++", title: "Programmering C/C++", short: "C/C++", tag: "IoT",
     desc: "Från Hello World till pekare, klasser och felhantering, med fokus på sensordata och inbyggda system.",
     lessons: TOPICS, timeline: LESSONS, assignments: ASSIGNMENTS, sources: SOURCES, links: LINKS, extra: EXTRA,
+    headline: "Varje byte har en <em>adress</em>.",
+    card: () => {
+      const cells = [..."C/C++", "\\0"].map((ch, i) => `<div><span class="cell ${ch === "\\0" ? "z" : ""}" style="animation-delay:${i * 90}ms">${esc(ch)}</span><span class="ad">…${(0x10 + i).toString(16)}</span></div>`).join("");
+      return `<div class="memcard" aria-label="Exempel: en C-sträng i minnet">
+        <div class="decl"><span class="k">char</span> kurs[] = <span class="s">"C/C++"</span>;</div>
+        <div class="mem">${cells}</div>
+        <div class="foot">sizeof(kurs) == 6, strlen(kurs) == 5.<br>Det sista tecknet, nolltecknet, gav sajten dess namn.</div></div>`;
+    },
+  },
+  {
+    id: "oop", badge: "OOP", title: "Objektorienterad programmering och design", short: "OOP", tag: "C++ · Design",
+    desc: "Klasser, inkapsling, komposition, arv, polymorfism och designmönster i C++, med IoT- och spelexempel.",
+    lessons: OOP_TOPICS, timeline: OOP_LESSONS, assignments: OOP_ASSIGNMENTS, sources: OOP_SOURCES, links: OOP_LINKS, extra: OOP_EXTRA,
+    headline: "Objekt som <em>samarbetar</em>.",
+    card: () => `<div class="memcard" aria-label="UML: Device med två subklasser">
+        <div class="decl"><span class="k">for</span> (<span class="k">auto</span>&amp; d : devices) d-&gt;tick();</div>
+        <div class="uml">
+          <div class="ubox abs"><i>«abstract»</i><b>Device</b><span>+ tick() = 0</span></div>
+          <div class="ulines" aria-hidden="true"><span></span></div>
+          <div class="urow"><div class="ubox" style="animation-delay:.15s"><b>TempSensor</b><span>+ tick() override</span></div><div class="ubox" style="animation-delay:.3s"><b>LedActuator</b><span>+ tick() override</span></div></div>
+        </div>
+        <div class="foot">Samma anrop, olika beteende.<br>Polymorfism via en virtuell funktion i basklassen.</div></div>`,
   },
 ];
 COURSES.forEach(c => c.lessons.forEach(l => {
@@ -44,8 +66,8 @@ const gradeOf = pct => pct >= 75 ? "VG" : pct >= 50 ? "G" : "IG";
 
 function practiceStats(c, l) {
   const p = state.practice[c.id + ":" + l.id] || {};
-  const right = Object.values(p).filter(a => a && a.ok).length;
-  return { right, total: l.pool.length };
+  const right = Object.entries(p).filter(([i, a]) => a && a.ok && l.pool[i] && usable(l.pool[i])).length;
+  return { right, total: l.pool.filter(usable).length };
 }
 
 /* ================================================================ chrome: top nav + sidebar */
@@ -153,7 +175,6 @@ function viewCourse(c) {
   const started = doneList(c.id).length > 0;
   const q = c.lessons.reduce((n, l) => n + l.pool.length, 0);
   const codeQ = c.lessons.reduce((n, l) => n + l.pool.filter(x => x.t === "code").length, 0);
-  const cells = [..."C/C++", "\\0"].map((ch, i) => `<div><span class="cell ${ch === "\\0" ? "z" : ""}" style="animation-delay:${i * 90}ms">${esc(ch)}</span><span class="ad">…${(0x10 + i).toString(16)}</span></div>`).join("");
   const used = new Set();
   const groups = c.timeline.map(g => {
     const ls = g.topics.filter(id => !used.has(id) && lessonIdx(c, id) >= 0);
@@ -165,19 +186,15 @@ function viewCourse(c) {
   <section class="hero" style="padding-top:0">
     <div>
       <div class="eyebrow">${esc(c.title)} · ${esc(c.tag)}</div>
-      <h1>Varje byte har en <em>adress</em>.</h1>
+      <h1>${c.headline}</h1>
       <p class="lead">${esc(c.desc)}</p>
       <div class="cta">
         <a class="btn primary" href="#${c.id}-${next.id}">${started ? "Fortsätt" : "Börja"} med lektion ${nn(lessonIdx(c, next.id))} →</a>
         <a class="btn" href="#${c.id}-prov">Gör ett prov</a>
       </div>
     </div>
-    <div class="memcard" aria-label="Exempel: en C-sträng i minnet">
-      <div class="decl"><span class="k">char</span> kurs[] = <span class="s">"C/C++"</span>;</div>
-      <div class="mem">${cells}</div>
-      <div class="foot">sizeof(kurs) == 6, strlen(kurs) == 5.<br>Det sista tecknet, nolltecknet, gav sajten dess namn.</div>
-    </div>
-  </section>
+    ${c.card()}
+    </section>
   <div class="stats">
     <div><b>${c.lessons.length}</b><span>lektioner</span></div>
     <div><b>${q}</b><span>frågor i poolen</span></div>

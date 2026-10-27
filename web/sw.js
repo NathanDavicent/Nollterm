@@ -1,5 +1,5 @@
 // Offline support for the web version. VERSION is bumped by src/build.mjs.
-const VERSION = "1793097241675";
+const VERSION = "1793098499571";
 const CACHE = "nollterm-" + VERSION;
 const CORE = ["./", "index.html", "cpp-runner.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png"];
 

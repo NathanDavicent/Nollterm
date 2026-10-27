@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const part = f => readFileSync(join(root, "src", "parts", f), "utf8");
-const scripts = ["p2_content_a.js", "p2_content_b.js", "p2_questions.js", "p3w_widgets.js", "p3a_core.js",
+const scripts = ["p2_content_a.js", "p2_content_b.js", "p2_questions.js",
+  "c2_oop_content.js", "c2_oop_content_b.js", "c2_oop_questions.js",
+  "p3w_widgets.js", "p3w_widgets_oop.js", "p3a_core.js",
   "p3b_questions.js", "p3c_exam.js", "p3e_lab.js", "p3d_router.js"].map(part).join("\n");
 const body = part("p1_head.html") + part("p1c_style2.html") +
   '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>\n' +

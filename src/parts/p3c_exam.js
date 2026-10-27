@@ -14,7 +14,7 @@ function examPrefs(c) {
 }
 function eligible(c, pr) {
   const out = [];
-  pr.lessons.forEach(lid => { const l = c.lessons[lessonIdx(c, lid)]; l.pool.forEach((q, i) => { if (pr.types.includes(q.t)) out.push({ l: lid, i }); }); });
+  pr.lessons.forEach(lid => { const l = c.lessons[lessonIdx(c, lid)]; l.pool.forEach((q, i) => { if (pr.types.includes(q.t) && usable(q)) out.push({ l: lid, i }); }); });
   return out;
 }
 function drawItems(c, pr) {
@@ -60,7 +60,7 @@ function renderSetup(c, box) {
   <div class="exam-setup">
     <form class="panel" id="exform">
       <fieldset class="fieldset"><legend>Lektioner</legend>
-        <div class="checkgrid">${c.lessons.map((l, i) => { const cnt = l.pool.filter(q => pr.types.includes(q.t)).length; return `<label><input type="checkbox" id="exl-${l.id}" name="l" value="${l.id}" ${pr.lessons.includes(l.id) ? "checked" : ""}><span>${nn(i)} ${esc(l.title)}</span><small>${cnt}</small></label>`; }).join("")}</div>
+        <div class="checkgrid">${c.lessons.map((l, i) => { const cnt = l.pool.filter(q => pr.types.includes(q.t) && usable(q)).length; return `<label><input type="checkbox" id="exl-${l.id}" name="l" value="${l.id}" ${pr.lessons.includes(l.id) ? "checked" : ""}><span>${nn(i)} ${esc(l.title)}</span><small>${cnt}</small></label>`; }).join("")}</div>
         <div class="linkbtns"><button type="button" data-all="1">Välj alla</button><button type="button" data-all="0">Välj inga</button></div>
       </fieldset>
       <fieldset class="fieldset"><legend>Frågetyper</legend>
@@ -72,7 +72,7 @@ function renderSetup(c, box) {
       <fieldset class="fieldset"><legend>Tidsgräns</legend>
         <div class="pills">${[0, 10, 20, 30, 45, 60].map(v => `<label><input type="radio" id="exm-${v}" name="m" value="${v}" ${pr.time === v ? "checked" : ""}><span>${v ? v + " min" : "Ingen"}</span></label>`).join("")}</div>
       </fieldset>
-      <p class="poolinfo"><b>${pool.length}</b> frågor matchar. Provet drar <b>${n}</b> av dem.</p>
+      <p class="poolinfo"><b>${pool.length}</b> frågor matchar. Provet drar <b>${n}</b> av dem.${(() => { const g = c.lessons.reduce((k, l) => k + l.pool.filter(q => q.gpp && !NATIVE && pr.types.includes(q.t)).length, 0); return g ? ` <br>${g} kodfrågor kräver g++ och är bara med i <a href="#app">desktop-appen</a>.` : ""; })()}</p>
       <button class="btn primary" type="submit" ${n ? "" : "disabled"}>Starta provet →</button>
     </form>
     <div>

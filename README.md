@@ -15,6 +15,13 @@ Skapad av **Nathanael** ([@NathanDavicent](https://github.com/NathanDavicent)), 
 - **Webb:** https://nathandavicent.github.io/Nollterm/
 - **Ladda ner appen:** [Releases](https://github.com/NathanDavicent/Nollterm/releases/latest) → `Nollterm-Setup-x.y.z.exe`
 
+## Kurser
+
+| Kurs | Lektioner | Frågor | Kodfrågor |
+|---|---|---|---|
+| Programmering C/C++ (IoT) | 11 | 135 | 17 (körs även på webben) |
+| Objektorienterad programmering och design | 10 | 104 | 15 (kräver g++, dvs. desktop-appen) |
+
 ## Kom igång första gången
 
 1. **Slå på GitHub Pages:** *Settings → Pages → Build and deployment → Source: GitHub Actions*. Kör sedan workflowen *Webbversion (GitHub Pages)* under *Actions* (eller pusha en ändring i `web/`).
@@ -39,7 +46,7 @@ Sidan känner av om den körs i appen (`window.nollterm` finns). Då går all ko
 
 ## Ändra innehåll eller lägga till en kurs
 
-1. Redigera filerna i `src/parts/` (lektioner i `p2_content_*.js`, frågor i `p2_questions.js`, kurslistan i `p3a_core.js`).
+1. Redigera filerna i `src/parts/`: C/C++ i `p2_*.js`, OOP i `c2_oop_*.js`, kurslistan i `p3a_core.js`. Kodfrågor som behöver riktig C++ markeras med `gpp: true`; på webben visas de med lösningsförslag och länk till Compiler Explorer, och de tas bara med i prov i desktop-appen.
 2. Bygg: `node src/build.mjs`
 3. Commit och push. Webbversionen uppdateras automatiskt.
 4. Ny app-version: höj `version` i `desktop/package.json` (t.ex. `1.1.0`), pusha och kör *Desktop-app (Windows)* under Actions igen.

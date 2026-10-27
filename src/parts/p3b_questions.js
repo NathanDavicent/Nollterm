@@ -77,6 +77,7 @@ function gradeSync(q, a) {
   if (q.t === "text") { const v = normText(a.v); return v !== "" && q.accept.some(x => normText(x) === v); }
   return !!a.ok;
 }
+const usable = q => !(q.gpp && !NATIVE);
 const isAnswered = (q, a) => !!a && (q.t === "multi" ? (a.v || []).length > 0 : q.t === "text" ? String(a.v || "").trim() !== "" : q.t === "code" ? !!a.v && a.v !== q.starter : a.v !== undefined);
 
 /* ================================================================ question component */
@@ -151,18 +152,20 @@ function mountQuestion(el, q, o) {
   }
 
   function renderCode() {
+    const blocked = q.gpp && !NATIVE;      // needs real g++: only in the desktop app
     const code = (a && a.v) || q.starter;
     const ex = q.tests[0];
     const res = a && a.res;
     const ok = !!(a && a.ok);
-    const showSol = mode === "review" || (mode === "practice" && res);
+    const showSol = mode === "review" || (mode === "practice" && (res || blocked));
     el.innerHTML = `<div class="q ${mode === "review" ? (ok ? "review-r" : "review-w") : ""}">${head()}
       <div class="example">Exempel: indata <pre>${esc(ex.in)}</pre> ger utdata <pre>${esc(ex.out)}</pre></div>
       <div class="editor">
         <div class="bar2"><span>main.cpp</span><span style="display:flex;gap:6px;flex-wrap:wrap">${mode !== "review" ? '<button type="button" data-act="reset">Återställ</button>' : ""}<a href="https://godbolt.org/" target="_blank" rel="noopener" data-act="gb">Öppna i Compiler Explorer ↗</a></span></div>
         <div class="ed"><div class="gut" aria-hidden="true"></div><textarea spellcheck="false" autocapitalize="off" autocomplete="off" id="ed-${o.uid}" aria-label="Kodredigerare" ${mode === "review" ? "readonly" : ""}>${esc(code)}</textarea></div>
       </div>
-      ${mode !== "review" ? `<div class="ioarea"><div><label for="in-${o.uid}">Indata (stdin)</label><textarea id="in-${o.uid}" spellcheck="false">${esc(ex.in)}</textarea></div><div><label>Utdata</label><div class="term" data-out aria-live="polite"><span class="dim">Tryck Kör för att köra programmet.</span></div></div></div>
+      ${blocked && mode !== "review" ? `<div class="note warn" style="margin-top:10px"><span class="tag">g++</span><div><p>Den här uppgiften använder klasser, string eller smarta pekare och kräver riktig C++. Kör den i <a href="#app">desktop-appen</a>, eller öppna den i Compiler Explorer och jämför med lösningsförslaget.</p></div></div>` : ""}
+      ${mode !== "review" && !blocked ? `<div class="ioarea"><div><label for="in-${o.uid}">Indata (stdin)</label><textarea id="in-${o.uid}" spellcheck="false">${esc(ex.in)}</textarea></div><div><label>Utdata</label><div class="term" data-out aria-live="polite"><span class="dim">Tryck Kör för att köra programmet.</span></div></div></div>
       <div class="qactions"><button type="button" class="btn" data-act="run">Kör ▶</button>${mode === "practice" ? '<button type="button" class="btn primary" data-act="test">Kör testerna</button>' : '<span class="status" style="color:var(--muted);font-weight:400">Dolda tester körs när du lämnar in.</span>'}<span class="status" data-st></span></div>` : ""}
       <div class="tests" data-tests>${res ? testsHtml(res) : ""}</div>
       ${res && mode !== "exam" ? whyBox(ok) : ""}
@@ -187,6 +190,7 @@ function mountQuestion(el, q, o) {
       }
     });
     $('[data-act="reset"]', el).addEventListener("click", () => { a = null; emit(); renderCode(); });
+    if (blocked) return;
     const outEl = $("[data-out]", el), st = $("[data-st]", el);
     $('[data-act="run"]', el).addEventListener("click", async () => {
       outEl.innerHTML = '<span class="dim">Kör…</span>';

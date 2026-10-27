@@ -154,6 +154,25 @@ a.ccard:hover { border-color: var(--mask); transform: translateY(-2px); }
 .yours code { white-space: pre-wrap; }
 
 .labtabs { display: flex; overflow-x: auto; }
+/* OOP hero: tiny UML */
+.uml { display: grid; justify-items: center; gap: 0; margin: 4px 0 2px; }
+.ubox { border: 1px solid var(--code-line); background: rgba(255,255,255,.03); border-radius: 6px; padding: 8px 12px; display: grid; gap: 3px; text-align: center; min-width: 0; animation: pop .5s backwards; }
+.ubox i { font-style: normal; font-size: .62rem; color: var(--hl-com); }
+.ubox b { color: var(--hl-fn); font-size: .82rem; font-weight: 600; }
+.ubox span { font-size: .7rem; color: var(--hl-com); border-top: 1px solid var(--code-line); padding-top: 4px; }
+.ubox.abs { border-color: var(--hl-kw); }
+.ulines { width: 62%; height: 26px; position: relative; }
+.ulines::before { content: ""; position: absolute; left: 50%; top: 0; height: 13px; border-left: 1px solid var(--hl-com); }
+.ulines::after { content: ""; position: absolute; left: 0; right: 0; top: 13px; height: 13px; border: 1px solid var(--hl-com); border-bottom: 0; }
+.ulines span { position: absolute; left: 50%; top: -2px; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 9px solid var(--hl-com); }
+.urow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; }
+/* constructor order widget */
+.layers { display: grid; gap: 6px; align-content: start; }
+.layer { border: 1.5px dashed var(--line); border-radius: 8px; padding: 9px 12px; display: flex; justify-content: space-between; gap: 10px; font-family: var(--f-mono); font-size: .8rem; color: var(--muted); transition: all .25s; min-width: 0; }
+.layer b { color: inherit; }
+.layer span { font-size: .72rem; overflow-wrap: anywhere; }
+.layer.on { border-style: solid; border-color: var(--mask); background: var(--mask-soft); color: var(--ink); }
+.layer.now { border-color: var(--copper); background: var(--copper-soft); }
 .editor .bar2 .labtabs button { border: 0; border-right: 1px solid var(--code-line); border-radius: 0; padding: 8px 12px; font-size: .74rem; color: var(--hl-com); display: flex; gap: 8px; align-items: center; white-space: nowrap; }
 .editor .bar2 .labtabs button[aria-selected="true"] { color: var(--code-fg); background: rgba(255,255,255,.05); box-shadow: inset 0 -2px 0 var(--hl-kw); }
 .editor .bar2 .labtabs button span { opacity: .6; padding: 0 2px; }
