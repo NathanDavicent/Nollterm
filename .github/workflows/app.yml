@@ -56,11 +56,24 @@ jobs:
       - name: Bygg appen med w64devkit
         run: |
           $kit = "$PWD\package\toolchain\w64devkit\bin"
+          $ninja = (Get-Command ninja).Source
           # Bara w64devkit först i PATH, så att CMake inte hittar någon annan kompilator.
           $env:PATH = "$kit;$env:PATH"
-          cmake -S app -B build -G Ninja -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_C_COMPILER="$kit\gcc.exe" -DCMAKE_CXX_COMPILER="$kit\g++.exe" -DCMAKE_MAKE_PROGRAM=(Get-Command ninja).Source
-          cmake --build build --parallel
+          cmake -S app -B build -G Ninja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_C_COMPILER=$kit\gcc.exe" "-DCMAKE_CXX_COMPILER=$kit\g++.exe" "-DCMAKE_MAKE_PROGRAM=$ninja" *>&1 | Tee-Object -FilePath build.log
+          if ($LASTEXITCODE -ne 0) { throw "cmake (konfigurering) misslyckades" }
+          cmake --build build --parallel *>&1 | Tee-Object -FilePath build.log -Append
+          if ($LASTEXITCODE -ne 0) { throw "bygget misslyckades" }
+
+      - name: Visa felet
+        if: failure()
+        run: |
+          # Lägger de sista raderna av loggen som en annotation, så att felet syns direkt på sidan för körningen.
+          foreach ($f in @("build.log", "build\CMakeFiles\CMakeConfigureLog.yaml")) {
+            if (Test-Path $f) {
+              $tail = (Get-Content $f -Tail 40) -join "%0A"
+              Write-Host "::error title=$f::$tail"
+            }
+          }
 
       - name: Packa ihop
         run: |
