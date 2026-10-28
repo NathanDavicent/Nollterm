@@ -1,0 +1,352 @@
+{
+  "id": "funktioner",
+  "title": "Funktioner och anropsstacken",
+  "category": "Funktioner",
+  "minutes": 11,
+  "date": "Tis 6/10",
+  "lead": "Dela upp programmet i små delar med ett tydligt ansvar, och se vad som händer i minnet när en funktion anropas.",
+  "sources": [
+    "Tis 6/10 – Funktioner",
+    "Startkod för klasser och structs (tabellen om const, & och *)"
+  ],
+  "goals": [
+    "Skriva, anropa och förklara funktioner i C och C++",
+    "Skilja på parametrar och argument, och på deklaration och definition",
+    "Förklara call by value, call by pointer och call by reference",
+    "Beskriva hur stack frames läggs på och tas bort från anropsstacken"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är en funktion?"
+    },
+    {
+      "type": "p",
+      "html": "En funktion är en namngiven, återanvändbar del av programmet. Den tar <strong>in</strong> data (parametrar), gör något och kan <strong>returnera</strong> ett resultat. Funktioner gör koden mer strukturerad, modulär och lättläst."
+    },
+    {
+      "type": "p",
+      "html": "Sträva efter <strong>single responsibility</strong>: funktionen gör precis det som namnet säger, varken mer eller mindre. En funktion som heter <code>average</code> räknar ut ett medelvärde. Den skriver inte ut det."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "returtyp namn(typ parameter1, typ parameter2) {\n    // kropp\n    return värde;          // utelämnas om returtypen är void\n}",
+      "caption": "allmän syntax"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void greetUser() {                          // ingen indata, inget returvärde\n    std::cout << \"Välkommen!\\n\";\n}\n\nfloat average(float a, float b) {            // parametrar och returvärde\n    return (a + b) / 2.0f;\n}\n\nint main() {\n    greetUser();\n    float avg = average(21.5f, 23.5f);       // 21.5f och 23.5f är argument\n    std::cout << avg << \"\\n\";                // 22.5\n}"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Returnera resultatet istället för att skriva ut det i funktionen, om syftet är en beräkning. Då kan den som anropar välja vad som ska hända med värdet."
+    },
+    {
+      "type": "h",
+      "text": "Parametrar och argument"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Parametrar</strong> är variablerna i funktionens definition (<code>a</code> och <code>b</code> ovan). <strong>Argument</strong> är de faktiska värdena du skickar in vid anropet (<code>21.5f</code> och <code>23.5f</code>)."
+    },
+    {
+      "type": "h",
+      "text": "Deklarera och definiera"
+    },
+    {
+      "type": "p",
+      "html": "Kompilatorn läser uppifrån och ner. Om <code>main</code> anropar en funktion som definieras längre ner måste funktionen <strong>deklareras</strong> först med en prototyp. <strong>Definitionen</strong> innehåller själva kroppen."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "float toKelvin(float celsius);               // deklaration (prototyp)\n\nint main() {\n    std::cout << toKelvin(20.0f) << \"\\n\";\n}\n\nfloat toKelvin(float celsius) {              // definition\n    return celsius + 273.15f;\n}"
+    },
+    {
+      "type": "h",
+      "text": "Call by value och stacken"
+    },
+    {
+      "type": "p",
+      "html": "Som standard får funktionen en <strong>kopia</strong> av argumentet. Ändringar inuti funktionen påverkar inte originalet."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void increment(int x) { x++; }\n\nint main() {\n    int a = 5;\n    increment(a);\n    std::cout << a;      // 5, bara kopian ökade\n}"
+    },
+    {
+      "type": "p",
+      "html": "Varje funktion som körs behöver en plats i minnet för sina parametrar och lokala variabler. Den platsen kallas <strong>stack frame</strong> och ligger på <strong>anropsstacken</strong> (call stack). Vid ett anrop läggs en ny frame överst. När funktionen returnerar tas den bort igen, och dess lokala variabler finns inte längre. Stega igenom programmet nedan:"
+    },
+    {
+      "type": "widget",
+      "name": "stack"
+    },
+    {
+      "type": "h",
+      "text": "Pekare (C)"
+    },
+    {
+      "type": "p",
+      "html": "Om funktionen ska ändra originalet skickar du dess <strong>adress</strong>. En pekare är en variabel som innehåller en adress."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<code>int* p</code> deklarerar en pekare till int.",
+        "<code>&amp;x</code> ger adressen till x (adressoperatorn).",
+        "<code>*p</code> ger värdet som p pekar på (avreferering, eng. <em>dereferencing</em>)."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void swap(int* a, int* b) {\n    int tmp = *a;     // läs värdet på adressen a\n    *a = *b;\n    *b = tmp;\n}\n\nint x = 1, y = 2;\nswap(&x, &y);         // skicka adresserna\n// nu är x == 2 och y == 1",
+      "caption": "swap med pekare"
+    },
+    {
+      "type": "h",
+      "text": "Referenser (C++)"
+    },
+    {
+      "type": "p",
+      "html": "C++ har ett enklare och säkrare sätt: en <strong>referens</strong> är ett alias för originalet. Ingen <code>*</code> eller <code>&amp;</code> behövs i anropet, och en referens kan aldrig vara null."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void swap(int& a, int& b) {\n    int tmp = a;\n    a = b;\n    b = tmp;\n}\n\nswap(x, y);           // anropet ser ut som vanligt"
+    },
+    {
+      "type": "p",
+      "html": "Vill du slippa kopian men inte tillåta ändringar, använd en <strong>konstant referens</strong>. Det är standardvalet för stora objekt som bara ska läsas."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void printData(const std::vector<int>& data) {\n    for (int v : data) std::cout << v << \" \";\n    // data.push_back(1);   // kompileringsfel: data är const\n}"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Signatur",
+        "Betyder",
+        "Använd när"
+      ],
+      "rows": [
+        [
+          "<code>void f(int x)</code>",
+          "kopia (pass by value)",
+          "datan är liten, som ett heltal"
+        ],
+        [
+          "<code>void f(int&amp; x)</code>",
+          "referens, ingen kopia, kan ändras",
+          "funktionen ska ändra originalet"
+        ],
+        [
+          "<code>void f(const T&amp; x)</code>",
+          "konstant referens, ingen kopia, kan inte ändras",
+          "stora objekt (vector, string) som bara läses"
+        ],
+        [
+          "<code>void f(int* p)</code>",
+          "pekare, en adress till värdet",
+          "i C, eller med dynamiskt minne"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Överlagring (overloading)"
+    },
+    {
+      "type": "p",
+      "html": "I C++ kan flera funktioner ha samma namn så länge parametrarna skiljer sig. Kompilatorn väljer version utifrån argumentens typer."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void printSensor(int v)    { std::cout << \"int: \"    << v << \"\\n\"; }\nvoid printSensor(float v)  { std::cout << \"float: \"  << v << \"\\n\"; }\nvoid printSensor(double v) { std::cout << \"double: \" << v << \"\\n\"; }\n\nprintSensor(3);       // int-versionen\nprintSensor(3.0f);    // float-versionen\nprintSensor(3.0);     // double-versionen"
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Grundläggande funktioner",
+      "html": "<ol><li><code>int square(int x)</code> som returnerar kvadraten</li><li><code>float average(float a, float b, float c)</code></li><li><code>float maxOfThree(float a, float b, float c)</code></li><li><code>bool isEven(int n)</code></li><li><code>int sumRange(int start, int end)</code>, där <code>sumRange(1, 4)</code> ger 10</li><li><code>float toKelvin(float celsius)</code></li></ol>",
+      "solution": "int sumRange(int start, int end) {\n    int sum = 0;\n    for (int i = start; i <= end; i++) sum += i;\n    return sum;\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Value, referens och pekare",
+      "html": "<ol><li>Skriv <code>void increment(int x)</code> och <code>void incrementRef(int&amp; x)</code>. Anropa båda i <code>main</code> och se vilken som ändrar värdet.</li><li>C-version: <code>void incrementPtr(int* x)</code>.</li><li>Skriv <code>void setLedState(bool* led, bool state)</code> och <code>void getTempRange(float* min, float* max)</code>.</li><li>Skriv om <code>swap</code> med referenser.</li></ol>"
+    },
+    {
+      "type": "exercise",
+      "title": "Statistik för tre mätvärden",
+      "html": "<p>Fråga användaren efter tre värden. Skriv <code>getAverage</code>, <code>getMax</code> och <code>printStats</code> och skriv ut Min, Max och Medel.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Utmaning: mini-sensormodul",
+      "html": "<ul><li><code>float readSensor()</code> returnerar ett slumpvärde 0–100.</li><li><code>void printSensorData(const float&amp; value)</code> skriver ut värdet med enhet.</li><li><code>void analyzeSensor(float&amp; value)</code> justerar värdet om det är över 80.</li><li>Simulera flera avläsningar i en loop.</li></ul>",
+      "solution": "#include <cstdlib>\n#include <ctime>\n\nfloat readSensor() {\n    return static_cast<float>(std::rand() % 1001) / 10.0f;   // 0.0–100.0\n}\n\nvoid analyzeSensor(float& value) {\n    if (value > 80.0f) value = 80.0f;   // begränsa till max\n}\n\nint main() {\n    std::srand(static_cast<unsigned>(std::time(nullptr)));\n    for (int i = 0; i < 5; i++) {\n        float v = readSensor();\n        analyzeSensor(v);\n        printSensorData(v);\n    }\n}",
+      "lang": "cpp"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "<code>void increment(int x) { x++; }</code> anropas med <code>a</code> som är 5. Vad är <code>a</code> efteråt?",
+      "options": [
+        "6",
+        "5",
+        "0",
+        "Odefinierat"
+      ],
+      "answer": 1,
+      "why": "Pass by value: funktionen fick en kopia. För att ändra <code>a</code> behövs <code>int&amp; x</code> (C++) eller <code>int* x</code> (C)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan parameter och argument?",
+      "options": [
+        "Det är samma sak",
+        "Parametern står i funktionens definition, argumentet är värdet du skickar vid anropet",
+        "Argument finns bara i C++",
+        "Parametrar är alltid pekare"
+      ],
+      "answer": 1,
+      "why": "I <code>float average(float a, float b)</code> är a och b parametrar. I <code>average(1.0f, 3.0f)</code> är 1.0f och 3.0f argument."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer med en funktions stack frame när funktionen returnerar?",
+      "options": [
+        "Den sparas tills programmet avslutas",
+        "Den flyttas till heapen",
+        "Den tas bort, och de lokala variablerna slutar finnas",
+        "Den skrivs till en fil"
+      ],
+      "answer": 2,
+      "why": "Stacken krymper automatiskt. Därför får du aldrig returnera en pekare eller referens till en lokal variabel."
+    },
+    {
+      "type": "mc",
+      "q": "Hur anropar du <code>void swap(int* a, int* b)</code> med variablerna x och y?",
+      "options": [
+        "<code>swap(x, y)</code>",
+        "<code>swap(*x, *y)</code>",
+        "<code>swap(&amp;x, &amp;y)</code>",
+        "<code>swap(int* x, int* y)</code>"
+      ],
+      "answer": 2,
+      "why": "Funktionen vill ha adresser. <code>&amp;x</code> ger adressen till x."
+    },
+    {
+      "type": "mc",
+      "q": "När passar parametern <code>const std::vector&lt;float&gt;&amp; data</code>?",
+      "options": [
+        "När funktionen ska lägga till element",
+        "När funktionen bara ska läsa en stor lista utan att kopiera den",
+        "När listan är tom",
+        "Bara i C"
+      ],
+      "answer": 1,
+      "why": "<code>&amp;</code> undviker kopian och <code>const</code> förhindrar ändringar. Det är både effektivt och säkert."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är returtypen för en funktion som inte returnerar något?",
+      "options": [
+        "<code>null</code>",
+        "<code>void</code>",
+        "<code>int</code>",
+        "<code>empty</code>"
+      ],
+      "answer": 1,
+      "why": "<code>void</code> betyder att funktionen inte lämnar tillbaka något värde."
+    },
+    {
+      "type": "mc",
+      "q": "<code>void f(int&amp; x) { x = 10; }</code> anropas med <code>a</code> som är 3. Vad är a efteråt?",
+      "options": [
+        "3",
+        "10",
+        "13",
+        "Kompileringsfel"
+      ],
+      "answer": 1,
+      "why": "x är en referens till a, så tilldelningen ändrar originalet."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka påståenden om överlagring i C++ stämmer? Välj alla.",
+      "options": [
+        "Funktionerna har samma namn",
+        "Parameterlistorna måste skilja sig",
+        "Det räcker att returtypen skiljer sig",
+        "Finns även i C"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "why": "Kompilatorn väljer version utifrån argumenten. Returtypen ensam räcker inte, och C saknar överlagring."
+    },
+    {
+      "type": "text",
+      "q": "Vad kallas minnesområdet där funktioners parametrar och lokala variabler hamnar? Ett ord.",
+      "accept": [
+        "stacken",
+        "stack",
+        "anropsstacken",
+        "callstack",
+        "call stack",
+        "stackminnet"
+      ],
+      "placeholder": "ett ord",
+      "why": "Stacken (anropsstacken). Varje anrop får en egen stack frame."
+    },
+    {
+      "type": "text",
+      "q": "Skriv prototypen (deklarationen) för en funktion <code>toKelvin</code> som tar en <code>float celsius</code> och returnerar <code>float</code>.",
+      "accept": [
+        "float toKelvin(float celsius);",
+        "float toKelvin(float);",
+        "float toKelvin(float c);"
+      ],
+      "placeholder": "float ...",
+      "why": "<code>float toKelvin(float celsius);</code> En prototyp slutar med semikolon istället för en kropp."
+    },
+    {
+      "type": "code",
+      "q": "Skriv funktionen <code>int square(int x)</code> som returnerar kvadraten. main är färdig.",
+      "task": "04-funktioner-1",
+      "why": "Funktionen returnerar värdet istället för att skriva ut det. main bestämmer vad som händer med det.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>bool isPrime(int n)</code>. main skriver ut <code>primtal</code> eller <code>inte primtal</code>.",
+      "task": "04-funktioner-2",
+      "why": "91 = 7 · 13. Det räcker att testa delare upp till roten ur n.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>void swap(int* a, int* b)</code> som byter plats på två värden via pekare.",
+      "task": "04-funktioner-3",
+      "why": "<code>*a</code> läser och skriver värdet på adressen. Utan en temporär variabel skulle det ena värdet skrivas över.",
+      "web": true
+    }
+  ]
+}

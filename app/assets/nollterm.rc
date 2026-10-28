@@ -1,0 +1,2 @@
+// Windows-resurs: programikonen. GLFW använder automatiskt ikonen som heter GLFW_ICON.
+GLFW_ICON ICON "nollterm.ico"

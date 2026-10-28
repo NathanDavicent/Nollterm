@@ -1,0 +1,201 @@
+{
+  "id": "git-samarbete",
+  "title": "Samarbete med Git: branches och pull requests",
+  "category": "Samarbete",
+  "minutes": 7,
+  "date": "Labb",
+  "lead": "Feature branches, små commits, pull requests och code review, i ett mini-projekt i par.",
+  "sources": [
+    "Samarbete med git – branches, merging, PRs"
+  ],
+  "goals": [
+    "Skapa en feature branch per ändring",
+    "Göra små commits med meddelanden som förklarar varför",
+    "Öppna en pull request och göra code review",
+    "Undvika de vanligaste misstagen i ett delat repo"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Arbetsflödet"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "# 1. skapa en branch för EN ändring\ngit checkout -b feature/add-heal-spell\n\n# 2. implementera, testa att det kompilerar, gör små commits\ngit add .\ngit commit -m \"Add heal spell so mages can restore HP\"\n\n# 3. pusha branchen\ngit push -u origin feature/add-heal-spell\n\n# 4. öppna en Pull Request på GitHub, tilldela din partner som reviewer\n# 5. efter review och godkännande: merge via GitHub, sedan lokalt:\ngit checkout main\ngit pull"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Regel:</strong> en feature branch = en ändring eller en deluppgift. Gör inte allt på samma branch."
+    },
+    {
+      "type": "h",
+      "text": "Pull request och code review"
+    },
+    {
+      "type": "p",
+      "html": "I PR-beskrivningen skriver du vad du lagt till, varför, och om något är oklart. Granskaren kommenterar specifika rader, ställer frågor och föreslår förbättringar i GitHubs review-verktyg. När allt är åtgärdat godkänner partnern och PR:en mergas."
+    },
+    {
+      "type": "h",
+      "text": "Vanliga misstag"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Stora branches med 300 rader ändringar.",
+        "För sena commits.",
+        "Dåliga commit-meddelanden, som \"fix\".",
+        "PR utan beskrivning.",
+        "Merge direkt till main utan review.",
+        "Båda jobbar på samma branch.",
+        "Konflikter som får växa sig stora.",
+        "Pusha utan att testa."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Mini-projekten"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Projekt",
+        "Minimikrav",
+        "Förslag på feature branches"
+      ],
+      "rows": [
+        [
+          "A. Mini-RPG Combat",
+          "<code>Character</code> med inkapslade stats, <code>Warrior</code> och <code>Mage</code> med polymorfa attacker, turbaserad stridsloop",
+          "print-ui, mage-spell, items, crit-chance"
+        ],
+        [
+          "B. SmartHome",
+          "basklass <code>Device</code>, subklasser <code>Lamp</code>, <code>Thermostat</code>, <code>Fan</code>, polymorf <code>update()</code>/<code>status()</code>, <code>vector&lt;unique_ptr&lt;Device&gt;&gt;</code>",
+          "fan-mode (enum), schedules, room (komposition), logging (Singleton)"
+        ],
+        [
+          "C. Marketplace Shop",
+          "<code>Item</code>, <code>Customer</code>, <code>VIPCustomer</code> med rabatt, <code>Shop</code> som säljer så länge lagret räcker",
+          "discount-code, out-of-stock-log, csv-load, receipt"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Bygg grunden tillsammans först: tomma klasser och en main som kompilerar. Sedan tar ni varsin feature branch. Mindre risk för konflikter."
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur många ändringar bör en feature branch innehålla?",
+      "options": [
+        "Alla ändringar för veckan",
+        "En ändring eller deluppgift",
+        "Minst 300 rader",
+        "Det spelar ingen roll"
+      ],
+      "answer": 1,
+      "why": "Små branches är lätta att granska och ger färre konflikter."
+    },
+    {
+      "type": "mc",
+      "q": "Vad bör ett bra commit-meddelande förklara?",
+      "options": [
+        "Bara vilka filer som ändrats",
+        "Vad som ändrats och varför",
+        "Vem som skrev koden",
+        "Datumet"
+      ],
+      "answer": 1,
+      "why": "\"Add heal spell so mages can restore HP\" säger mer än \"fix\"."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>git push -u origin feature/x</code>?",
+      "options": [
+        "Raderar branchen",
+        "Pushar branchen och kopplar den lokala branchen till den på GitHub",
+        "Mergar till main",
+        "Skapar en PR automatiskt"
+      ],
+      "answer": 1,
+      "why": "<code>-u</code> sätter upstream så att senare <code>git push</code> och <code>git pull</code> vet vart de ska."
+    },
+    {
+      "type": "mc",
+      "q": "Vem bör godkänna en PR innan merge?",
+      "options": [
+        "Den som skrev koden",
+        "En annan person, efter code review",
+        "Ingen",
+        "GitHub automatiskt"
+      ],
+      "answer": 1,
+      "why": "Merge till main utan review är ett av de vanliga misstagen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör du efter att PR:en mergats på GitHub?",
+      "options": [
+        "Inget",
+        "<code>git checkout main</code> och <code>git pull</code>",
+        "Raderar repot",
+        "<code>git push --force</code>"
+      ],
+      "answer": 1,
+      "why": "Då får du in den mergade koden lokalt innan nästa feature branch."
+    },
+    {
+      "type": "mc",
+      "q": "Du och din partner jobbar på samma branch och får konflikter hela tiden. Vad är bästa åtgärden?",
+      "options": [
+        "Pusha med --force",
+        "Ta varsin feature branch och merga via PR",
+        "Sluta committa",
+        "Jobba i main"
+      ],
+      "answer": 1,
+      "why": "Båda på samma branch är ett av de vanliga misstagen."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ska en PR-beskrivning innehålla? Välj alla.",
+      "options": [
+        "Vad som lagts till",
+        "Varför",
+        "Om något är oklart eller behöver feedback",
+        "Hela källkoden igen"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Koden syns redan i diffen."
+    },
+    {
+      "type": "text",
+      "q": "Skriv kommandot som skapar och byter till branchen <code>feature/items</code>.",
+      "accept": [
+        "git checkout -b feature/items",
+        "git switch -c feature/items"
+      ],
+      "placeholder": "git ...",
+      "why": "<code>git checkout -b feature/items</code>"
+    },
+    {
+      "type": "text",
+      "q": "Skriv kommandot som pushar <code>feature/items</code> första gången och sätter upstream.",
+      "accept": [
+        "git push -u origin feature/items",
+        "git push --set-upstream origin feature/items"
+      ],
+      "placeholder": "git push ...",
+      "why": "<code>git push -u origin feature/items</code>"
+    }
+  ]
+}

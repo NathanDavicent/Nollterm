@@ -1,0 +1,111 @@
+{
+  "cpp/01-kom-igang-1": [
+    "cpp",
+    "py"
+  ],
+  "cpp/01-kom-igang-2": [
+    "cpp",
+    "py"
+  ],
+  "cpp/02-villkor-1": [
+    "cpp",
+    "py"
+  ],
+  "cpp/02-villkor-2": [
+    "cpp",
+    "py"
+  ],
+  "cpp/03-loopar-1": [
+    "cpp",
+    "py"
+  ],
+  "cpp/03-loopar-2": [
+    "cpp",
+    "py"
+  ],
+  "cpp/03-loopar-3": [
+    "cpp",
+    "py"
+  ],
+  "cpp/04-funktioner-1": [
+    "cpp",
+    "py"
+  ],
+  "cpp/04-funktioner-2": [
+    "cpp",
+    "py"
+  ],
+  "cpp/04-funktioner-3": [
+    "cpp"
+  ],
+  "cpp/05-arrayer-pekare-1": [
+    "cpp",
+    "py"
+  ],
+  "cpp/05-arrayer-pekare-2": [
+    "cpp",
+    "py"
+  ],
+  "cpp/05-arrayer-pekare-3": [
+    "cpp",
+    "py"
+  ],
+  "cpp/06-c-strangar-1": [
+    "c"
+  ],
+  "cpp/06-c-strangar-2": [
+    "c",
+    "py"
+  ],
+  "cpp/10-felhantering-1": [
+    "cpp",
+    "py"
+  ],
+  "cpp/10-felhantering-2": [
+    "cpp",
+    "py"
+  ],
+  "oop/01-klasser-typer-1": [
+    "py"
+  ],
+  "oop/01-klasser-typer-2": [
+    "py"
+  ],
+  "oop/02-inkapsling-1": [
+    "py"
+  ],
+  "oop/03-komposition-uml-1": [
+    "py"
+  ],
+  "oop/04-arv-1": [],
+  "oop/04-arv-2": [
+    "py"
+  ],
+  "oop/05-enums-1": [
+    "py"
+  ],
+  "oop/05-enums-2": [
+    "py"
+  ],
+  "oop/06-polymorfism-1": [
+    "py"
+  ],
+  "oop/07-agande-casting-1": [
+    "py"
+  ],
+  "oop/07-agande-casting-2": [
+    "py"
+  ],
+  "oop/08-designmonster-1": [
+    "py"
+  ],
+  "oop/08-designmonster-2": [
+    "py"
+  ],
+  "oop/09-singleton-adapter-1": [
+    "py"
+  ],
+  "oop/09-singleton-adapter-2": [
+    "py"
+  ]
+}

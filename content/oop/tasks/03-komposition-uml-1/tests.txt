@@ -1,0 +1,8 @@
+--- in
+R2D2 1 2 3 -1
+--- out
+R2D2 at (4, 1)
+--- in
+Wall-E
+--- out
+Wall-E at (0, 0)

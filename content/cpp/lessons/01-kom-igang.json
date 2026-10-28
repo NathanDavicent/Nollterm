@@ -1,0 +1,346 @@
+{
+  "id": "kom-igang",
+  "title": "Kom igång med C och C++",
+  "category": "Grunder",
+  "minutes": 7,
+  "lead": "Skriv, kompilera och kör ditt första program, och lär dig vad som skiljer C från C++.",
+  "sources": [
+    "C/C++ – V39 Studiehäfte"
+  ],
+  "goals": [
+    "Förklara skillnaden mellan C och C++ på en grundläggande nivå",
+    "Kompilera och köra ett program, både i en IDE och från terminalen",
+    "Använda variabler, de vanligaste datatyperna och operatorer"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "C och C++: släkt men inte samma"
+    },
+    {
+      "type": "p",
+      "html": "<strong>C</strong> är ett litet, procedurellt språk som ligger nära hårdvaran. Det finns en C-kompilator till nästan varje mikrokontroller, och därför är C fortfarande standard i inbyggda system. <strong>C++</strong> bygger vidare på C och lägger till bland annat klasser, referenser, <code>std::string</code>, <code>std::vector</code> och exceptions."
+    },
+    {
+      "type": "p",
+      "html": "Det mesta av giltig C-kod kompilerar också som C++, men inte tvärtom. I den här kursen skriver du båda, ofta samma uppgift två gånger, så att du ser vad C++ gör enklare och vad C kräver att du gör själv."
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "C",
+        "C++"
+      ],
+      "rows": [
+        [
+          "Utskrift",
+          "<code>printf</code> från <code>&lt;stdio.h&gt;</code>",
+          "<code>std::cout</code> från <code>&lt;iostream&gt;</code>"
+        ],
+        [
+          "Inläsning",
+          "<code>scanf</code>, <code>fgets</code>",
+          "<code>std::cin</code>, <code>std::getline</code>"
+        ],
+        [
+          "Text",
+          "<code>char</code>-array som slutar med <code>'\\0'</code>",
+          "<code>std::string</code>"
+        ],
+        [
+          "Filändelse",
+          ".c",
+          ".cpp"
+        ],
+        [
+          "Kompilator (CLI)",
+          "gcc",
+          "g++"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Sätt upp din miljö"
+    },
+    {
+      "type": "p",
+      "html": "Det finns två vägar. Båda fungerar, välj den du trivs med."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>A. IDE (rekommenderas för nybörjare):</strong> Visual Studio, CLion, Code::Blocks eller Dev-C++. Du skriver, kompilerar, kör och debuggar på samma ställe.",
+        "<strong>B. Kommandoraden:</strong> gcc/g++ via MinGW på Windows, eller i terminalen på Linux och Mac."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "# Kompilera och kör från terminalen\ngcc hello.c -o hello      # C\ng++ hello.cpp -o hello    # C++\n./hello                   # Windows: hello.exe",
+      "caption": "terminal"
+    },
+    {
+      "type": "h",
+      "text": "Hello, World"
+    },
+    {
+      "type": "p",
+      "html": "Första milstolpen i ett nytt språk är att få ut en rad text. Då vet du att kompilatorn, länkningen och körningen fungerar."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"Hello, World!\\n\");\n    return 0;   // 0 betyder \"allt gick bra\"\n}",
+      "caption": "hello.c"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}",
+      "caption": "hello.cpp"
+    },
+    {
+      "type": "h",
+      "text": "Variabler och datatyper"
+    },
+    {
+      "type": "p",
+      "html": "En variabel är en namngiven behållare för data. Typen bestämmer vilka värden som får plats och hur mycket minne som används."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Typ",
+        "Innehåll",
+        "Exempel",
+        "Vanlig storlek"
+      ],
+      "rows": [
+        [
+          "<code>int</code>",
+          "heltal",
+          "<code>int age = 20;</code>",
+          "4 byte"
+        ],
+        [
+          "<code>float</code>",
+          "decimaltal",
+          "<code>float price = 19.99f;</code>",
+          "4 byte"
+        ],
+        [
+          "<code>double</code>",
+          "decimaltal, högre precision",
+          "<code>double pi = 3.14159;</code>",
+          "8 byte"
+        ],
+        [
+          "<code>char</code>",
+          "ett tecken",
+          "<code>char grade = 'A';</code>",
+          "1 byte"
+        ],
+        [
+          "<code>bool</code>",
+          "sant/falskt",
+          "<code>bool on = true;</code>",
+          "1 byte"
+        ],
+        [
+          "<code>std::string</code>",
+          "text (bara C++)",
+          "<code>std::string name = \"Anna\";</code>",
+          "varierar"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Storlekarna gäller en vanlig PC. På en mikrokontroller kan <code>int</code> vara 2 byte. Kontrollera med <code>sizeof(int)</code> när det spelar roll."
+    },
+    {
+      "type": "h",
+      "text": "Operatorer"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Aritmetiska:</strong> <code>+ - * / %</code>",
+        "<strong>Jämförelse:</strong> <code>== != &lt; &gt; &lt;= &gt;=</code>, ger alltid sant eller falskt",
+        "<strong>Logiska:</strong> <code>&amp;&amp;</code> (och), <code>||</code> (eller), <code>!</code> (inte)"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int a = 7, b = 2;\nstd::cout << a / b   << \"\\n\";   // 3   heltalsdivision, decimalerna kapas\nstd::cout << a % b   << \"\\n\";   // 1   resten\nstd::cout << 7.0 / 2 << \"\\n\";   // 3.5 minst ett decimaltal ger decimaldivision",
+      "caption": "heltalsdivision"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<code>=</code> tilldelar, <code>==</code> jämför. <code>if (x = 5)</code> kompilerar men sätter x till 5 och är alltid sant."
+    },
+    {
+      "type": "h",
+      "text": "Mini-labb"
+    },
+    {
+      "type": "exercise",
+      "title": "Ditt första program",
+      "html": "<p>Skriv ett program som:</p><ol><li>skriver ut ditt namn och din ålder</li><li>beräknar summan av två tal</li><li>avgör om åldern är över eller under 18</li></ol><p>Gör det i både C och C++. För varje nytt begrepp: slå upp det på cppreference.com.</p>",
+      "solution": "#include <iostream>\n#include <string>\n\nint main() {\n    std::string name = \"Nathanael\";\n    int age = 20;\n    int x = 4, y = 7;\n\n    std::cout << name << \", \" << age << \" år\\n\";\n    std::cout << \"Summa: \" << x + y << \"\\n\";\n    if (age >= 18) {\n        std::cout << \"Myndig\\n\";\n    } else {\n        std::cout << \"Under 18\\n\";\n    }\n    return 0;\n}",
+      "lang": "cpp"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad skriver <code>std::cout &lt;&lt; 7 / 2;</code> ut?",
+      "options": [
+        "3.5",
+        "3",
+        "4",
+        "3.0"
+      ],
+      "answer": 1,
+      "why": "Båda operanderna är <code>int</code>, så det blir heltalsdivision och decimalerna kapas. Skriv <code>7.0 / 2</code> för att få 3.5."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken typ passar bäst för ett enskilt tecken, till exempel betyget 'A'?",
+      "options": [
+        "<code>std::string</code>",
+        "<code>char</code>",
+        "<code>int</code>",
+        "<code>bool</code>"
+      ],
+      "answer": 1,
+      "why": "<code>char</code> rymmer exakt ett tecken (1 byte). Enkla citattecken <code>'A'</code> betyder ett tecken, dubbla <code>\"A\"</code> betyder en sträng."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket påstående om C och C++ stämmer?",
+      "options": [
+        "<code>std::string</code> finns bara i C++",
+        "C har klasser precis som C++",
+        "C++ kan inte använda <code>printf</code>",
+        "C-kod måste skrivas om helt för att kompilera som C++"
+      ],
+      "answer": 0,
+      "why": "Standardbiblioteket med <code>std::string</code>, <code>std::vector</code> och <code>std::cout</code> är C++. C++ kan fortfarande använda <code>printf</code> via <code>&lt;cstdio&gt;</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad blir <code>10 % 3</code>?",
+      "options": [
+        "3",
+        "0",
+        "1",
+        "3.33"
+      ],
+      "answer": 2,
+      "why": "<code>%</code> ger resten vid heltalsdivision: 10 = 3 · 3 + <strong>1</strong>."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken operator betyder logiskt OCH?",
+      "options": [
+        "<code>&amp;</code>",
+        "<code>&amp;&amp;</code>",
+        "<code>||</code>",
+        "<code>!</code>"
+      ],
+      "answer": 1,
+      "why": "<code>&amp;&amp;</code> är logiskt och. En ensam <code>&amp;</code> är bitvis och, eller adressoperatorn, beroende på sammanhang."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket kommando kompilerar <code>main.cpp</code> till programmet <code>app</code>?",
+      "options": [
+        "<code>gcc main.cpp app</code>",
+        "<code>g++ main.cpp -o app</code>",
+        "<code>g++ -o main.cpp app</code>",
+        "<code>run main.cpp</code>"
+      ],
+      "answer": 1,
+      "why": "<code>g++</code> är C++-kompilatorn och <code>-o</code> anger namnet på den körbara filen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad returnerar <code>main</code> för att signalera att allt gick bra?",
+      "options": [
+        "1",
+        "0",
+        "-1",
+        "true"
+      ],
+      "answer": 1,
+      "why": "<code>return 0;</code> betyder att programmet avslutades utan fel. Allt annat tolkas som en felkod."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka av följande är jämförelseoperatorer? Välj alla som stämmer.",
+      "options": [
+        "<code>==</code>",
+        "<code>!=</code>",
+        "<code>=</code>",
+        "<code>&lt;=</code>",
+        "<code>&amp;&amp;</code>"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "<code>=</code> är tilldelning och <code>&amp;&amp;</code> är en logisk operator."
+    },
+    {
+      "type": "text",
+      "q": "Vilken datatyp ger dubbel precision för decimaltal? Skriv typens namn.",
+      "accept": [
+        "double"
+      ],
+      "placeholder": "typnamn",
+      "why": "<code>double</code> har ungefär 15–16 siffrors precision, <code>float</code> ungefär 7."
+    },
+    {
+      "type": "text",
+      "q": "Vad skriver <code>std::cout &lt;&lt; 17 % 5;</code> ut?",
+      "accept": [
+        "2"
+      ],
+      "placeholder": "svar",
+      "why": "17 = 3 · 5 + 2, så resten är 2."
+    },
+    {
+      "type": "text",
+      "q": "Vilken header inkluderar du för att använda <code>printf</code> i C? Skriv hela raden.",
+      "accept": [
+        "#include <stdio.h>",
+        "#include<stdio.h>",
+        "stdio.h",
+        "<stdio.h>"
+      ],
+      "placeholder": "#include ...",
+      "why": "<code>#include &lt;stdio.h&gt;</code> (i C++ heter den <code>&lt;cstdio&gt;</code>)."
+    },
+    {
+      "type": "code",
+      "q": "Läs in två heltal och skriv ut deras summa, skillnad och produkt på var sin rad.",
+      "task": "01-kom-igang-1",
+      "why": "Tre utskrifter med <code>endl</code> efter varje ger tre rader.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in en temperatur i Celsius (decimaltal) och skriv ut den i Fahrenheit. Formel: F = C · 9 / 5 + 32.",
+      "task": "01-kom-igang-2",
+      "why": "Eftersom <code>c</code> är en double blir hela uttrycket en decimalberäkning.",
+      "web": true
+    }
+  ]
+}

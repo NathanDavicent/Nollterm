@@ -1,0 +1,366 @@
+{
+  "id": "klasser",
+  "title": "Structs, klasser och objekt",
+  "category": "Objekt",
+  "minutes": 12,
+  "date": "Tors 16/10",
+  "lead": "Samla data som hör ihop, välj mellan stack och heap och skydda dina värden med inkapsling och konstruktorer.",
+  "sources": [
+    "Torsdag 16/10 – Klasser, structs, objekt"
+  ],
+  "goals": [
+    "Skapa structs i C och C++ och förklara vad en medlem är",
+    "Skilja på objekt på stacken och på heapen, och använda . och ->",
+    "Förklara skillnaden mellan struct och class, och public/private",
+    "Skriva konstruktorer med initieringslista"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Structs: data som hör ihop"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>struct</strong> samlar flera värden, ofta av olika typer, under ett namn. Varje värde kallas <strong>medlem</strong> (eller fält)."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "struct Device {\n    int id;            // data-medlem\n    char name[20];     // data-medlem\n    float temperature; // data-medlem\n};\n\nstruct Device d = {1, \"Sensor A\", 23.5f};   // i C skriver du \"struct Device\"\nprintf(\"%s: %.1f\\n\", d.name, d.temperature);",
+      "caption": "C"
+    },
+    {
+      "type": "p",
+      "html": "I C++ kan en struct dessutom innehålla <strong>metoder</strong> (funktioner som hör till structen), och du behöver inte skriva <code>struct</code> framför typnamnet."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "struct Device {\n    int id;\n    std::string name;\n    float temperature;\n\n    void printInfo() const {              // metod (funktionsmedlem)\n        std::cout << \"Device \" << id << \" (\" << name << \") -> \"\n                  << temperature << \" °C\\n\";\n    }\n};\n\nDevice d1 = {1, \"Sensor A\", 23.5f};       // en instans, ett objekt\nd1.printInfo();",
+      "caption": "C++"
+    },
+    {
+      "type": "p",
+      "html": "Definitionen av <code>Device</code> är en ritning. Varje <strong>instans</strong> (objekt) du skapar har sina egna värden på <code>id</code>, <code>name</code> och <code>temperature</code>."
+    },
+    {
+      "type": "h",
+      "text": "Stack och heap"
+    },
+    {
+      "type": "p",
+      "html": "All data i ett program lagras någonstans i minnet. Två områden är viktiga att känna till:"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Stack",
+        "Heap"
+      ],
+      "rows": [
+        [
+          "Skapas",
+          "automatiskt: <code>Device d1;</code>",
+          "manuellt: <code>new Device{...}</code> eller <code>malloc</code>"
+        ],
+        [
+          "Frigörs",
+          "automatiskt när funktionen avslutas",
+          "när du anropar <code>delete</code> (eller <code>free</code>)"
+        ],
+        [
+          "Används till",
+          "lokala variabler, parametrar, temporära objekt",
+          "objekt som ska leva längre än funktionen, eller när antalet är okänt"
+        ],
+        [
+          "Egenskaper",
+          "snabb men begränsad i storlek",
+          "flexibel, men du ansvarar för att frigöra"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "När du har en <strong>pekare</strong> till ett objekt använder du <code>-&gt;</code> istället för punkt. <code>d2-&gt;name</code> är kortform för <code>(*d2).name</code>."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "Device d1 = {1, \"Sensor A\", 22.5f};              // stack\nDevice* d2 = new Device{2, \"Sensor B\", 25.0f};   // heap\n\nstd::cout << d1.name  << \"\\n\";    // punkt för objekt\nstd::cout << d2->name << \"\\n\";    // pil för pekare\nstd::cout << &d1 << \" \" << d2 << \"\\n\";   // jämför adresserna\n\ndelete d2;          // annars minnesläcka\nd2 = nullptr;"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "I inbyggda system med lite RAM undviker man ofta heapen helt efter uppstart. Statisk eller stackbaserad allokering är förutsägbar och kan inte fragmentera minnet."
+    },
+    {
+      "type": "h",
+      "text": "Från struct till class"
+    },
+    {
+      "type": "p",
+      "html": "I C++ är <code>struct</code> och <code>class</code> nästan samma sak. Den enda skillnaden är standardåtkomsten:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "I en <code>struct</code> är medlemmarna <strong>public</strong> om inget annat anges.",
+        "I en <code>class</code> är medlemmarna <strong>private</strong> om inget annat anges."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Konventionen är att använda struct för enkla datapaket och class när objektet har regler för hur datan får användas."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Åtkomst",
+        "Vem kommer åt medlemmen"
+      ],
+      "rows": [
+        [
+          "<code>public</code>",
+          "alla, även kod utanför klassen"
+        ],
+        [
+          "<code>private</code>",
+          "bara klassens egna metoder"
+        ],
+        [
+          "<code>protected</code>",
+          "klassen och klasser som ärver från den (arv kommer senare)"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Inkapsling"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Inkapsling</strong> (encapsulation) betyder att klassen själv bestämmer hur dess data används. Gör <code>value</code> privat och låt ändringar gå via <code>setValue()</code>, så kan klassen garantera att värdet alltid är rimligt."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Sensor {\nprivate:\n    float value = 0.0f;\npublic:\n    bool setValue(float v) {\n        if (v < 0.0f || v > 100.0f) return false;   // avvisa orimliga värden\n        value = v;\n        return true;\n    }\n    float getValue() const { return value; }\n};"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Färre buggar: ingen utanför kan ändra känsliga värden direkt.",
+        "Lättare att underhålla: gränssnittet är tydligt.",
+        "Du kan byta implementation utan att resten av programmet påverkas."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Konstruktorer"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>konstruktor</strong> har samma namn som klassen och körs automatiskt när ett objekt skapas. Den sätter startvärden, så att ett objekt aldrig existerar i ett halvfärdigt läge. Initieringslistan efter kolonet sätter medlemmarna direkt."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Device {\nprivate:\n    int id;\n    std::string type;\n    float value;\npublic:\n    Device(int i, std::string t, float v)\n        : id(i), type(t), value(v) {}           // initieringslista\n\n    void setValue(float v) { value = v; }\n    void print() const {\n        std::cout << \"Device \" << id << \" (\" << type << \"): \" << value << \"\\n\";\n    }\n};\n\nint main() {\n    Device d1(1, \"Sensor A\", 23.5f);   // konstruktorn anropas här\n    d1.print();\n}"
+    },
+    {
+      "type": "p",
+      "html": "En klass kan ha flera konstruktorer (överlagring), så att objekt kan skapas på olika sätt:"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "Device() : id(0), type(\"Unnamed\"), value(0.0f) {}                  // standard\nDevice(int i, std::string t) : id(i), type(t), value(0.0f) {}           // delvis\nDevice(int i, std::string t, float v) : id(i), type(t), value(v) {}     // full\n\nDevice a;                         // standard\nDevice b(2, \"TempSensor\");        // delvis\nDevice c(3, \"Pressure\", 101.3f);  // full"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Metoder som bara läser, som <code>print()</code>, markeras med <code>const</code> efter parentesen. Då kan de anropas på konstanta objekt och kompilatorn stoppar oavsiktliga ändringar."
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "struct Device",
+      "html": "<p>Skapa en struct med <code>int id</code>, <code>string type</code>, <code>bool active</code> och <code>float value</code>. Skriv <code>void printDevice(Device d)</code>, skapa två objekt i <code>main</code> och skriv ut dem. Extra: läs in värden med <code>cin</code>.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Stack och heap",
+      "html": "<ol><li>Skapa en Device på stacken och en på heapen.</li><li>Ändra <code>value</code> för båda.</li><li>Skriv ut <code>&amp;d1</code> och <code>d2</code> och jämför adresserna.</li><li>Diskutera: vilken allokering passar inbyggda system med lite minne?</li></ol>"
+    },
+    {
+      "type": "exercise",
+      "title": "class Sensor",
+      "html": "<p>Skapa en klass <code>Sensor</code> med privata medlemmar <code>id</code>, <code>unit</code> och <code>value</code>, en konstruktor som tar alla tre och en metod <code>printInfo()</code>. Skapa två sensorer i <code>main</code>.</p>",
+      "solution": "class Sensor {\nprivate:\n    int id;\n    std::string unit;\n    float value;\npublic:\n    Sensor(int i, std::string u, float v) : id(i), unit(u), value(v) {}\n    void printInfo() const {\n        std::cout << \"Sensor \" << id << \": \" << value << \" \" << unit << \"\\n\";\n    }\n};\n\nint main() {\n    Sensor s1(1, \"°C\", 22.5f);\n    Sensor s2(2, \"%RH\", 41.0f);\n    s1.printInfo();\n    s2.printInfo();\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "vector av devices",
+      "html": "<p>Skapa en <code>vector&lt;Device&gt;</code> med flera objekt och en funktion som skriver ut alla. Tips: ta listan som <code>const vector&lt;Device&gt;&amp;</code>.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Utmaning: statusmeddelande",
+      "html": "<p>Lägg till en metod som returnerar ett statusmeddelande beroende på <code>value</code>, till exempel \"Sensor normal\", \"Warning: High value\" eller \"Offline\".</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är den enda skillnaden mellan <code>struct</code> och <code>class</code> i C++?",
+      "options": [
+        "Structs kan inte ha metoder",
+        "Standardåtkomsten: public i struct, private i class",
+        "Klasser lagras alltid på heapen",
+        "Structs kan inte ha konstruktorer"
+      ],
+      "answer": 1,
+      "why": "I C++ kan båda ha metoder, konstruktorer och arv. Bara standardåtkomsten skiljer."
+    },
+    {
+      "type": "mc",
+      "q": "<code>Device* d2 = new Device{2, \"B\", 25.0f};</code> Hur når du namnet?",
+      "options": [
+        "<code>d2.name</code>",
+        "<code>d2-&gt;name</code>",
+        "<code>&amp;d2.name</code>",
+        "<code>d2::name</code>"
+      ],
+      "answer": 1,
+      "why": "d2 är en pekare, så du använder <code>-&gt;</code>. Det är kortform för <code>(*d2).name</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer om du glömmer <code>delete d2;</code>?",
+      "options": [
+        "Kompileringsfel",
+        "Objektet raderas automatiskt när main slutar köra rader",
+        "Minnet frigörs aldrig under körningen: en minnesläcka",
+        "d2 flyttas till stacken"
+      ],
+      "answer": 2,
+      "why": "Heapminne frigörs bara när du gör det själv. I ett program som körs länge, som en IoT-enhet, kan läckor till slut ta slut på minnet."
+    },
+    {
+      "type": "mc",
+      "q": "När körs en konstruktor?",
+      "options": [
+        "När du anropar den manuellt med obj.Konstruktor()",
+        "Automatiskt när objektet skapas",
+        "När objektet förstörs",
+        "Bara för objekt på heapen"
+      ],
+      "answer": 1,
+      "why": "<code>Device d1(1, \"A\", 23.5f);</code> anropar konstruktorn direkt. Det gör också <code>new Device(...)</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Varför göra <code>value</code> private och ha en <code>setValue()</code>-metod?",
+      "options": [
+        "Det gör programmet snabbare",
+        "Klassen kan kontrollera att värdet alltid är giltigt",
+        "Private-medlemmar tar mindre minne",
+        "Det krävs för att kunna använda konstruktorer"
+      ],
+      "answer": 1,
+      "why": "Det är inkapsling: all ändring går via en metod som kan validera, logga eller avvisa värden."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en <em>instans</em>?",
+      "options": [
+        "En metod i en klass",
+        "Ett konkret objekt skapat från en klass eller struct",
+        "En headerfil",
+        "En privat medlem"
+      ],
+      "answer": 1,
+      "why": "<code>Device d1;</code> skapar en instans av Device. Klassen är ritningen, instansen är det som byggs."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder <code>const</code> efter metoden i <code>void print() const</code>?",
+      "options": [
+        "Metoden returnerar en konstant",
+        "Metoden ändrar inte objektets medlemmar",
+        "Metoden kan inte anropas",
+        "Metoden är private"
+      ],
+      "answer": 1,
+      "why": "Kompilatorn stoppar alla ändringar av medlemmar i metoden, och den kan anropas på konstanta objekt."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka hamnar på stacken? Välj alla.",
+      "options": [
+        "<code>int x = 5;</code> i en funktion",
+        "En funktions parametrar",
+        "Objektet som skapas av <code>new Device{}</code>",
+        "<code>Device d1;</code> i main"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "<code>new</code> allokerar på heapen. Pekaren som håller adressen kan däremot ligga på stacken."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka åtkomstnivåer finns i C++? Välj alla.",
+      "options": [
+        "public",
+        "private",
+        "protected",
+        "internal",
+        "hidden"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "<code>internal</code> finns i C#, inte i C++."
+    },
+    {
+      "type": "text",
+      "q": "Vilken operator använder du för att nå en medlem via en pekare till ett objekt?",
+      "accept": [
+        "->"
+      ],
+      "placeholder": "operator",
+      "why": "<code>ptr-&gt;medlem</code> är samma som <code>(*ptr).medlem</code>."
+    },
+    {
+      "type": "text",
+      "q": "Vilket nyckelord frigör ett objekt som skapats med <code>new</code>?",
+      "accept": [
+        "delete",
+        "delete;"
+      ],
+      "placeholder": "nyckelord",
+      "why": "<code>delete ptr;</code> (för arrayer: <code>delete[] ptr;</code>)."
+    },
+    {
+      "type": "text",
+      "q": "Vad kallas idén att en klass döljer sin data och bara visar ett gränssnitt? Ett ord, svenska eller engelska.",
+      "accept": [
+        "inkapsling",
+        "encapsulation"
+      ],
+      "placeholder": "begrepp",
+      "why": "Inkapsling (encapsulation): privat data, publika metoder."
+    }
+  ]
+}

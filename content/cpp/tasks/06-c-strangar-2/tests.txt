@@ -1,0 +1,12 @@
+--- in
+Mikrokontroller
+--- out
+5
+--- in
+IoT
+--- out
+2
+--- in
+xyz
+--- out
+1

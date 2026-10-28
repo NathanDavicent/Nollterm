@@ -1,0 +1,317 @@
+{
+  "id": "arrayer-pekare",
+  "title": "Arrayer, pekare, vector och map",
+  "category": "Minne",
+  "minutes": 11,
+  "date": "Fre 10/10",
+  "lead": "Se hur arrayer ligger i minnet, räkna med pekare och låt std::vector och std::map göra grovjobbet.",
+  "sources": [
+    "Fredag 10/10 – Arrays, pekare, vektorer och maps"
+  ],
+  "goals": [
+    "Förklara hur en array ligger i minnet och hur den hänger ihop med pekare",
+    "Använda enkel pekararitmetik",
+    "Skicka arrayer till funktioner",
+    "Använda std::vector, malloc/free, 2D-arrayer och std::map"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför arrayer?"
+    },
+    {
+      "type": "p",
+      "html": "Hur skulle du lagra 10 temperaturvärden utan en array? Med tio variabler: <code>t0</code>, <code>t1</code> … <code>t9</code>. Det går inte att loopa över dem, och varje ny mätpunkt kräver ny kod. En array samlar värdena under ett namn."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include <stdio.h>\n\nint main(void) {\n    int temperatures[5] = {21, 22, 20, 19, 23};\n    for (int i = 0; i < 5; ++i) {\n        printf(\"Temp %d: %d\\n\", i, temperatures[i]);\n    }\n    return 0;\n}"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Indexering</strong> börjar på 0.",
+        "<strong>Minneslayout:</strong> elementen ligger direkt efter varandra (kontinuerligt).",
+        "<strong>Storlek:</strong> <code>sizeof(temperatures)</code> ger antal bytes (20), <code>sizeof(temperatures) / sizeof(temperatures[0])</code> ger antal element (5). I C++17 finns <code>std::size(temperatures)</code>."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Arrayer och pekare"
+    },
+    {
+      "type": "p",
+      "html": "I de flesta uttryck omvandlas arrayens namn till en pekare till första elementet: <code>temperatures == &amp;temperatures[0]</code>. Lägger du till 1 till en pekare flyttas den ett helt <em>element</em> framåt, inte en byte. Därför är <code>arr[i]</code> och <code>*(arr + i)</code> samma sak."
+    },
+    {
+      "type": "widget",
+      "name": "pointer"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int arr[] = {10, 20, 30};\nint* p = arr;\nstd::cout << *p       << \"\\n\";   // 10\nstd::cout << *(p + 1) << \"\\n\";   // 20\nstd::cout << p[2]     << \"\\n\";   // 30"
+    },
+    {
+      "type": "h",
+      "text": "Arrayer som parametrar"
+    },
+    {
+      "type": "p",
+      "html": "När du skickar en array till en funktion skickas bara pekaren till första elementet. Funktionen vet alltså inte hur lång arrayen är, så storleken måste skickas med."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int sum(int* arr, int size) {\n    int total = 0;\n    for (int i = 0; i < size; i++) {\n        total += *(arr + i);       // samma som arr[i]\n    }\n    return total;\n}\n\nint data[] = {4, 8, 15, 16, 23};\nint s = sum(data, 5);"
+    },
+    {
+      "type": "h",
+      "text": "std::vector i C++"
+    },
+    {
+      "type": "p",
+      "html": "Råa arrayer har ingen automatisk storlekskontroll, och det är lätt att skriva utanför gränsen. <code>std::vector</code> löser mycket av det: storleken är dynamisk, minnet hanteras automatiskt och vektorn vet själv hur många element den har."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <vector>\n\ndouble average(const std::vector<int>& v) {\n    if (v.empty()) return 0.0;\n    double sum = 0;\n    for (int x : v) sum += x;\n    return sum / v.size();\n}\n\nint main() {\n    std::vector<int> temps = {21, 22, 20, 19, 23};\n    temps.push_back(25);                       // lägg till sist\n    std::cout << temps.size() << \"\\n\";         // 6\n    std::cout << average(temps) << \"\\n\";\n    std::cout << temps.at(10);                 // at() kastar exception istället för att läsa skräp\n}"
+    },
+    {
+      "type": "h",
+      "text": "Dynamiska listor i C"
+    },
+    {
+      "type": "p",
+      "html": "C har ingen vector. Där allokerar du minne på heapen själv med <code>malloc</code>, ändrar storleken med <code>realloc</code> och lämnar tillbaka det med <code>free</code>. Det här är vardag i inbyggda system och IoT."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include <stdlib.h>\n\nint size = 5;\nint* data = malloc(size * sizeof(int));\nif (data == NULL) { /* slut på minne */ return 1; }\n\nfor (int i = 0; i < size; ++i) data[i] = i * 2;\n\nsize = 10;\nint* tmp = realloc(data, size * sizeof(int));   // spara i tmp först\nif (tmp == NULL) { free(data); return 1; }      // annars tappar du data vid fel\ndata = tmp;\n\nfree(data);       // varje malloc ska ha en free\ndata = NULL;"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Kontrollera alltid att <code>malloc</code> och <code>realloc</code> inte returnerade <code>NULL</code>. Använd inte minnet efter <code>free</code>."
+    },
+    {
+      "type": "h",
+      "text": "2D-arrayer"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int grid[2][3] = {{1, 2, 3}, {4, 5, 6}};\nfor (int i = 0; i < 2; ++i)\n    for (int j = 0; j < 3; ++j)\n        std::cout << grid[i][j] << \" \";\n\n// C++: nästlade vektorer\nstd::vector<std::vector<int>> g = {{1, 2, 3}, {4, 5, 6}};\nfor (auto& row : g)\n    for (int val : row)\n        std::cout << val << \" \";"
+    },
+    {
+      "type": "h",
+      "text": "std::map"
+    },
+    {
+      "type": "p",
+      "html": "En map lagrar par av <strong>nyckel → värde</strong>, sorterade på nyckeln. Perfekt när du vill slå upp en sensor på namn istället för index."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <map>\n#include <string>\n\nstd::map<std::string, int> readings = {\n    {\"Temp\", 22},\n    {\"Humidity\", 45},\n};\nreadings[\"Pressure\"] = 1013;          // lägg till eller skriv över\n\nfor (auto& [key, value] : readings)   // C++17\n    std::cout << key << \": \" << value << \"\\n\";\n\nif (readings.count(\"CO2\") == 0)\n    std::cout << \"Ingen CO2-sensor\\n\";"
+    },
+    {
+      "type": "h",
+      "text": "Vänd en array på plats"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void reverseArray(int* arr, int size) {\n    for (int i = 0; i < size / 2; ++i) {\n        int tmp = arr[i];\n        arr[i] = arr[size - 1 - i];\n        arr[size - 1 - i] = tmp;\n    }\n}",
+      "caption": "C"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void reverseArray(std::vector<int>& arr) {\n    for (size_t i = 0; i < arr.size() / 2; ++i)\n        std::swap(arr[i], arr[arr.size() - 1 - i]);\n}",
+      "caption": "C++"
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Medeltemperatur",
+      "html": "<p>Läs in 5 temperaturer från användaren och beräkna medelvärdet. Använd en for-loop för både inläsning och summering.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Index och pekarnotation",
+      "html": "<ol><li>Skriv ut arrayens värden med både <code>arr[i]</code> och <code>*(arr + i)</code>.</li><li>Skriv <code>int sum(int* arr, int size)</code> som summerar med pekare.</li></ol>"
+    },
+    {
+      "type": "exercise",
+      "title": "makeArray",
+      "html": "<p>Skriv <code>int* makeArray(int size)</code> som returnerar en dynamiskt allokerad array fylld med nollor. Skriv ut innehållet och glöm inte <code>free</code>.</p>",
+      "solution": "int* makeArray(int size) {\n    int* a = malloc(size * sizeof(int));\n    if (a == NULL) return NULL;\n    for (int i = 0; i < size; i++) a[i] = 0;\n    return a;          // anroparen ansvarar för free(a)\n}\n// Alternativ: calloc(size, sizeof(int)) nollställer åt dig",
+      "lang": "c"
+    },
+    {
+      "type": "exercise",
+      "title": "map med flera mätvärden",
+      "html": "<ol><li>Skapa en <code>map&lt;string, vector&lt;int&gt;&gt;</code> där varje sensor har flera mätvärden.</li><li>Skriv en funktion som skriver ut medelvärdet för varje sensor.</li></ol>",
+      "solution": "void printAverages(const std::map<std::string, std::vector<int>>& m) {\n    for (const auto& [name, values] : m) {\n        if (values.empty()) continue;\n        double sum = 0;\n        for (int v : values) sum += v;\n        std::cout << name << \": \" << sum / values.size() << \"\\n\";\n    }\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "reverseArray",
+      "html": "<p>Implementera <code>reverseArray</code> i C och C++ och skriv ut arrayen före och efter. Bonus: vänd en <code>vector&lt;string&gt;</code> med sensornamn.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "<code>int arr[] = {10, 20, 30}; int* p = arr;</code> Vad är <code>*(p + 2)</code>?",
+      "options": [
+        "12",
+        "20",
+        "30",
+        "Adressen till arr[2]"
+      ],
+      "answer": 2,
+      "why": "<code>p + 2</code> pekar två element framåt, alltså på <code>arr[2]</code>, och <code>*</code> läser värdet där."
+    },
+    {
+      "type": "mc",
+      "q": "Varför har <code>int sum(int* arr, int size)</code> en size-parameter?",
+      "options": [
+        "För att kompilatorn kräver det",
+        "Funktionen får bara en pekare och kan inte veta arrayens längd",
+        "För att kunna ändra arrayens storlek",
+        "Den behövs bara i C++"
+      ],
+      "answer": 1,
+      "why": "Arrayen omvandlas till en pekare vid anropet. <code>sizeof(arr)</code> inuti funktionen ger pekarens storlek, inte arrayens."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>temps.push_back(25)</code>?",
+      "options": [
+        "Lägger 25 först i vektorn",
+        "Ersätter sista elementet med 25",
+        "Lägger till 25 sist, och vektorn växer",
+        "Tar bort alla element som är 25"
+      ],
+      "answer": 2,
+      "why": "<code>push_back</code> lägger till ett element i slutet. Vektorn allokerar mer minne själv vid behov."
+    },
+    {
+      "type": "mc",
+      "q": "Vad måste följa varje lyckad <code>malloc</code>?",
+      "options": [
+        "<code>delete</code>",
+        "<code>free</code>, när minnet inte behövs längre",
+        "<code>realloc</code>",
+        "Ingenting, minnet frigörs när funktionen returnerar"
+      ],
+      "answer": 1,
+      "why": "Heapminne frigörs inte automatiskt. <code>malloc</code> hör ihop med <code>free</code>, och <code>new</code> med <code>delete</code>. Annars blir det en minnesläcka."
+    },
+    {
+      "type": "mc",
+      "q": "I <code>map&lt;string, int&gt; m; m[\"Temp\"] = 22;</code> – vad är \"Temp\"?",
+      "options": [
+        "Värdet",
+        "Nyckeln",
+        "Indexet 0",
+        "Mapens namn"
+      ],
+      "answer": 1,
+      "why": "En map lagrar nyckel → värde. \"Temp\" är nyckeln och 22 är värdet."
+    },
+    {
+      "type": "mc",
+      "q": "<code>int a[10];</code> på en dator där int är 4 bytes. Vad är <code>sizeof(a)</code>?",
+      "options": [
+        "4",
+        "10",
+        "40",
+        "8"
+      ],
+      "answer": 2,
+      "why": "sizeof för en array ger hela storleken: 10 · 4 = 40 bytes."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan <code>v[10]</code> och <code>v.at(10)</code> på en vector med 5 element?",
+      "options": [
+        "Ingen skillnad",
+        "<code>at</code> kontrollerar gränsen och kastar ett undantag, <code>[]</code> gör det inte",
+        "<code>[]</code> lägger till element som saknas",
+        "<code>at</code> returnerar 0"
+      ],
+      "answer": 1,
+      "why": "<code>v[10]</code> är odefinierat beteende. <code>v.at(10)</code> kastar <code>std::out_of_range</code>."
+    },
+    {
+      "type": "multi",
+      "q": "<code>int arr[] = {4, 8, 15}; int* p = arr;</code> Vilka uttryck ger värdet 8? Välj alla.",
+      "options": [
+        "<code>arr[1]</code>",
+        "<code>*(p + 1)</code>",
+        "<code>p[1]</code>",
+        "<code>*p + 1</code>"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "<code>*p + 1</code> läser första värdet (4) och lägger till 1, vilket ger 5."
+    },
+    {
+      "type": "text",
+      "q": "Vilken C-funktion lämnar tillbaka minne som allokerats med <code>malloc</code>?",
+      "accept": [
+        "free",
+        "free()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>free(ptr);</code> Varje malloc ska ha en free."
+    },
+    {
+      "type": "text",
+      "q": "Vilken vector-metod lägger till ett element sist?",
+      "accept": [
+        "push_back",
+        "push_back()",
+        ".push_back",
+        "emplace_back"
+      ],
+      "placeholder": "metod",
+      "why": "<code>push_back</code> (eller <code>emplace_back</code>, som bygger elementet på plats)."
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>int sum(int* arr, int size)</code> som summerar arrayen. main läser in n tal.",
+      "task": "05-arrayer-pekare-1",
+      "why": "<code>*(arr + i)</code> och <code>arr[i]</code> är samma sak.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>void reverseArray(int* arr, int size)</code> som vänder arrayen på plats.",
+      "task": "05-arrayer-pekare-2",
+      "why": "Byt första med sista, andra med näst sista, och stanna på mitten. Går du hela vägen vänds arrayen tillbaka igen.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>int countEven(int* a, int n)</code> som räknar hur många tal som är jämna.",
+      "task": "05-arrayer-pekare-3",
+      "why": "0 och negativa jämna tal räknas också: -2 % 2 är 0.",
+      "web": true
+    }
+  ]
+}

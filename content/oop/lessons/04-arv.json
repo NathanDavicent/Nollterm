@@ -1,0 +1,253 @@
+{
+  "id": "arv",
+  "title": "Arv och konstruktorordning",
+  "category": "Arv",
+  "minutes": 9,
+  "date": "Tis 4/11",
+  "lead": "Bygg nya klasser på befintliga, förstå i vilken ordning objekt byggs och rivs, och välj mellan arv och komposition.",
+  "sources": [
+    "Tisdag 4/11 – Arv"
+  ],
+  "goals": [
+    "Skapa basklasser och subklasser med public-arv",
+    "Förklara konstruktor- och destruktorordningen",
+    "Anropa basklassens konstruktor från subklassen",
+    "Välja arv (är-en) eller komposition (har-en)"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är arv?"
+    },
+    {
+      "type": "p",
+      "html": "Arv låter oss skapa nya klasser som bygger på befintliga. Med arv kan vi återanvända kod från en <strong>basklass</strong>, utöka eller ändra beteendet i en <strong>subklass</strong> (derived class), och skapa logiska hierarkier."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Animal {\nprotected:\n    std::string name_;\npublic:\n    Animal(const std::string& name) : name_{name} {\n        std::cout << \"Animal-konstruktor\\n\";\n    }\n    void speak() const { std::cout << name_ << \" gör ett ljud.\\n\"; }\n};\n\nclass Dog : public Animal {\npublic:\n    Dog(const std::string& name) : Animal(name) {      // anropa basens konstruktor\n        std::cout << \"Dog-konstruktor\\n\";\n    }\n    void wagTail() const { std::cout << name_ << \" viftar på svansen.\\n\"; }\n};\n\nint main() {\n    Dog d(\"Fido\");\n    d.speak();      // ärvs från Animal\n    d.wagTail();    // finns bara i Dog\n}"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "Animal-konstruktor\nDog-konstruktor\nFido gör ett ljud.\nFido viftar på svansen.",
+      "caption": "utdata"
+    },
+    {
+      "type": "h",
+      "text": "Begrepp"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Begrepp",
+        "Förklaring"
+      ],
+      "rows": [
+        [
+          "Base class",
+          "klassen som andra ärver från"
+        ],
+        [
+          "Derived class",
+          "klassen som ärver"
+        ],
+        [
+          "public-arv",
+          "det vanliga: basens publika gränssnitt är publikt även i subklassen (<code>class Dog : public Animal</code>)"
+        ],
+        [
+          "protected",
+          "medlemmar som syns i subklasser men inte utåt"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Konstruktor- och destruktorordning"
+    },
+    {
+      "type": "p",
+      "html": "När ett subklassobjekt skapas byggs <strong>basen först</strong>, sedan subklassen. Destruktorerna körs i <strong>omvänd ordning</strong>: subklassen rivs först. Tänk dig ett hus: grunden byggs först och rivs sist."
+    },
+    {
+      "type": "widget",
+      "name": "ctororder"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Subklassen ärver <strong>inte</strong> basens konstruktorer.",
+        "Har basen ingen standardkonstruktor måste du anropa rätt konstruktor i initieringslistan: <code>TemperatureSensor(const std::string&amp; id) : Sensor(id) {}</code>.",
+        "En basklass i en polymorf hierarki ska ha en <code>virtual</code> destruktor (mer om det i lektionen om polymorfism)."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Vad ärvs?"
+    },
+    {
+      "type": "p",
+      "html": "Subklassen kommer åt basens <code>public</code>- och <code>protected</code>-medlemmar. <code>private</code>-medlemmar finns kvar i objektet men går inte att nå direkt från subklassen."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Base {\nprotected:\n    int protected_value = 42;\nprivate:\n    int private_value = 100;\n};\n\nclass Derived : public Base {\npublic:\n    void print() {\n        std::cout << protected_value << \"\\n\";    // OK\n        // std::cout << private_value;          // fel: inte åtkomlig\n    }\n};"
+    },
+    {
+      "type": "h",
+      "text": "Arv eller komposition?"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Relation",
+        "Välj",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "är-en",
+          "arv",
+          "en TemperatureSensor är en Sensor, en Dog är ett Animal"
+        ],
+        [
+          "har-en",
+          "komposition",
+          "en Car har en Engine, en SensorStation har flera Sensor"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Ärv inte bara för att återanvända kod. Om du inte kan säga \"X är en Y\" utan att det låter fel, använd komposition."
+    },
+    {
+      "type": "h",
+      "text": "Övning"
+    },
+    {
+      "type": "exercise",
+      "title": "Sensorhierarki",
+      "html": "<p>Skapa <code>Sensor</code> med ett skyddat <code>id_</code> och en konstruktor som skriver ut att sensorn skapas. Låt <code>TemperatureSensor</code> och <code>HumiditySensor</code> ärva och anropa basens konstruktor. Skapa ett objekt av varje och studera utskrifterna.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "<code>class Car : public Vehicle</code>. Vilken konstruktor körs först när du skapar en Car?",
+      "options": [
+        "Car",
+        "Vehicle",
+        "Det är odefinierat",
+        "Bara Car körs"
+      ],
+      "answer": 1,
+      "why": "Basen byggs alltid först, sedan subklassen."
+    },
+    {
+      "type": "mc",
+      "q": "I vilken ordning körs destruktorerna för ett Car-objekt?",
+      "options": [
+        "Vehicle, sedan Car",
+        "Car, sedan Vehicle",
+        "Bara Vehicle",
+        "Samtidigt"
+      ],
+      "answer": 1,
+      "why": "Omvänd ordning mot konstruktion: subklassen rivs först."
+    },
+    {
+      "type": "mc",
+      "q": "Vilka basklassmedlemmar kan en subklass komma åt direkt?",
+      "options": [
+        "Alla",
+        "public och protected",
+        "Bara public",
+        "Bara private"
+      ],
+      "answer": 1,
+      "why": "private finns i objektet men är dold även för subklassen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken relation passar arv?",
+      "options": [
+        "En bil har en motor",
+        "En termometer är en sensor",
+        "Ett rum har lampor",
+        "En logg använder en fil"
+      ],
+      "answer": 1,
+      "why": "Arv modellerar är-en. De andra är har-en eller använder."
+    },
+    {
+      "type": "mc",
+      "q": "Hur skickar en subklass vidare ett värde till basklassens konstruktor?",
+      "options": [
+        "Genom att anropa basens konstruktor i initieringslistan",
+        "Genom att skriva Base::Base(x) i kroppen",
+        "Det sker automatiskt",
+        "Med virtual"
+      ],
+      "answer": 0,
+      "why": "<code>TemperatureSensor(const std::string&amp; id) : Sensor(id) {}</code>"
+    },
+    {
+      "type": "mc",
+      "q": "<code>class Dog : public Animal</code>. Vad ärver Dog inte?",
+      "options": [
+        "Animals publika metoder",
+        "Animals protected-medlemmar",
+        "Animals konstruktorer",
+        "Animals data"
+      ],
+      "answer": 2,
+      "why": "Konstruktorer ärvs inte. Dog måste anropa Animals konstruktor i sin initieringslista."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka par passar arv (är-en)? Välj alla.",
+      "options": [
+        "ElectricCar – Car",
+        "Car – Engine",
+        "TemperatureSensor – Sensor",
+        "SensorStation – Sensor"
+      ],
+      "answers": [
+        0,
+        2
+      ],
+      "why": "En bil har en motor och en station har sensorer: det är komposition."
+    },
+    {
+      "type": "text",
+      "q": "Skriv deklarationsraden (utan klamrar) för klassen <code>Dog</code> som ärver publikt från <code>Animal</code>.",
+      "accept": [
+        "class Dog : public Animal",
+        "class Dog: public Animal",
+        "struct Dog : public Animal",
+        "struct Dog : Animal"
+      ],
+      "placeholder": "class ...",
+      "why": "<code>class Dog : public Animal</code>"
+    },
+    {
+      "type": "code",
+      "q": "Konstruktorordning: skriv klasserna <code>Base</code> och <code>Derived : public Base</code> så att programmet skriver <code>Base()</code>, <code>Derived()</code>, <code>~Derived()</code>, <code>~Base()</code> på var sin rad.",
+      "task": "04-arv-1",
+      "why": "Basen byggs först och rivs sist. Ordningen sköts automatiskt av språket.",
+      "web": false
+    },
+    {
+      "type": "code",
+      "q": "<code>TemperatureSensor</code> ärver <code>Sensor</code>, vars konstruktor kräver ett id. Skriv TemperatureSensors konstruktor som skickar id vidare, och en metod <code>describe()</code> som skriver <code>TemperatureSensor ID</code>.",
+      "task": "04-arv-2",
+      "why": "Sensor saknar standardkonstruktor, så TemperatureSensor måste anropa <code>Sensor(id)</code> i initieringslistan. <code>id_</code> är protected och kan läsas i subklassen.",
+      "web": false
+    }
+  ]
+}

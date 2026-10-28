@@ -1,5 +1,8 @@
 node_modules/
-desktop/dist/
-desktop/vendor/
-desktop/web/
+build/
+build-*/
+app/build/
+.vscode/
+.vs/
+*.user
 .DS_Store

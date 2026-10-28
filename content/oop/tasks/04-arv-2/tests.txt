@@ -1,0 +1,8 @@
+--- in
+T-01
+--- out
+TemperatureSensor T-01
+--- in
+kok
+--- out
+TemperatureSensor kok

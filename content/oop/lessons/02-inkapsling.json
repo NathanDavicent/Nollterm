@@ -1,0 +1,202 @@
+{
+  "id": "inkapsling",
+  "title": "Inkapsling och gränssnitt",
+  "category": "Design",
+  "minutes": 7,
+  "date": "Tors 30/10",
+  "lead": "Skydda objektets data och ge det ett litet, stabilt gränssnitt: access-nivåer, getters och setters i idiomatisk C++.",
+  "sources": [
+    "Torsdag 30/10 – Inkapsling, komposition"
+  ],
+  "goals": [
+    "Förklara inkapsling och varför den minskar buggar",
+    "Använda public, protected och private",
+    "Skriva idiomatiska accessorer som <code>value()</code> och <code>setValue()</code>"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är inkapsling?"
+    },
+    {
+      "type": "p",
+      "html": "Inkapsling handlar om att avgränsa vad som syns från utsidan av ett objekt. Vi vill:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "skydda intern data från direkt åtkomst,",
+        "förhindra oavsiktliga eller felaktiga ändringar,",
+        "exponera ett tydligt och stabilt gränssnitt utåt."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Example {\npublic:\n    void doSomething();     // synligt och åtkomligt utifrån\nprotected:\n    // åtkomligt i subklasser men inte utifrån\nprivate:\n    int internalValue;      // bara inom den här klassen\n};"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class TemperatureSensor {\nprivate:\n    double currentValue = 0.0;\npublic:\n    void read() { currentValue = 23.5; }          // simulerad läsning\n    double value() const { return currentValue; } // kontrollerad läsning\n};",
+      "caption": "data skyddas, läsning sker via en metod"
+    },
+    {
+      "type": "h",
+      "text": "Getters och setters i C++"
+    },
+    {
+      "type": "p",
+      "html": "Python och C# har <em>properties</em>. I C++ använder vi metoder, men namnger dem så att anropen läses naturligt:"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "// mindre idiomatiskt\ndouble getValue();\nvoid setValue(double);\n\n// mer idiomatiskt i modern C++\ndouble value() const;\nvoid setValue(double v);\n\nsensor.setValue(25.0);\nstd::cout << sensor.value();"
+    },
+    {
+      "type": "p",
+      "html": "Ett vanligt mönster är att ge privata medlemmar ett suffix <code>_</code> så att accessorn kan heta som begreppet:"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Device {\nprivate:\n    int id_;\n    std::string name_;\npublic:\n    Device(int id, const std::string& name) : id_{id}, name_{name} {}\n    const std::string& name() const { return name_; }\n    void rename(const std::string& newName) { name_ = newName; }\n};"
+    },
+    {
+      "type": "h",
+      "text": "En setter som skyddar invarianter"
+    },
+    {
+      "type": "p",
+      "html": "Värdet av inkapsling syns när setter-metoden har en regel. En <strong>invariant</strong> är något som alltid ska vara sant för objektet, till exempel att en ljusstyrka ligger mellan 0 och 100."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Lamp {\n    int brightness_ = 0;          // invariant: 0–100\npublic:\n    void setBrightness(int b) {\n        if (b < 0) b = 0;\n        if (b > 100) b = 100;\n        brightness_ = b;\n    }\n    int brightness() const { return brightness_; }\n};"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Skriv inte getters och setters för varje medlem av ren vana. Fråga vad användaren av klassen behöver göra. Ofta är <code>lamp.dim(10)</code> ett bättre gränssnitt än <code>lamp.setBrightness(lamp.brightness() - 10)</code>."
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är huvudsyftet med inkapsling?",
+      "options": [
+        "Att koden ska gå snabbare",
+        "Att skydda intern data och exponera ett tydligt gränssnitt",
+        "Att undvika arv",
+        "Att kunna använda pekare"
+      ],
+      "answer": 1,
+      "why": "Objektet kontrollerar själv hur dess data får ändras."
+    },
+    {
+      "type": "mc",
+      "q": "Vem kommer åt en <code>protected</code>-medlem?",
+      "options": [
+        "Alla",
+        "Bara klassen själv",
+        "Klassen och dess subklasser",
+        "Bara main"
+      ],
+      "answer": 2,
+      "why": "protected är private utåt men synlig i klasser som ärver."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket accessor-namn är mest idiomatiskt i modern C++?",
+      "options": [
+        "<code>double getValue()</code>",
+        "<code>double value() const</code>",
+        "<code>double GetTheValue()</code>",
+        "<code>double value_get()</code>"
+      ],
+      "answer": 1,
+      "why": "Kort namn och <code>const</code> eftersom metoden bara läser."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en invariant?",
+      "options": [
+        "En variabel som aldrig används",
+        "Ett villkor som alltid ska gälla för objektet",
+        "En konstant global variabel",
+        "En virtuell funktion"
+      ],
+      "answer": 1,
+      "why": "Till exempel att ljusstyrkan alltid ligger mellan 0 och 100. Settern ser till att den håller."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska getters som bara läser vara const?",
+      "options": [
+        "Det gör dem snabbare",
+        "Så att de kan anropas på konstanta objekt och inte råkar ändra något",
+        "Det krävs av kompilatorn",
+        "För att de ska bli private"
+      ],
+      "answer": 1,
+      "why": "Ett objekt som skickas som <code>const Device&amp;</code> kan bara använda const-metoder."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är fördelar med inkapsling? Välj alla.",
+      "options": [
+        "Färre buggar eftersom data inte ändras direkt utifrån",
+        "Implementationen kan bytas utan att användarna påverkas",
+        "Programmet blir alltid snabbare",
+        "Klassen kan garantera sina invarianter"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "Inkapsling handlar om korrekthet och underhåll, inte om hastighet."
+    },
+    {
+      "type": "mc",
+      "q": "<code>sensor.currentValue = -999;</code> ger kompileringsfel. Varför?",
+      "options": [
+        "currentValue är private",
+        "currentValue är const",
+        "Negativa tal är förbjudna",
+        "sensor är en pekare"
+      ],
+      "answer": 0,
+      "why": "Private-medlemmar kan bara nås inifrån klassen."
+    },
+    {
+      "type": "text",
+      "q": "Vilken åtkomstnivå gör en medlem synlig i subklasser men inte utåt?",
+      "accept": [
+        "protected"
+      ],
+      "placeholder": "nyckelord",
+      "why": "<code>protected</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vad kallas ett villkor som alltid ska gälla för ett objekt, till exempel att ljusstyrkan ligger mellan 0 och 100?",
+      "accept": [
+        "invariant",
+        "en invariant",
+        "klassinvariant"
+      ],
+      "placeholder": "begrepp",
+      "why": "En invariant. Setter-metoderna ser till att den håller."
+    },
+    {
+      "type": "code",
+      "q": "Skriv klassen <code>Lamp</code> med en privat ljusstyrka (startar på 0), <code>setBrightness(int)</code> som begränsar värdet till 0–100, och <code>brightness()</code>. main läser värden tills indata tar slut och skriver ut ljusstyrkan efter varje.",
+      "task": "02-inkapsling-1",
+      "why": "Settern skyddar invarianten: inget värde utanför 0–100 kan någonsin lagras.",
+      "web": false
+    }
+  ]
+}

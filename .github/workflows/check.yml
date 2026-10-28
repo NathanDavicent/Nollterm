@@ -1,0 +1,26 @@
+name: Kontroll
+
+# Bygger appens kärna (utan grafik) på Linux och kör alla lösningsförslag i C, C++ och Python
+# mot testerna. Körs automatiskt när innehållet eller appen ändras.
+on:
+  push:
+    paths: ["content/**", "app/**", "tools/**", ".github/workflows/check.yml"]
+  pull_request:
+    paths: ["content/**", "app/**", "tools/**"]
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bygg kärnan
+        run: |
+          cmake -S app -B build -DNOLLTERM_GUI=OFF -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+      - name: Självtest
+        run: ./build/nollterm-check --selftest
+      - name: Alla lösningsförslag klarar testerna
+        run: ./build/nollterm-check --verify
+      - name: Statistik
+        run: ./build/nollterm-check --stats

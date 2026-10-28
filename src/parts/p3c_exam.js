@@ -72,7 +72,7 @@ function renderSetup(c, box) {
       <fieldset class="fieldset"><legend>Tidsgräns</legend>
         <div class="pills">${[0, 10, 20, 30, 45, 60].map(v => `<label><input type="radio" id="exm-${v}" name="m" value="${v}" ${pr.time === v ? "checked" : ""}><span>${v ? v + " min" : "Ingen"}</span></label>`).join("")}</div>
       </fieldset>
-      <p class="poolinfo"><b>${pool.length}</b> frågor matchar. Provet drar <b>${n}</b> av dem.${(() => { const g = c.lessons.reduce((k, l) => k + l.pool.filter(q => q.gpp && !NATIVE && pr.types.includes(q.t)).length, 0); return g ? ` <br>${g} kodfrågor kräver g++ och är bara med i <a href="#app">desktop-appen</a>.` : ""; })()}</p>
+      <p class="poolinfo"><b>${pool.length}</b> frågor matchar. Provet drar <b>${n}</b> av dem.${(() => { const g = c.lessons.reduce((k, l) => k + l.pool.filter(q => q.gpp && !NATIVE && pr.types.includes(q.t)).length, 0); return g ? ` <br>${g} kodfrågor går inte att köra i webbläsaren och är bara med i <a href="#app">appen</a>.` : ""; })()}</p>
       <button class="btn primary" type="submit" ${n ? "" : "disabled"}>Starta provet →</button>
     </form>
     <div>
@@ -179,7 +179,7 @@ async function submitExam(c, timeout) {
     if (q.t === "code") {
       if (a && isAnswered(q, a)) {
         const p = $("#gprog"); if (p) p.textContent = `Kör tester för fråga ${i + 1}…`;
-        const r = await runTests(q, a.v);
+        const r = await runTests(q, a.v, a.lang || "cpp");
         ok = r.every(x => x.pass); a = Object.assign(a, { res: r, ok });
       }
     } else ok = gradeSync(q, a);
@@ -240,7 +240,7 @@ function renderResult(c, box, r) {
     if (reviewOnlyWrong && x.ok) return;
     const q = qOf(c, x);
     const el = document.createElement("div"); rv.appendChild(el);
-    mountQuestion(el, q, { mode: "review", n: i + 1, total: r.per.length, uid: "rv" + i, perm: x.perm, from: "Lektion " + nn(lessonIdx(c, x.l)), ans: x.ans || (q.t === "code" ? { v: q.starter, res: null } : null) });
+    mountQuestion(el, q, { mode: "review", n: i + 1, total: r.per.length, uid: "rv" + i, perm: x.perm, from: "Lektion " + nn(lessonIdx(c, x.l)), ans: x.ans || (q.t === "code" ? { lang: langOf(q, null), v: starterOf(q), res: null } : null) });
     if (!x.ans || !isAnswered(q, x.ans)) el.querySelector(".q").insertAdjacentHTML("beforeend", `<p class="yours"><b>Obesvarad.</b></p>`);
     else if (q.t === "code" && !x.ans.res) el.querySelector(".q").insertAdjacentHTML("beforeend", `<p class="yours">Koden rättades inte.</p>`);
     if (q.t === "code" && x.ans && x.ans.res) el.querySelector("[data-tests]").innerHTML = testsHtml(x.ans.res);

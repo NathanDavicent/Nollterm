@@ -1,0 +1,12 @@
+--- in
+5
+--- out
+positivt
+--- in
+-3
+--- out
+negativt
+--- in
+0
+--- out
+noll

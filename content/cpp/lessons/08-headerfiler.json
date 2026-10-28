@@ -1,0 +1,282 @@
+{
+  "id": "headerfiler",
+  "title": "Headerfiler och projektstruktur",
+  "category": "Objekt",
+  "minutes": 8,
+  "date": "Tors 16/10",
+  "lead": "Dela upp koden i .h- och .cpp-filer så att projektet går att läsa, återanvända och jobba i tillsammans.",
+  "sources": [
+    "Torsdag 16/10 – Klasser, structs, objekt (del 4)",
+    "Startkod för klasser och structs"
+  ],
+  "goals": [
+    "Skilja på deklarationer i headerfiler och definitioner i källfiler",
+    "Skriva include guards och förstå varför de behövs",
+    "Strukturera inlämningsuppgiften med DataManager och Measurement"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför flera filer?"
+    },
+    {
+      "type": "p",
+      "html": "När programmet växer blir en enda <code>main.cpp</code> svår att hitta i. Uppdelningen följer en enkel regel:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Headerfiler</strong> (<code>.h</code>/<code>.hpp</code>) innehåller <strong>deklarationer</strong>: vad som finns. Klassens medlemmar och funktionsprototyper.",
+        "<strong>Källfiler</strong> (<code>.cpp</code>) innehåller <strong>definitioner</strong>: hur det fungerar."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Det håller koden organiserad (en klass per filpar är standard), gör den återanvändbar, kan snabba upp kompileringen och låter flera personer jobba i olika filer samtidigt."
+    },
+    {
+      "type": "h",
+      "text": "Exempel: Sensor i tre filer"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#ifndef SENSOR_H\n#define SENSOR_H\n\n#include <string>\n\nclass Sensor {\nprivate:\n    int id;\n    std::string name;\n    float value;\npublic:\n    Sensor(int i, std::string n, float v);\n    void setValue(float v);\n    void printInfo() const;\n};\n\n#endif",
+      "caption": "sensor.h"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <iostream>\n#include \"sensor.h\"\n\nSensor::Sensor(int i, std::string n, float v)\n    : id(i), name(n), value(v) {}\n\nvoid Sensor::setValue(float v) {\n    value = v;\n}\n\nvoid Sensor::printInfo() const {\n    std::cout << \"Sensor \" << id << \" (\" << name << \"): \" << value << \"\\n\";\n}",
+      "caption": "sensor.cpp"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include \"sensor.h\"\n\nint main() {\n    Sensor s1(1, \"TempSensor\", 22.5f);\n    s1.printInfo();\n    s1.setValue(23.1f);\n    s1.printInfo();\n}",
+      "caption": "main.cpp"
+    },
+    {
+      "type": "p",
+      "html": "<code>Sensor::</code> framför metodnamnet säger att definitionen hör till klassen Sensor. Utan det tror kompilatorn att du skriver en fristående funktion."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "g++ main.cpp sensor.cpp -o app     # alla .cpp-filer måste med\n./app",
+      "caption": "kompilera flera filer"
+    },
+    {
+      "type": "note",
+      "kind": "fix",
+      "html": "Felet <code>undefined reference to Sensor::Sensor(...)</code> betyder nästan alltid att <code>sensor.cpp</code> inte kompilerades med. I Visual Studio: kontrollera att filen ligger under Source Files i projektet."
+    },
+    {
+      "type": "h",
+      "text": "Include guards"
+    },
+    {
+      "type": "p",
+      "html": "Om samma header inkluderas två gånger (direkt eller via en annan header) blir klassen definierad två gånger, och det är ett kompileringsfel. Include guards förhindrar det:"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#ifndef DEVICE_H     // om DEVICE_H inte är definierat ...\n#define DEVICE_H     // ... definiera det och ta med innehållet\n// innehåll\n#endif               // annars hoppas allt över\n\n// Modernt alternativ som alla stora kompilatorer stöder:\n#pragma once"
+    },
+    {
+      "type": "p",
+      "html": "<code>#include \"fil.h\"</code> med citattecken letar först i projektets mappar. <code>#include &lt;string&gt;</code> med vinkelparenteser används för standard- och systembibliotek."
+    },
+    {
+      "type": "h",
+      "text": "Startkod för inlämningsuppgiften"
+    },
+    {
+      "type": "p",
+      "html": "En rimlig struktur för datainsamlaren:"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "Inlamning1/\n├── main.cpp            programstart, menyn\n├── measurement.h       structs: Measurement, Statistics\n├── data_manager.h      klassdeklaration\n└── data_manager.cpp    implementation",
+      "caption": "filstruktur"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#ifndef MEASUREMENT_H\n#define MEASUREMENT_H\n#include <string>\n\nstruct Measurement {\n    std::string timestamp;   // t.ex. \"2025-10-07 10:00\"\n    float value;             // t.ex. temperatur\n};\n\nstruct Statistics {\n    float min;\n    float max;\n    float average;\n    float stddev;\n};\n\n#endif",
+      "caption": "measurement.h"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#ifndef DATA_MANAGER_H\n#define DATA_MANAGER_H\n#include \"measurement.h\"\n#include <vector>\n#include <string>\n\nclass DataManager {\nprivate:\n    std::vector<Measurement> measurements;\npublic:\n    void addMeasurement(const Measurement& m);\n    bool loadFromFile(const std::string& filename);\n    bool saveToFile(const std::string& filename) const;\n    Statistics calculateStatistics() const;\n    void printMeasurements() const;\n};\n\n#endif",
+      "caption": "data_manager.h"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include \"data_manager.h\"\n#include <iostream>\n#include <fstream>\n#include <sstream>\n#include <cmath>\n\nvoid DataManager::addMeasurement(const Measurement& m) {\n    // TODO: lägg till m i measurements\n}\n\nbool DataManager::loadFromFile(const std::string& filename) {\n    // TODO: öppna filen, läs rad för rad, skapa Measurement-objekt\n    return true;\n}\n\nbool DataManager::saveToFile(const std::string& filename) const {\n    // TODO: skriv alla mätningar till filen\n    return true;\n}\n\nStatistics DataManager::calculateStatistics() const {\n    Statistics stats{};\n    // TODO: min, max, medel, standardavvikelse\n    return stats;\n}\n\nvoid DataManager::printMeasurements() const {\n    // TODO: loopa och skriv ut varje mätning\n}",
+      "caption": "data_manager.cpp – kodskelett"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include \"data_manager.h\"\n#include <iostream>\n\nint main() {\n    DataManager manager;\n    manager.loadFromFile(\"data.csv\");\n\n    Measurement m1{\"2025-10-07 09:00\", 22.5f};\n    manager.addMeasurement(m1);     // const& → ingen kopia av m1 skapas\n\n    manager.printMeasurements();\n    manager.saveToFile(\"data.csv\");\n    return 0;\n}",
+      "caption": "main.cpp"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "I Visual Studio: högerklicka på projektet → <strong>Add → New Item…</strong> → Header File (.h) eller C++ File (.cpp). Implementera en metod i taget och testa den i <code>main</code> innan du går vidare."
+    },
+    {
+      "type": "h",
+      "text": "Övning"
+    },
+    {
+      "type": "exercise",
+      "title": "Dela upp en klass",
+      "html": "<ol><li>Dela upp din Device- eller Sensor-klass i <code>device.h</code> och <code>device.cpp</code>.</li><li>Kompilera och kör. Fungerar det fortfarande?</li><li>Reflektera: varför är det bra att skilja gränssnitt från implementation, och hur hjälper det när flera utvecklare jobbar tillsammans?</li></ol>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad hör hemma i en headerfil?",
+      "options": [
+        "Hela implementationen av alla metoder",
+        "Deklarationer: klassdefinitionen och funktionsprototyper",
+        "Bara <code>main()</code>",
+        "Testdata"
+      ],
+      "answer": 1,
+      "why": "Headern beskriver <em>vad</em> som finns. <code>.cpp</code>-filen beskriver <em>hur</em> det fungerar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad skyddar include guards mot?",
+      "options": [
+        "Att headern ändras av misstag",
+        "Att samma header tas med flera gånger, vilket ger omdefinitionsfel",
+        "Att andra kan läsa koden",
+        "Minnesläckor"
+      ],
+      "answer": 1,
+      "why": "<code>#ifndef/#define/#endif</code> (eller <code>#pragma once</code>) gör att innehållet bara tas med första gången."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder <code>void Sensor::setValue(float v)</code> i sensor.cpp?",
+      "options": [
+        "Det anropar setValue",
+        "Det är definitionen av metoden setValue som tillhör klassen Sensor",
+        "Det skapar ett nytt Sensor-objekt",
+        "Det är en deklaration"
+      ],
+      "answer": 1,
+      "why": "<code>::</code> är scope-operatorn. <code>Sensor::setValue</code> betyder \"setValue i klassen Sensor\"."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan <code>#include \"sensor.h\"</code> och <code>#include &lt;string&gt;</code>?",
+      "options": [
+        "Ingen skillnad",
+        "Citattecken letar först i projektet, vinkelparenteser i standard- och systembibliotek",
+        "Vinkelparenteser är bara för C",
+        "Citattecken kräver include guards"
+      ],
+      "answer": 1,
+      "why": "Egna headers inkluderas med citattecken, standardbiblioteket med vinkelparenteser."
+    },
+    {
+      "type": "mc",
+      "q": "Du kör <code>g++ main.cpp -o app</code> och får \"undefined reference to Sensor::Sensor\". Varför?",
+      "options": [
+        "sensor.h saknar include guards",
+        "sensor.cpp kompilerades inte med, så länkaren hittar inte definitionen",
+        "Konstruktorn måste vara private",
+        "main.cpp måste inkludera sensor.cpp"
+      ],
+      "answer": 1,
+      "why": "Headern räcker för att kompilera <code>main.cpp</code>, men länkaren behöver definitionerna. Kör <code>g++ main.cpp sensor.cpp -o app</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken fil ska normalt <em>inte</em> inkluderas med #include?",
+      "options": [
+        "<code>sensor.h</code>",
+        "<code>sensor.cpp</code>",
+        "<code>&lt;iostream&gt;</code>",
+        "<code>measurement.h</code>"
+      ],
+      "answer": 1,
+      "why": ".cpp-filer kompileras separat. Inkluderar du dem blir definitionerna dubbla vid länkningen."
+    },
+    {
+      "type": "mc",
+      "q": "Var placeras <code>#endif</code> i en include guard?",
+      "options": [
+        "Först i filen",
+        "Sist i filen",
+        "Direkt efter #define",
+        "I .cpp-filen"
+      ],
+      "answer": 1,
+      "why": "<code>#ifndef</code> och <code>#define</code> överst, <code>#endif</code> sist, så att hela innehållet skyddas."
+    },
+    {
+      "type": "multi",
+      "q": "Vad hör hemma i data_manager.cpp? Välj alla.",
+      "options": [
+        "Implementationen av DataManager::addMeasurement",
+        "<code>#include \"data_manager.h\"</code>",
+        "Include guards",
+        "Implementationen av calculateStatistics"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "Include guards behövs bara i headerfiler."
+    },
+    {
+      "type": "text",
+      "q": "Skriv det moderna direktivet som ersätter include guards med en enda rad.",
+      "accept": [
+        "#pragma once",
+        "#pragmaonce"
+      ],
+      "placeholder": "#...",
+      "why": "<code>#pragma once</code> stöds av alla stora kompilatorer."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter operatorn <code>::</code> i <code>Sensor::setValue</code>? Skriv namnet på svenska eller engelska.",
+      "accept": [
+        "scope-operatorn",
+        "scopeoperatorn",
+        "scope",
+        "scope resolution operator",
+        "scope resolution",
+        "räckviddsoperatorn"
+      ],
+      "placeholder": "namn",
+      "why": "Scope-operatorn (scope resolution operator)."
+    },
+    {
+      "type": "text",
+      "q": "Skriv kommandot som kompilerar <code>main.cpp</code> och <code>sensor.cpp</code> till programmet <code>app</code> med g++.",
+      "accept": [
+        "g++ main.cpp sensor.cpp -o app",
+        "g++ sensor.cpp main.cpp -o app",
+        "g++ -o app main.cpp sensor.cpp",
+        "g++ -o app sensor.cpp main.cpp"
+      ],
+      "placeholder": "g++ ...",
+      "why": "<code>g++ main.cpp sensor.cpp -o app</code>. Alla .cpp-filer måste med."
+    }
+  ]
+}

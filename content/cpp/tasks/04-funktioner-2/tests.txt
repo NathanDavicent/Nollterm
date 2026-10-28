@@ -1,0 +1,16 @@
+--- in
+97
+--- out
+primtal
+--- in
+1
+--- out
+inte primtal
+--- in
+91
+--- out
+inte primtal
+--- in
+2
+--- out
+primtal

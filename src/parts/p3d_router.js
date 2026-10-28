@@ -1,7 +1,7 @@
 /* ================================================================ search */
 const INDEX = [
   { href: "lab", title: "Kodlabb", sub: "Fri editor med flera filer", text: "kodlabb editor kod kör kompilera g++ sandlåda playground flera filer", w: 3 },
-  { href: "app", title: "Appen", sub: "Desktop med g++, mobil", text: "app desktop windows ladda ner installera g++ kompilator mobil telefon offline", w: 3 },
+  { href: "app", title: "Appen", sub: "Datorapp med gcc, g++ och Python, mobil", text: "app dator desktop windows ladda ner installera g++ gcc python kompilator mobil telefon offline", w: 3 },
 ];
 COURSES.forEach(c => {
   INDEX.push({ href: c.id, title: c.title, sub: "Kurs", text: (c.title + " " + c.desc + " kurs").toLowerCase(), w: 4 });

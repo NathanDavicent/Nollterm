@@ -1,0 +1,305 @@
+{
+  "id": "c-strangar",
+  "title": "C-strängar och säker indata",
+  "category": "Minne",
+  "minutes": 10,
+  "lead": "Förstå nolltecknet, undvik buffer overflow och tolka IoT-kommandon som LED=ON utan att programmet kraschar.",
+  "sources": [
+    "Övningar: C-strängar, pekare och säker indata"
+  ],
+  "goals": [
+    "Förklara varför C-strängar behöver plats för <code>'\\0'</code>",
+    "Skilja på <code>strlen</code> och <code>sizeof</code>",
+    "Läsa och kopiera text säkert med <code>fgets</code> och <code>strncpy</code>",
+    "Dela upp och validera kommandon i både C och C++"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är en C-sträng?"
+    },
+    {
+      "type": "p",
+      "html": "I C finns ingen strängtyp. En sträng är en <code>char</code>-array där texten avslutas med nolltecknet <code>'\\0'</code>. Alla strängfunktioner (<code>printf(\"%s\")</code>, <code>strlen</code>, <code>strcpy</code>) läser tecken tills de hittar det. Saknas det fortsätter de läsa i minnet efter arrayen."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "char text[5] = \"Hello\";     // fel: \"Hello\" behöver 6 bytes\nprintf(\"%s\\n\", text);       // läser vidare tills den råkar hitta en 0:a\n\nchar ok[6] = \"Hello\";       // 5 tecken + '\\0'\nchar auto_[] = \"Hello\";     // låt kompilatorn räkna: 6 bytes"
+    },
+    {
+      "type": "p",
+      "html": "Prova själv. Skriv en text och välj buffertstorlek:"
+    },
+    {
+      "type": "widget",
+      "name": "cstring"
+    },
+    {
+      "type": "h",
+      "text": "Storlek eller längd?"
+    },
+    {
+      "type": "p",
+      "html": "<code>strlen</code> räknar tecknen fram till <code>'\\0'</code>. <code>sizeof</code> mäter hur mycket minne arrayen tar, inklusive nolltecknet och eventuellt oanvänt utrymme."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "char s[] = \"IoT\";\nprintf(\"strlen: %zu, sizeof: %zu\\n\", strlen(s), sizeof(s));   // strlen: 3, sizeof: 4\n\nchar buf[32] = \"IoT\";\n// strlen(buf) == 3, sizeof(buf) == 32"
+    },
+    {
+      "type": "h",
+      "text": "Gå igenom en sträng med pekare"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int my_strlen(const char* str) {\n    int len = 0;\n    while (*str++) len++;       // stannar när *str är '\\0' (0 = falskt)\n    return len;\n}\n\nvoid printChars(const char* str) {\n    while (*str) {\n        printf(\"%c\\n\", *str);\n        str++;\n    }\n}"
+    },
+    {
+      "type": "h",
+      "text": "Kopiera säkert"
+    },
+    {
+      "type": "p",
+      "html": "<code>strcpy</code> kopierar tills källan tar slut, oavsett hur stor målbufferten är. <code>strncpy</code> begränsar antalet tecken men lägger <em>inte</em> alltid till <code>'\\0'</code>, så du måste avsluta själv."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void safeCopy(char* dest, const char* src, int size) {\n    strncpy(dest, src, size - 1);\n    dest[size - 1] = '\\0';      // alltid avslutad\n}\n\n// Alternativ som alltid avslutar:\nsnprintf(dest, size, \"%s\", src);"
+    },
+    {
+      "type": "h",
+      "text": "Läs in text säkert"
+    },
+    {
+      "type": "p",
+      "html": "<code>gets()</code> vet inte hur stor bufferten är och är borttagen ur språket. Använd <code>fgets</code>, som tar buffertstorleken som argument. <code>fgets</code> sparar radbrytningen om den får plats, så ta bort den efteråt."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "char buffer[64];\nif (fgets(buffer, sizeof(buffer), stdin) != NULL) {\n    buffer[strcspn(buffer, \"\\n\")] = '\\0';   // ersätt '\\n' med '\\0'\n}"
+    },
+    {
+      "type": "h",
+      "text": "Jämför strängar"
+    },
+    {
+      "type": "p",
+      "html": "<code>==</code> jämför två adresser, inte texten. Använd <code>strcmp</code>, som returnerar 0 när strängarna är lika."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "char pw[16];\nfgets(pw, sizeof(pw), stdin);\npw[strcspn(pw, \"\\n\")] = '\\0';\nif (strcmp(pw, \"secret\") == 0) printf(\"Rätt!\\n\");\nelse                           printf(\"Fel.\\n\");"
+    },
+    {
+      "type": "h",
+      "text": "Tolka IoT-kommandon"
+    },
+    {
+      "type": "p",
+      "html": "Kommandon som <code>LED=ON</code> och <code>TEMP=25</code> delas upp i nyckel och värde. <code>strchr</code> hittar <code>=</code>. Genom att skriva <code>'\\0'</code> där blir den första delen en egen sträng."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include <ctype.h>\n#include <string.h>\n\nchar cmd[] = \"TEMP=25\";\nchar* value = strchr(cmd, '=');\nif (value != NULL) {\n    *value = '\\0';                 // cmd blir \"TEMP\"\n    value++;                       // value pekar på \"25\"\n\n    int valid = (*value != '\\0');\n    for (char* p = value; *p; p++)\n        if (!isdigit((unsigned char)*p)) valid = 0;\n\n    printf(\"Nyckel: %s, värde: %s (%s)\\n\", cmd, value, valid ? \"numeriskt\" : \"ogiltigt\");\n}",
+      "caption": "C"
+    },
+    {
+      "type": "p",
+      "html": "Samma sak i C++ med <code>std::string</code> blir kortare och utan risk för buffer overflow:"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "std::string cmd;\nstd::getline(std::cin, cmd);\n\nauto pos = cmd.find('=');\nif (pos != std::string::npos) {\n    std::string key = cmd.substr(0, pos);\n    std::string val = cmd.substr(pos + 1);\n    if (key == \"LED\" && val == \"ON\") std::cout << \"Tänder LED.\\n\";\n    if (key == \"TEMP\") {\n        try { int t = std::stoi(val); std::cout << \"Mål: \" << t << \" °C\\n\"; }\n        catch (const std::exception&) { std::cout << \"Ogiltigt tal\\n\"; }\n    }\n}",
+      "caption": "C++"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "std::string trim(const std::string& s) {\n    size_t start = s.find_first_not_of(\" \\t\");\n    if (start == std::string::npos) return \"\";\n    size_t end = s.find_last_not_of(\" \\t\");\n    return s.substr(start, end - start + 1);\n}",
+      "caption": "ta bort inledande och avslutande mellanslag"
+    },
+    {
+      "type": "h",
+      "text": "Sammanfattning"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ange alltid buffertgränser: <code>fgets</code>, <code>strncpy</code>, <code>snprintf</code>.",
+        "Undvik <code>gets()</code> helt.",
+        "Förstå pekarlogiken. Den är grunden för minnessäkerhet.",
+        "<code>std::string</code> förenklar mycket, men finns inte alltid på små mikrokontroller.",
+        "Inputvalidering är minst lika viktig som minnessäkerhet i IoT."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Trunka en sträng",
+      "html": "<p>Skriv <code>void truncate(char* str, int maxlen)</code> som kapar strängen efter maxlen tecken.</p>",
+      "solution": "void truncate(char* str, int maxlen) {\n    if ((int)strlen(str) > maxlen)\n        str[maxlen] = '\\0';\n}",
+      "lang": "c"
+    },
+    {
+      "type": "exercise",
+      "title": "Räkna vokaler",
+      "html": "<p>Räkna vokalerna (a, e, i, o, u, y) i en C-sträng. Använd <code>tolower()</code>.</p>",
+      "solution": "int countVowels(const char* s) {\n    int c = 0;\n    for (; *s; s++) {\n        char ch = tolower((unsigned char)*s);\n        if (strchr(\"aeiouy\", ch)) c++;\n    }\n    return c;\n}",
+      "lang": "c"
+    },
+    {
+      "type": "exercise",
+      "title": "Säkert IoT-kommando (avslutande)",
+      "html": "<p>Skriv ett program som läser ett kommando som <code>LED=ON</code>, <code>TEMP=23</code> eller <code>MOTOR=OFF</code>, delar upp nyckel och värde, validerar texten och skriver ut en åtgärd. Lösningen får inte riskera buffer overflow.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur många bytes behövs för att lagra \"Hello\" som C-sträng?",
+      "options": [
+        "4",
+        "5",
+        "6",
+        "Det beror på kompilatorn"
+      ],
+      "answer": 2,
+      "why": "5 tecken plus nolltecknet <code>'\\0'</code> = 6 bytes."
+    },
+    {
+      "type": "mc",
+      "q": "<code>char s[] = \"IoT\";</code> Vad ger <code>strlen(s)</code> och <code>sizeof(s)</code>?",
+      "options": [
+        "3 och 3",
+        "3 och 4",
+        "4 och 4",
+        "4 och 3"
+      ],
+      "answer": 1,
+      "why": "strlen räknar tecknen före <code>'\\0'</code> (3). sizeof mäter hela arrayen inklusive nolltecknet (4)."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska <code>gets()</code> aldrig användas?",
+      "options": [
+        "Den är långsam",
+        "Den kan inte begränsa hur mycket som läses, vilket ger buffer overflow",
+        "Den läser bara siffror",
+        "Den finns bara i C++"
+      ],
+      "answer": 1,
+      "why": "<code>gets</code> vet inte buffertens storlek. Använd <code>fgets(buf, sizeof(buf), stdin)</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Hur jämför du textinnehållet i två C-strängar a och b?",
+      "options": [
+        "<code>a == b</code>",
+        "<code>strcmp(a, b) == 0</code>",
+        "<code>strlen(a) == strlen(b)</code>",
+        "<code>*a == *b</code>"
+      ],
+      "answer": 1,
+      "why": "<code>a == b</code> jämför adresser. <code>*a == *b</code> jämför bara första tecknet. <code>strcmp</code> jämför hela texten."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>buffer[strcspn(buffer, \"\\n\")] = '\\0';</code>?",
+      "options": [
+        "Tömmer bufferten",
+        "Tar bort radbrytningen som fgets sparade",
+        "Lägger till en radbrytning",
+        "Räknar antalet rader"
+      ],
+      "answer": 1,
+      "why": "<code>strcspn</code> ger positionen för första <code>'\\n'</code> (eller strängens längd om den saknas). Där skrivs <code>'\\0'</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket tecken avslutar alltid en C-sträng?",
+      "options": [
+        "<code>'\\n'</code>",
+        "<code>'\\0'</code>",
+        "<code>' '</code>",
+        "<code>'0'</code>"
+      ],
+      "answer": 1,
+      "why": "Nolltecknet <code>'\\0'</code> har värdet 0. Tecknet <code>'0'</code> är siffran noll och har värdet 48."
+    },
+    {
+      "type": "mc",
+      "q": "Varför måste du lägga till <code>'\\0'</code> själv efter <code>strncpy(dest, src, n)</code>?",
+      "options": [
+        "strncpy lägger aldrig till det",
+        "strncpy lägger inte till det om källan är n tecken eller längre",
+        "Det behövs inte",
+        "För att strncpy tar bort det"
+      ],
+      "answer": 1,
+      "why": "Om källan inte får plats kopierar strncpy exakt n tecken utan avslutning. Skriv <code>dest[size - 1] = '\\0';</code>."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka funktioner begränsar hur mycket som skrivs till bufferten? Välj alla.",
+      "options": [
+        "<code>fgets</code>",
+        "<code>gets</code>",
+        "<code>snprintf</code>",
+        "<code>strcpy</code>",
+        "<code>strncpy</code>"
+      ],
+      "answers": [
+        0,
+        2,
+        4
+      ],
+      "why": "<code>gets</code> och <code>strcpy</code> vet inget om buffertens storlek."
+    },
+    {
+      "type": "text",
+      "q": "Vilken funktion i <code>&lt;string.h&gt;</code> hittar första förekomsten av ett tecken i en sträng?",
+      "accept": [
+        "strchr",
+        "strchr()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>strchr(cmd, '=')</code> returnerar en pekare till tecknet, eller NULL om det saknas."
+    },
+    {
+      "type": "text",
+      "q": "Vilken std::string-metod letar efter ett tecken och returnerar <code>std::string::npos</code> om det saknas?",
+      "accept": [
+        "find",
+        "find()",
+        ".find"
+      ],
+      "placeholder": "metod",
+      "why": "<code>cmd.find('=')</code>"
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>int my_strlen(const char* str)</code> som räknar tecknen fram till <code>'\\0'</code>. Använd inte <code>strlen</code>.",
+      "task": "06-c-strangar-1",
+      "why": "Pekaren flyttas ett tecken i taget tills den når nolltecknet.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>int countVowels(const char* s)</code> som räknar vokalerna a, e, i, o, u och y, oavsett stor eller liten bokstav.",
+      "task": "06-c-strangar-2",
+      "why": "<code>tolower</code> gör att 'I' och 'i' räknas likadant.",
+      "web": true
+    }
+  ]
+}

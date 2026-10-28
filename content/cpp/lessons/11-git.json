@@ -1,0 +1,308 @@
+{
+  "id": "git",
+  "title": "Git, GitHub och kodgranskning",
+  "category": "Samarbete",
+  "minutes": 8,
+  "lead": "Versionshantera din kod, jobba i branches och granska varandras pull requests.",
+  "sources": [
+    "Kom igång med Git och GitHub i Visual Studio",
+    "Guide till kodgranskning och Git-flöde"
+  ],
+  "goals": [
+    "Skapa ett repo, klona det och följa arbetsflödet pull, commit, push",
+    "Skriva tydliga commit-meddelanden",
+    "Arbeta i branches och skapa pull requests",
+    "Ge konstruktiv feedback i en kodgranskning"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Git och GitHub"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Git</strong> är ett versionshanteringssystem som sparar en historik över ändringarna i din kod. <strong>GitHub</strong> är en molntjänst där du lagrar dina Git-repon online. Tillsammans ger de dig historik, en trygg backup och möjlighet att samarbeta utan att skriva över varandras arbete."
+    },
+    {
+      "type": "h",
+      "text": "Kom igång"
+    },
+    {
+      "type": "list",
+      "items": [
+        "På github.com: klicka <strong>New</strong>, döp repot (t.ex. <code>inlamning1</code>), välj Public eller Private, kryssa i <strong>Add a README file</strong> och klicka <strong>Create repository</strong>.",
+        "I Visual Studio: startfönstret → <strong>Clone a repository</strong>, klistra in repots URL, välj en lokal mapp och klicka <strong>Clone</strong>."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Det dagliga arbetsflödet"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "git pull                         # 1. hämta det senaste från GitHub\n# 2. arbeta, spara, testa\ngit add main.cpp                 # 3. stage: välj filer till nästa commit\ngit commit -m \"Lägg till medelvärdesberäkning\"   # 4. spara en version lokalt\ngit push                         # 5. skicka upp till GitHub",
+      "caption": "pull → arbeta → stage → commit → push"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Begrepp",
+        "Vad det gör"
+      ],
+      "rows": [
+        [
+          "Fetch",
+          "kollar om det finns ändringar på GitHub, utan att hämta in dem"
+        ],
+        [
+          "Pull",
+          "hämtar och slår ihop ändringarna med din lokala kod"
+        ],
+        [
+          "Stage / Add",
+          "markerar ändrade filer som ska med i nästa commit"
+        ],
+        [
+          "Commit",
+          "sparar en version (snapshot) lokalt, med ett meddelande"
+        ],
+        [
+          "Push",
+          "laddar upp dina commits till GitHub"
+        ],
+        [
+          "Sync",
+          "i Visual Studio: pull och push i ett steg"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Bra commit-meddelanden"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Korta och tydliga, helst under 50 tecken.",
+        "Börja med ett verb: \"Lägg till\", \"Fixa\", \"Byt ut\".",
+        "Exempel: <code>Lägg till funktion för medelvärdesberäkning</code>.",
+        "Commita ofta: efter varje uppgift eller ny funktion.",
+        "Pulla när du börjar dagens arbete, pusha innan du går från datorn."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Kör alltid pull innan push. Om två personer har ändrat samma rader blir det en <strong>konflikt</strong>. Visual Studio markerar filerna, och du väljer manuellt vilka rader som ska behållas."
+    },
+    {
+      "type": "h",
+      "text": "Branches och pull requests"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>branch</strong> är en separat utvecklingslinje där du kan bygga en ny funktion utan att påverka <code>main</code>. När du är klar skapar du en <strong>pull request</strong> (PR): \"Jag vill slå ihop min branch med main. Kan någon granska den?\""
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "git checkout -b feature/removeDevice    # skapa och byt till ny branch\n# ... implementera, testa ...\ngit add .\ngit commit -m \"Lägg till removeDevice() med testfall\"\ngit push origin feature/removeDevice     # skapa sedan en PR på GitHub"
+    },
+    {
+      "type": "h",
+      "text": "Kodgranskning"
+    },
+    {
+      "type": "p",
+      "html": "En kodgranskning betyder att någon läser och utvärderar koden innan den slås ihop. Målet är bättre kod tillsammans, inte att hitta någon att skylla på."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Område",
+        "Fråga dig"
+      ],
+      "rows": [
+        [
+          "Funktionalitet",
+          "Gör koden det den ska? Testas olika indata och fel?"
+        ],
+        [
+          "Struktur",
+          "Är koden uppdelad i små, begripliga funktioner? Finns onödig upprepning?"
+        ],
+        [
+          "Läsbarhet",
+          "Är namnen tydliga? Följer koden samma stil som resten av projektet?"
+        ],
+        [
+          "Effektivitet",
+          "Görs onödigt arbete i loopar? Används rätt datatyper och strukturer?"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Så granskar du en PR"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Läs titeln och beskrivningen: vad försöker ändringen lösa?",
+        "Läs igenom hela flödet innan du kommenterar detaljer.",
+        "Gå igenom varje funktion: vad tar den in, vad returnerar den?",
+        "Leta efter out-of-bounds, null-pekare, fel typ och obehandlade fel.",
+        "Kommentera direkt i koden. Var konkret och föreslå en förbättring.",
+        "När du är nöjd: <strong>Approve</strong> och merge."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Bra feedback är konkret och vänlig: \"Kan den här funktionen delas upp i två? Den både läser filen och räknar statistik.\" Fråga dig själv: kan någon annan förstå den här koden nästa månad?"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad gör en commit?",
+      "options": [
+        "Laddar upp koden till GitHub",
+        "Sparar en version lokalt, med ett meddelande",
+        "Hämtar andras ändringar",
+        "Skapar en ny branch"
+      ],
+      "answer": 1,
+      "why": "Commit sparar lokalt. Push är det som laddar upp till GitHub."
+    },
+    {
+      "type": "mc",
+      "q": "Vad bör du göra innan push för att undvika konflikter?",
+      "options": [
+        "Fetch",
+        "Pull",
+        "Ta bort branchen",
+        "Skapa en ny commit"
+      ],
+      "answer": 1,
+      "why": "Pull hämtar och slår ihop det andra har pushat, så att du löser eventuella konflikter lokalt."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket kommando skapar en ny branch och byter till den?",
+      "options": [
+        "<code>git branch -d feature-temp</code>",
+        "<code>git checkout -b feature-temp</code>",
+        "<code>git push feature-temp</code>",
+        "<code>git commit -b feature-temp</code>"
+      ],
+      "answer": 1,
+      "why": "<code>-b</code> skapar branchen. I nyare Git finns också <code>git switch -c feature-temp</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en pull request?",
+      "options": [
+        "Ett sätt att hämta kod från GitHub",
+        "En begäran om att slå ihop en branch med main, efter granskning",
+        "En automatisk backup",
+        "Ett felmeddelande från GitHub"
+      ],
+      "answer": 1,
+      "why": "En PR samlar ändringarna i en branch så att andra kan granska och kommentera innan merge."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken feedback är mest konstruktiv?",
+      "options": [
+        "Det här är dålig kod.",
+        "Kan funktionen delas upp i två? Den både läser filen och räknar statistik.",
+        "Skriv om allt.",
+        "LGTM"
+      ],
+      "answer": 1,
+      "why": "Konkret, förklarar varför och föreslår en förbättring. Det är målet med en kodgranskning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan fetch och pull?",
+      "options": [
+        "Ingen",
+        "Fetch kollar efter ändringar utan att slå ihop dem, pull hämtar och slår ihop",
+        "Pull laddar upp, fetch laddar ner",
+        "Fetch tar bort lokala ändringar"
+      ],
+      "answer": 1,
+      "why": "Fetch uppdaterar bara din bild av GitHub. Pull = fetch + merge."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket commit-meddelande följer riktlinjerna bäst?",
+      "options": [
+        "fix",
+        "Ändringar",
+        "Lägg till medelvärdesberäkning",
+        "Jag har nu lagt till en funktion som räknar ut medelvärdet av alla mätvärden i listan"
+      ],
+      "answer": 2,
+      "why": "Kort, under 50 tecken, börjar med ett verb och säger vad som ändrats."
+    },
+    {
+      "type": "multi",
+      "q": "Vad bör du titta på i en kodgranskning? Välj alla.",
+      "options": [
+        "Fungerar koden och hanteras fel?",
+        "Är namnen tydliga?",
+        "Finns onödig upprepning?",
+        "Vem som skrev koden"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Granskningen handlar om koden, inte om personen."
+    },
+    {
+      "type": "text",
+      "q": "Skriv kommandot som skickar dina commits till GitHub.",
+      "accept": [
+        "git push",
+        "git push origin",
+        "git push origin main"
+      ],
+      "placeholder": "git ...",
+      "why": "<code>git push</code>"
+    },
+    {
+      "type": "text",
+      "q": "Skriv kommandot som skapar och byter till branchen <code>feature-temp</code>.",
+      "accept": [
+        "git checkout -b feature-temp",
+        "git switch -c feature-temp"
+      ],
+      "placeholder": "git ...",
+      "why": "<code>git checkout -b feature-temp</code> eller <code>git switch -c feature-temp</code>."
+    },
+    {
+      "type": "text",
+      "q": "Skriv kommandot som sparar en commit med meddelandet <code>Fixa off-by-one</code>.",
+      "accept": [
+        "git commit -m \"Fixa off-by-one\"",
+        "git commit -m 'Fixa off-by-one'"
+      ],
+      "placeholder": "git commit ...",
+      "why": "<code>git commit -m \"Fixa off-by-one\"</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vilket kommando markerar <code>main.cpp</code> för nästa commit (stage)?",
+      "accept": [
+        "git add main.cpp"
+      ],
+      "placeholder": "git ...",
+      "why": "<code>git add main.cpp</code> (eller <code>git add .</code> för alla ändrade filer)."
+    }
+  ]
+}

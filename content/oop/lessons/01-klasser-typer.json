@@ -1,0 +1,297 @@
+{
+  "id": "klasser-typer",
+  "title": "Klasser och egna typer",
+  "category": "Grunder",
+  "minutes": 10,
+  "date": "Tis 28/10",
+  "lead": "Från data och funktioner till objekt med ansvar: vad en typ är, struct och class, konstruktorer, const och this.",
+  "sources": [
+    "Tisdag 28/10 – Klasser",
+    "Övningsuppgifter Dag 1 – klasser och structs"
+  ],
+  "goals": [
+    "Förklara vad en typ är och varför vi skapar egna typer",
+    "Skilja på struct och class och använda konstruktorer med initieringslista",
+    "Förklara const-metoder och this-pekaren",
+    "Dela upp en klass i .h och .cpp"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Hur kom vi hit?"
+    },
+    {
+      "type": "p",
+      "html": "I C/C++-kursen tänkte vi ofta \"C-aktigt\": data först, funktioner sen. Nu går vi över till att tänka i <strong>objekt</strong>: delar med ett eget ansvar som samarbetar i ett system. Historiskt gick utvecklingen från procedurprogrammering (funktioner + data) via modulprogrammering till objektorienterad programmering (OOP) med klasser och objekt."
+    },
+    {
+      "type": "p",
+      "html": "I IoT och inbyggda system finns många samverkande komponenter: sensorer, aktuatorer, kommunikation. OOP hjälper oss att hålla isär dem. En luftkvalitetssensor mäter, har ett namn och kanske en intern klocka. Det är mer än ett <code>double</code>-värde. Det är ett objekt med beteende."
+    },
+    {
+      "type": "h",
+      "text": "Vad är en typ?"
+    },
+    {
+      "type": "p",
+      "html": "<strong>En typ definierar vilka värden en variabel kan ha och vilka operationer som är tillåtna.</strong> <code>int</code>, <code>double</code> och <code>char</code> är primitiva typer."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Säkerhet:</strong> kompilatorn upptäcker fel, som att lägga ihop en sträng och en sensor.",
+        "<strong>Struktur:</strong> programmet organiseras kring begrepp.",
+        "<strong>Läsbarhet:</strong> andra förstår vad datan betyder."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Men primitiva typer säger inget om beteende, relationer, ansvar eller livscykel. Därför skapar vi egna typer med <code>struct</code> och <code>class</code>: data <em>och</em> beteende i samma enhet."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int temperature = 22;      // ett tal, men vad betyder det?\ndouble voltage = 3.3;\n\nstruct Point {             // egen typ: data som hör ihop\n    double x;\n    double y;\n};\n\nclass Sensor {             // egen typ: data + beteende\npublic:\n    std::string name;\n    double value;\n    void read() { value = 42.0; }   // simulerad läsning\n};"
+    },
+    {
+      "type": "h",
+      "text": "struct eller class?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<code>struct</code>: alla medlemmar är <strong>public</strong> som standard.",
+        "<code>class</code>: alla medlemmar är <strong>private</strong> som standard."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Annars är de identiska. Konventionen: struct för enkla datapaket (<code>Position</code>, <code>SensorReading</code>), class när objektet har regler och ett gränssnitt (<code>Device</code>, <code>Logger</code>). Ställ tre frågor när du designar: <em>Vad representerar objektet? Vilka egenskaper har det? Vilket ansvar ska det ha?</em>"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "struct Position {\n    double x;\n    double y;\n    void move(double dx, double dy) { x += dx; y += dy; }\n    void print() const { std::cout << \"(\" << x << \", \" << y << \")\\n\"; }\n};\n\nclass Device {\nprivate:\n    int id;\n    std::string name;\npublic:\n    Device(int id, const std::string& name)\n        : id(id), name(name) {}               // initieringslista\n\n    void rename(const std::string& newName) { name = newName; }\n    void printInfo() const { std::cout << \"Device \" << id << \": \" << name << \"\\n\"; }\n};",
+      "caption": "repetition"
+    },
+    {
+      "type": "h",
+      "text": "const-metoder och this"
+    },
+    {
+      "type": "p",
+      "html": "<code>const</code> efter parameterlistan lovar att metoden inte ändrar objektet. Då kan den anropas på konstanta objekt och via <code>const&amp;</code>, och kompilatorn stoppar oavsiktliga ändringar."
+    },
+    {
+      "type": "p",
+      "html": "<code>this</code> är en pekare till objektet som metoden anropas på. Den behövs sällan, men är praktisk när en parameter har samma namn som en medlem, eller när en metod ska returnera objektet självt."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Counter {\n    int count = 0;\npublic:\n    Counter& increment() {       // returnerar *this → anrop kan kedjas\n        this->count++;\n        return *this;\n    }\n    int value() const { return count; }\n};\n\nCounter c;\nc.increment().increment().increment();\nstd::cout << c.value();          // 3"
+    },
+    {
+      "type": "h",
+      "text": "Kursens mål i korthet"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Kod",
+        "Mål",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "KUN8",
+          "Kunskaper om OOP",
+          "Vad är ett objekt, en klass, och hur hänger de ihop?"
+        ],
+        [
+          "KUN9",
+          "Utvecklingsmiljö",
+          "Bygga ett program med flera .cpp/.h-filer"
+        ],
+        [
+          "KUN10",
+          "Polymorfism och arv",
+          "Introduceras tidigt, fördjupas senare"
+        ],
+        [
+          "KUN11",
+          "Kompilerade vs interpreterade språk",
+          "C++ kompileras, Python interpreteras"
+        ],
+        [
+          "KUN12",
+          "UML",
+          "Rita klassdiagram för att modellera objekt"
+        ],
+        [
+          "F10–F14",
+          "Färdigheter",
+          "Söka info, strukturera kod, sätta upp miljö, hitta buggar, kommunicera lösningar"
+        ],
+        [
+          "KOM6–KOM8",
+          "Kompetenser",
+          "Utveckla IoT-mjukvara, utvärdera och förbättra, professionell utveckling"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Övningar (Dag 1)"
+    },
+    {
+      "type": "exercise",
+      "title": "Position och Device i egna filer",
+      "html": "<ol><li>Deklarera <code>struct Position</code> i <code>Position.h</code>, implementera <code>move</code> och <code>print</code> i <code>Position.cpp</code>. print ska skriva <code>Position(x=…, y=…)</code>.</li><li>Gör samma sak med <code>class Device</code>: konstruktor, <code>rename</code> och <code>printInfo</code>.</li><li>I <code>main.cpp</code>: skapa objekten, flytta och byt namn, skriv ut och verifiera.</li></ol><p>Tips: prova i Kodlabbet i desktop-appen, som klarar flera filer.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Sensor, SensorReading och Logger",
+      "html": "<p>Ett IoT-system ska läsa en sensor, paketera värdet som en <code>SensorReading</code> och logga det.</p><ul><li><code>struct SensorReading { double value; std::string timestamp; void print() const; }</code></li><li><code>class Sensor</code> med <code>read()</code> som returnerar en SensorReading (dummyvärde 42.0) och <code>getName()</code>.</li><li><code>class Logger</code> med <code>log(const SensorReading&amp;, const std::string&amp; sensorName) const</code>.</li></ul>",
+      "solution": "SensorReading Sensor::read() const {\n    return SensorReading{42.0, \"2025-10-28 14:35\"};\n}\n\nvoid Logger::log(const SensorReading& r, const std::string& sensorName) const {\n    std::cout << sensorName << \": \";\n    r.print();\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Luftkvalitetssystem (komposition)",
+      "html": "<p><code>AirSensor</code> har ett namn och <code>read()</code>. <code>AirMonitor</code> har en <code>std::vector&lt;AirSensor&gt;</code> och <code>logAll()</code> som läser varje sensor och loggar med Logger. Skapa tre sensorer och anropa logAll().</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Parkeringshus",
+      "html": "<p><code>struct Car { std::string regNumber; std::string arrivalTime; void print() const; }</code> och <code>class ParkingHouse</code> med <code>addCar</code>, <code>removeCar</code> (returnerar true/false) och <code>printStatus</code>.</p>",
+      "solution": "bool ParkingHouse::removeCar(const std::string& regNumber) {\n    for (auto it = cars.begin(); it != cars.end(); ++it) {\n        if (it->regNumber == regNumber) {\n            cars.erase(it);\n            return true;\n        }\n    }\n    return false;\n}",
+      "lang": "cpp"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad definierar en typ?",
+      "options": [
+        "Bara hur mycket minne en variabel tar",
+        "Vilka värden en variabel kan ha och vilka operationer som är tillåtna",
+        "Vilken fil koden ligger i",
+        "Variabelns namn"
+      ],
+      "answer": 1,
+      "why": "En typ beskriver både värdemängden och de tillåtna operationerna. Därför kan kompilatorn hitta fel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan <code>struct</code> och <code>class</code> i C++?",
+      "options": [
+        "Structs kan inte ha metoder",
+        "Standardåtkomsten: public i struct, private i class",
+        "Klasser måste skapas med new",
+        "Structs kan inte ha konstruktorer"
+      ],
+      "answer": 1,
+      "why": "Det är den enda språkliga skillnaden. Valet handlar om vad du vill signalera."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder <code>void print() const;</code>?",
+      "options": [
+        "print returnerar en konstant",
+        "print ändrar inte objektets medlemmar",
+        "print kan bara anropas en gång",
+        "print är private"
+      ],
+      "answer": 1,
+      "why": "En const-metod kan anropas på <code>const</code>-objekt och via <code>const&amp;</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är <code>this</code> inuti en metod?",
+      "options": [
+        "En kopia av objektet",
+        "En pekare till objektet som metoden anropas på",
+        "Klassens namn",
+        "En referens till main"
+      ],
+      "answer": 1,
+      "why": "<code>this-&gt;count</code> och <code>count</code> betyder samma sak inuti en metod. <code>*this</code> är själva objektet."
+    },
+    {
+      "type": "mc",
+      "q": "Varför använder vi initieringslistan i konstruktorn?",
+      "options": [
+        "Den krävs alltid",
+        "Medlemmarna initieras direkt istället för att först skapas och sedan tilldelas",
+        "Den gör medlemmarna private",
+        "Den anropar destruktorn"
+      ],
+      "answer": 1,
+      "why": "<code>: id(id), name(name)</code> bygger medlemmarna med rätt värde direkt. const-medlemmar och referenser <em>måste</em> initieras där."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka av följande är sanna om en klass i C++? Välj alla.",
+      "options": [
+        "Den kan ha både data och metoder",
+        "Medlemmar är private som standard",
+        "Den måste ha en destruktor",
+        "Den kan ha flera konstruktorer"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "Kompilatorn skapar en destruktor åt dig om du inte skriver en."
+    },
+    {
+      "type": "mc",
+      "q": "Vad returnerar <code>*this</code> i en metod?",
+      "options": [
+        "En pekare till objektet",
+        "Objektet självt (som referens om returtypen är en referens)",
+        "Klassens namn",
+        "nullptr"
+      ],
+      "answer": 1,
+      "why": "<code>this</code> är pekaren, <code>*this</code> är objektet. <code>Counter&amp; increment() { ...; return *this; }</code> gör att anrop kan kedjas."
+    },
+    {
+      "type": "text",
+      "q": "Vilket nyckelord efter parameterlistan lovar att en metod inte ändrar objektet?",
+      "accept": [
+        "const"
+      ],
+      "placeholder": "nyckelord",
+      "why": "<code>void print() const;</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vilken filändelse har filen som innehåller klassens <em>deklaration</em>, enligt kursens konvention?",
+      "accept": [
+        ".h",
+        "h",
+        ".hpp",
+        "hpp"
+      ],
+      "placeholder": ".?",
+      "why": "Deklarationen i <code>.h</code>, implementationen i <code>.cpp</code>."
+    },
+    {
+      "type": "code",
+      "q": "Skriv klassen <code>Counter</code> med en privat räknare som startar på 0, en metod <code>increment()</code> och en const-metod <code>value()</code>. main läser n och anropar increment n gånger.",
+      "task": "01-klasser-typer-1",
+      "why": "Räknaren är private och nås bara via metoderna. <code>value()</code> är const eftersom den bara läser.",
+      "web": false
+    },
+    {
+      "type": "code",
+      "q": "Implementera <code>Position::move</code> och <code>Position::print</code>. print ska skriva <code>Position(x=X, y=Y)</code>.",
+      "task": "01-klasser-typer-2",
+      "why": "<code>Position::</code> knyter definitionen till structen, och print behåller sin <code>const</code> även i definitionen.",
+      "web": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+--- in
+sword sword fireball
+--- out
+35
+--- in
+fireball
+--- out
+15
+--- in
+
+--- out
+0

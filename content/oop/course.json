@@ -1,0 +1,342 @@
+{
+  "id": "oop",
+  "badge": "OOP",
+  "title": "Objektorienterad programmering och design",
+  "short": "OOP",
+  "tag": "C++ · Design",
+  "description": "Klasser, inkapsling, komposition, arv, polymorfism och designmönster i C++, med IoT- och spelexempel.",
+  "headline": "Objekt som <em>samarbetar</em>.",
+  "lessons": [
+    "01-klasser-typer.json",
+    "02-inkapsling.json",
+    "03-komposition-uml.json",
+    "04-arv.json",
+    "05-enums.json",
+    "06-polymorfism.json",
+    "07-agande-casting.json",
+    "08-designmonster.json",
+    "09-singleton-adapter.json",
+    "10-git-samarbete.json"
+  ],
+  "timeline": [
+    {
+      "date": "Tis 28/10",
+      "title": "Kursstart: klasser och egna typer",
+      "lessons": [
+        "klasser-typer"
+      ]
+    },
+    {
+      "date": "Tors 30/10",
+      "title": "Inkapsling, komposition och UML",
+      "lessons": [
+        "inkapsling",
+        "komposition-uml"
+      ]
+    },
+    {
+      "date": "Tis 4/11",
+      "title": "Arv och enums",
+      "lessons": [
+        "arv",
+        "enums"
+      ]
+    },
+    {
+      "date": "Tors 6/11",
+      "title": "Polymorfism och casting · Terminal Game-labben",
+      "lessons": [
+        "polymorfism",
+        "agande-casting"
+      ]
+    },
+    {
+      "date": "Tors 13/11",
+      "title": "Designmönster",
+      "lessons": [
+        "designmonster",
+        "singleton-adapter"
+      ]
+    },
+    {
+      "date": "Labb",
+      "title": "Samarbete med Git",
+      "lessons": [
+        "git-samarbete"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "terminalgame",
+      "kind": "Labb, grupp om 3",
+      "title": "OOP-design i ett terminalspel",
+      "intro": "Bygg vidare på ett textbaserat spel med <code>Player</code>, den abstrakta basklassen <code>Effect</code> och effekterna <code>Slow</code> och <code>Burn</code>. Målet är ett interaktivt spel där två spelare turas om att välja handlingar. Ca 3 timmar.",
+      "groups": [
+        {
+          "h": "A. Förstå basprogrammet",
+          "items": [
+            "Kompilera och kör, se hur Slow och Burn appliceras",
+            "Hitta var polymorfismen används",
+            "Diskutera: vad betyder <code>virtual</code> och <code>override</code> här?",
+            "Diskutera: varför <code>unique_ptr</code> i vektorn?",
+            "Diskutera: varför har Effect en virtuell destruktor?"
+          ]
+        },
+        {
+          "h": "B. Två spelare och turordning",
+          "items": [
+            "Lägg till <code>Player player2(\"Villain\")</code>",
+            "Spel-loop där spelarna turas om: 1. Attack, 2. Effekt",
+            "Använd <code>makeEffect(EffectType::Burn)</code> och <code>effect-&gt;apply(player2)</code>",
+            "Byt tur med <code>std::swap(player1, player2)</code>"
+          ]
+        },
+        {
+          "h": "C. Fler effekter",
+          "items": [
+            "Ny effektklass som ärver Effect (Heal, Poison, Freeze eller Shield)",
+            "Uppdatera <code>enum class EffectType</code>",
+            "Uppdatera <code>makeEffect()</code> med ett nytt case",
+            "Låt spelaren välja effekttyp vid inmatning"
+          ]
+        },
+        {
+          "h": "D. Unik vidareutveckling (välj 1–3)",
+          "items": [
+            "Nya klasser: <code>Weapon</code>, <code>Item</code> eller <code>Spell</code> med mana",
+            "Nya strukturer: <code>struct Stats</code> eller <code>TurnResult</code>",
+            "Enums: <code>enum class Action { Attack, Cast, Wait }</code> eller <code>Status { Normal, Frozen, Poisoned }</code>",
+            "Design: abstrakt <code>Entity</code> som Player och Enemy ärver, och effekter på vilken Entity som helst"
+          ]
+        },
+        {
+          "h": "E. Test och reflektion",
+          "items": [
+            "Spela några rundor och diskutera de polymorfa anropen",
+            "Hur lätt är det att lägga till nya effekter?",
+            "Hur skulle ni spara och läsa in spelstatus från fil?",
+            "Skriv ner 2–3 saker ni lärt er om arv, enums och OOP-design"
+          ]
+        }
+      ],
+      "topics": [
+        "arv",
+        "enums",
+        "polymorfism",
+        "agande-casting"
+      ],
+      "hint": "Strategy-mönstret passar för Weapon, och en fabrik med <code>enum class EffectType</code> håller main-loopen fri från new."
+    },
+    {
+      "id": "gitprojekt",
+      "kind": "Parövning",
+      "title": "Samarbete med Git: mini-projekt",
+      "intro": "Välj projekt A (Mini-RPG Combat), B (SmartHome) eller C (Marketplace Shop) och bygg det i par med feature branches, pull requests och code review.",
+      "groups": [
+        {
+          "h": "Grund",
+          "items": [
+            "En person skapar repot, båda klonar",
+            "Bygg tomma klasser och en main som kompilerar",
+            "Uppfyll projektets minimikrav"
+          ]
+        },
+        {
+          "h": "Per feature",
+          "items": [
+            "Ny branch: <code>git checkout -b feature/…</code>",
+            "Liten, sammanhängande ändring som kompilerar",
+            "Små commits med tydliga meddelanden",
+            "<code>git push -u origin feature/…</code>",
+            "PR med beskrivning, partnern som reviewer",
+            "Åtgärda kommentarer, godkänn och merga",
+            "<code>git checkout main</code> och <code>git pull</code>"
+          ]
+        },
+        {
+          "h": "Avslutande",
+          "items": [
+            "Branch som lägger till en ny klass i hierarkin, en enum, en polymorf metod eller komposition",
+            "Korsvis code review"
+          ]
+        }
+      ],
+      "topics": [
+        "git-samarbete",
+        "polymorfism",
+        "designmonster"
+      ]
+    },
+    {
+      "id": "dag1",
+      "kind": "Övningar",
+      "title": "Dag 1: klasser och structs i egna filer",
+      "intro": "Trygghet i att definiera egna typer och dela upp dem i .h och .cpp. Inget arv än.",
+      "groups": [
+        {
+          "h": "Block 1",
+          "items": [
+            "Position.h/.cpp med move() och print()",
+            "Device.h/.cpp med konstruktor, rename() och printInfo()"
+          ]
+        },
+        {
+          "h": "Block 2",
+          "items": [
+            "SensorReading med print()",
+            "Sensor med read() och getName()",
+            "Logger med log()"
+          ]
+        },
+        {
+          "h": "Block 3",
+          "items": [
+            "AirSensor och AirMonitor med logAll()",
+            "Car och ParkingHouse med addCar, removeCar och printStatus"
+          ]
+        },
+        {
+          "h": "Block 4 och extra",
+          "items": [
+            "Diskutera reflektionsfrågorna",
+            "Läs in Car eller Sensor från användaren med std::cin",
+            "Felhantering: ogiltigt registreringsnummer, orimligt sensorvärde",
+            "Enhetstest med <code>assert</code> för Sensor::read() eller removeCar()"
+          ]
+        }
+      ],
+      "topics": [
+        "klasser-typer",
+        "komposition-uml"
+      ]
+    },
+    {
+      "id": "enumovn",
+      "kind": "Övningar",
+      "title": "enum och enum class",
+      "intro": "Fem övningar från magiska tal till menyer med enum class.",
+      "groups": [
+        {
+          "h": "Övningar",
+          "items": [
+            "Veckodagar med enum och switch",
+            "Gör om till enum class och testa today == 2",
+            "<code>Direction</code> med <code>toString()</code> och användarval",
+            "<code>Machine</code> med <code>MachineState</code> och printStatus()",
+            "Meny med <code>MenuOption</code> och en mappningsfunktion"
+          ]
+        }
+      ],
+      "topics": [
+        "enums"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "28/10",
+      "title": "Tisdag 28/10 – Klasser",
+      "description": "Kursstart, typer, struct och class, kursens mål, repetition av konstruktorer, const och this.",
+      "lessons": [
+        "klasser-typer"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningsuppgifter Dag 1 – klasser och structs",
+      "description": "Fyra block: Position/Device, Sensor/Logger, AirMonitor och ParkingHouse, reflektion.",
+      "lessons": [
+        "klasser-typer",
+        "komposition-uml"
+      ]
+    },
+    {
+      "kind": "30/10",
+      "title": "Torsdag 30/10 – Inkapsling, komposition",
+      "description": "Access-nivåer, getters/setters i idiomatisk C++, komposition med Robot och Position.",
+      "lessons": [
+        "inkapsling",
+        "komposition-uml"
+      ]
+    },
+    {
+      "kind": "4/11",
+      "title": "Tisdag 4/11 – Arv",
+      "description": "Bas- och subklasser, konstruktorordning, protected, arv eller komposition, intro till enum class.",
+      "lessons": [
+        "arv",
+        "enums"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningar – enums",
+      "description": "enum och enum class, switch och fem övningar.",
+      "lessons": [
+        "enums"
+      ]
+    },
+    {
+      "kind": "6/11",
+      "title": "Torsdag 6/11 – Polymorfism, casting",
+      "description": "virtual, override, final, abstrakta klasser, slicing, unique_ptr, fabriker, RTTI och dynamic_cast.",
+      "lessons": [
+        "polymorfism",
+        "agande-casting"
+      ]
+    },
+    {
+      "kind": "Labb",
+      "title": "Labb: Terminal Game",
+      "description": "Player, Effect, Slow och Burn, vidareutvecklat till ett turbaserat spel.",
+      "lessons": [
+        "polymorfism",
+        "enums"
+      ]
+    },
+    {
+      "kind": "13/11",
+      "title": "Torsdag 13/11 – Design Patterns intro",
+      "description": "Strategy, Observer, Factory Method, Singleton och Adapter.",
+      "lessons": [
+        "designmonster",
+        "singleton-adapter"
+      ]
+    },
+    {
+      "kind": "Labb",
+      "title": "Samarbete med git",
+      "description": "Mini-projekt A–C, feature branches, PR och code review.",
+      "lessons": [
+        "git-samarbete"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Ref",
+      "title": "cppreference: virtual, override, final",
+      "url": "https://en.cppreference.com/w/cpp/language/virtual",
+      "description": "Exakta regler för virtuella funktioner."
+    },
+    {
+      "kind": "Ref",
+      "title": "C++ Core Guidelines: klasser och hierarkier",
+      "url": "https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-class",
+      "description": "Riktlinjer för inkapsling, arv och polymorfism."
+    },
+    {
+      "kind": "Bok",
+      "title": "Refactoring.Guru: designmönster",
+      "url": "https://refactoring.guru/design-patterns",
+      "description": "Illustrerade förklaringar av Strategy, Observer, Factory, Singleton och Adapter."
+    },
+    {
+      "kind": "UML",
+      "title": "UML-klassdiagram (översikt)",
+      "url": "https://www.uml-diagrams.org/class-diagrams-overview.html",
+      "description": "Notation för klasser, relationer och multiplicitet."
+    }
+  ]
+}

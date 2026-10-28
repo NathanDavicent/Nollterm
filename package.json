@@ -4,7 +4,9 @@
   "scripts": {
     "build": "node src/build.mjs",
     "build:runner": "esbuild src/worker-src.js --bundle --minify --format=iife --platform=browser --alias:util=./src/shims/util.js --alias:stream=./src/shims/stream.js --alias:fs=./src/shims/fs.js --outfile=web/cpp-runner.js",
-    "serve": "npx http-server web -p 8080 -c-1"
+    "serve": "npx http-server web -p 8080 -c-1",
+    "web-langs": "node tools/web_langs.cjs",
+    "check": "python3 tools/check_tasks.py"
   },
   "devDependencies": {
     "JSCPP": "2.0.9",

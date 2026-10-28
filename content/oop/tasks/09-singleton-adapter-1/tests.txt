@@ -1,0 +1,8 @@
+--- in
+
+--- out
+100 samma
+--- in
+250
+--- out
+250 samma

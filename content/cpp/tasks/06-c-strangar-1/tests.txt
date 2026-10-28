@@ -1,0 +1,12 @@
+--- in
+Hello
+--- out
+5
+--- in
+IoT
+--- out
+3
+--- in
+a
+--- out
+1

@@ -1,0 +1,250 @@
+{
+  "id": "komposition-uml",
+  "title": "Komposition och UML",
+  "category": "Design",
+  "minutes": 8,
+  "date": "Tors 30/10",
+  "lead": "Bygg klasser av andra klasser och rita relationerna som UML-klassdiagram.",
+  "sources": [
+    "Torsdag 30/10 – Inkapsling, komposition",
+    "Övningsuppgifter Dag 1 (block 3)",
+    "UML-avsnittet kompletterat av Nollterm"
+  ],
+  "goals": [
+    "Förklara komposition som en har-en-relation",
+    "Bygga klasser som innehåller andra objekt",
+    "Läsa och rita ett enkelt UML-klassdiagram"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är komposition?"
+    },
+    {
+      "type": "p",
+      "html": "Komposition betyder att en klass innehåller andra klasser som medlemmar. Den är lättare att förstå än arv och mycket vanlig i inbyggda system. Relationen är <strong>har-en</strong>: <em>a robot has a position</em>."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Position {\npublic:\n    double x, y;\n    Position(double x, double y) : x{x}, y{y} {}\n};\n\nclass Robot {\nprivate:\n    std::string name_;\n    Position pos_;                          // Robot HAR EN Position\npublic:\n    Robot(const std::string& name) : name_{name}, pos_{0.0, 0.0} {}\n    void move(double dx, double dy) { pos_.x += dx; pos_.y += dy; }\n    void printStatus() const {\n        std::cout << name_ << \" at (\" << pos_.x << \", \" << pos_.y << \")\\n\";\n    }\n};"
+    },
+    {
+      "type": "p",
+      "html": "Delarna skapas tillsammans med helheten och förstörs med den. Kompositionen kan också vara en samling: <code>AirMonitor</code> har flera <code>AirSensor</code>, <code>ParkingHouse</code> har flera <code>Car</code>."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class AirMonitor {\n    std::vector<AirSensor> sensors_;\n    Logger logger_;\npublic:\n    void addSensor(const AirSensor& s) { sensors_.push_back(s); }\n    void logAll() const {\n        for (const auto& s : sensors_) logger_.log(s.read(), s.name());\n    }\n};"
+    },
+    {
+      "type": "h",
+      "text": "UML-klassdiagram"
+    },
+    {
+      "type": "p",
+      "html": "UML (Unified Modeling Language) är ett standardiserat sätt att rita klasser och deras relationer. En klass ritas som en låda i tre fack: <strong>namn</strong>, <strong>attribut</strong> och <strong>operationer</strong>. Tecknet före varje medlem visar åtkomsten."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "┌───────────────────────────┐\n│          Robot            │\n├───────────────────────────┤\n│ - name_ : string          │\n│ - pos_ : Position         │\n├───────────────────────────┤\n│ + Robot(name : string)    │\n│ + move(dx, dy : double)   │\n│ + printStatus() : void    │\n└───────────────────────────┘",
+      "caption": "UML-klass"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Symbol",
+        "Betyder"
+      ],
+      "rows": [
+        [
+          "<code>+</code>",
+          "public"
+        ],
+        [
+          "<code>-</code>",
+          "private"
+        ],
+        [
+          "<code>#</code>",
+          "protected"
+        ],
+        [
+          "<code>namn : Typ</code>",
+          "attribut med typ"
+        ],
+        [
+          "<code>op(p : Typ) : Retur</code>",
+          "operation med parametrar och returtyp"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Relation",
+        "Ritas",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Komposition (äger, samma livstid)",
+          "linje med fylld romb vid helheten ◆",
+          "Robot ◆── Position"
+        ],
+        [
+          "Aggregation (har, men äger inte)",
+          "linje med ofylld romb ◇",
+          "Team ◇── Player"
+        ],
+        [
+          "Arv (är-en)",
+          "linje med ofylld triangel mot basklassen △",
+          "TempSensor ──▷ Sensor"
+        ],
+        [
+          "Beroende (använder)",
+          "streckad pil",
+          "Logger - - > SensorReading"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Multiplicitet skrivs vid linjens ände: <code>1</code>, <code>0..1</code>, <code>*</code> (många). <code>AirMonitor ◆── * AirSensor</code> betyder att en monitor äger många sensorer."
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Rita diagrammet innan du kodar. Det tvingar fram frågorna: vem äger vad, vem anropar vem, och vilket ansvar har varje klass?"
+    },
+    {
+      "type": "h",
+      "text": "Övning"
+    },
+    {
+      "type": "exercise",
+      "title": "Rita och bygg luftkvalitetssystemet",
+      "html": "<ol><li>Rita UML för <code>AirSensor</code>, <code>AirMonitor</code>, <code>Logger</code> och <code>SensorReading</code> med åtkomst, typer och relationer.</li><li>Markera var det är komposition och var det bara är ett beroende.</li><li>Implementera och jämför koden med diagrammet.</li></ol>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken relation beskriver komposition?",
+      "options": [
+        "är-en",
+        "har-en",
+        "använder ibland",
+        "ärver från"
+      ],
+      "answer": 1,
+      "why": "En Robot har en Position. Arv är är-en."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder <code>-</code> framför ett attribut i UML?",
+      "options": [
+        "public",
+        "private",
+        "protected",
+        "static"
+      ],
+      "answer": 1,
+      "why": "<code>+</code> public, <code>-</code> private, <code>#</code> protected."
+    },
+    {
+      "type": "mc",
+      "q": "Hur ritas arv i ett UML-klassdiagram?",
+      "options": [
+        "Linje med fylld romb",
+        "Linje med ofylld triangel som pekar mot basklassen",
+        "Streckad linje utan pil",
+        "Dubbel linje"
+      ],
+      "answer": 1,
+      "why": "Triangeln pekar alltid mot den mer generella klassen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilka tre fack har en UML-klass?",
+      "options": [
+        "Namn, attribut, operationer",
+        "Namn, filer, tester",
+        "Public, private, protected",
+        "Header, källkod, main"
+      ],
+      "answer": 0,
+      "why": "Namn överst, sedan data, sist metoder."
+    },
+    {
+      "type": "mc",
+      "q": "<code>AirMonitor</code> innehåller <code>std::vector&lt;AirSensor&gt;</code>. Vad är det?",
+      "options": [
+        "Arv",
+        "Komposition",
+        "Polymorfism",
+        "Ett designmönster"
+      ],
+      "answer": 1,
+      "why": "Monitorn äger sina sensorer. De skapas och förstörs med den."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken relation är aggregation snarare än komposition?",
+      "options": [
+        "En Robot har en Position som skapas med roboten",
+        "Ett Team har Players som kan finnas kvar när laget upplöses",
+        "Ett Hus har Rum som rivs med huset",
+        "En Car har en Engine som byggs in"
+      ],
+      "answer": 1,
+      "why": "Aggregation: helheten har delarna men äger inte deras livstid."
+    },
+    {
+      "type": "multi",
+      "q": "Vad visar ett UML-klassdiagram? Välj alla.",
+      "options": [
+        "Klassernas attribut och operationer",
+        "Åtkomst (+, -, #)",
+        "Relationer som arv och komposition",
+        "Exakt i vilken ordning koden körs"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Körordning visas i sekvensdiagram, inte klassdiagram."
+    },
+    {
+      "type": "text",
+      "q": "Vilket tecken markerar protected i UML?",
+      "accept": [
+        "#"
+      ],
+      "placeholder": "tecken",
+      "why": "<code>+</code> public, <code>-</code> private, <code>#</code> protected."
+    },
+    {
+      "type": "text",
+      "q": "Hur skrivs multipliciteten \"många\" i UML?",
+      "accept": [
+        "*",
+        "0..*",
+        "1..*"
+      ],
+      "placeholder": "symbol",
+      "why": "<code>*</code> (eller <code>0..*</code>)."
+    },
+    {
+      "type": "code",
+      "q": "Komposition: <code>Robot</code> har en <code>Position</code>. Implementera <code>Robot::move</code> och <code>Robot::printStatus</code> som skriver <code>NAMN at (X, Y)</code>.",
+      "task": "03-komposition-uml-1",
+      "why": "Roboten delegerar positionen till sin Position-medlem. Den har en position, den är inte en.",
+      "web": false
+    }
+  ]
+}

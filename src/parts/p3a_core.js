@@ -1,24 +1,16 @@
 /* ================================================================ courses */
-const COURSES = [
-  {
-    id: "cpp", badge: "C++", title: "Programmering C/C++", short: "C/C++", tag: "IoT",
-    desc: "Från Hello World till pekare, klasser och felhantering, med fokus på sensordata och inbyggda system.",
-    lessons: TOPICS, timeline: LESSONS, assignments: ASSIGNMENTS, sources: SOURCES, links: LINKS, extra: EXTRA,
-    headline: "Varje byte har en <em>adress</em>.",
-    card: () => {
+const R = String.raw;
+// CONTENT kommer från content/ (läggs in av src/build.mjs). Kurser med ett eget kort på startsidan
+// listas i HERO_CARDS; övriga kurser får ett enkelt standardkort.
+const HERO_CARDS = {
+  cpp: () => {
       const cells = [..."C/C++", "\\0"].map((ch, i) => `<div><span class="cell ${ch === "\\0" ? "z" : ""}" style="animation-delay:${i * 90}ms">${esc(ch)}</span><span class="ad">…${(0x10 + i).toString(16)}</span></div>`).join("");
       return `<div class="memcard" aria-label="Exempel: en C-sträng i minnet">
         <div class="decl"><span class="k">char</span> kurs[] = <span class="s">"C/C++"</span>;</div>
         <div class="mem">${cells}</div>
         <div class="foot">sizeof(kurs) == 6, strlen(kurs) == 5.<br>Det sista tecknet, nolltecknet, gav sajten dess namn.</div></div>`;
     },
-  },
-  {
-    id: "oop", badge: "OOP", title: "Objektorienterad programmering och design", short: "OOP", tag: "C++ · Design",
-    desc: "Klasser, inkapsling, komposition, arv, polymorfism och designmönster i C++, med IoT- och spelexempel.",
-    lessons: OOP_TOPICS, timeline: OOP_LESSONS, assignments: OOP_ASSIGNMENTS, sources: OOP_SOURCES, links: OOP_LINKS, extra: OOP_EXTRA,
-    headline: "Objekt som <em>samarbetar</em>.",
-    card: () => `<div class="memcard" aria-label="UML: Device med två subklasser">
+  oop: () => `<div class="memcard" aria-label="UML: Device med två subklasser">
         <div class="decl"><span class="k">for</span> (<span class="k">auto</span>&amp; d : devices) d-&gt;tick();</div>
         <div class="uml">
           <div class="ubox abs"><i>«abstract»</i><b>Device</b><span>+ tick() = 0</span></div>
@@ -26,10 +18,9 @@ const COURSES = [
           <div class="urow"><div class="ubox" style="animation-delay:.15s"><b>TempSensor</b><span>+ tick() override</span></div><div class="ubox" style="animation-delay:.3s"><b>LedActuator</b><span>+ tick() override</span></div></div>
         </div>
         <div class="foot">Samma anrop, olika beteende.<br>Polymorfism via en virtuell funktion i basklassen.</div></div>`,
-  },
-];
-COURSES.forEach(c => c.lessons.forEach(l => {
-  l.pool = l.quiz.map(q => Object.assign({ t: "mc" }, q)).concat((c.extra && c.extra[l.id]) || []);
+};
+const COURSES = CONTENT.map(c => Object.assign(c, {
+  card: HERO_CARDS[c.id] || (() => `<div class="memcard"><div class="decl">${esc(c.badge)}</div><div class="foot">${c.lessons.length} lektioner.</div></div>`),
 }));
 const courseById = id => COURSES.find(c => c.id === id);
 const lessonIdx = (c, id) => c.lessons.findIndex(l => l.id === id);
@@ -79,7 +70,7 @@ function renderChrome(ctx) {
   const side = $("#side");
   if (!c) {
     side.innerHTML = `<p class="ctitle">Dina kurser</p><div class="tabs">${COURSES.map(x => `<a href="#${x.id}"><b>${esc(x.title)}</b><span>${x.lessons.length} lekt.</span></a>`).join("")}</div>
-      <div class="tabs"><a href="#lab" ${ctx.view === "lab" ? 'aria-current="page"' : ""}>Kodlabb <span>${NATIVE ? "g++" : "tolk"}</span></a><a href="#app" ${ctx.view === "app" ? 'aria-current="page"' : ""}>Appen <span>${NATIVE ? "desktop" : "ladda ner"}</span></a></div>
+      <div class="tabs"><a href="#lab" ${ctx.view === "lab" ? 'aria-current="page"' : ""}>Kodlabb <span>${NATIVE ? "g++" : "tolk"}</span></a><a href="#app" ${ctx.view === "app" ? 'aria-current="page"' : ""}>Appen <span>ladda ner</span></a></div>
       <div class="journey"><strong>Fler kurser</strong><p style="margin-top:6px">Skicka materialet från nästa kurs så byggs den in här på samma sätt.</p></div>`;
     return;
   }
@@ -143,10 +134,10 @@ function viewHome() {
   <section class="block">
     <div class="eyebrow">Verktyg</div>
     <h2>Skriv egen kod</h2>
-    <p class="sub">${NATIVE ? "Du kör desktop-appen: all kod kompileras med g++ på din dator." : "På webben körs enklare kod i en tolk. Desktop-appen för Windows har riktig g++ för tyngre program."}</p>
+    <p class="sub">${NATIVE ? "Du kör desktop-appen: all kod kompileras med g++ på din dator." : "På webben körs Python fullt ut och enklare C/C++ i en tolk. Datorappen för Windows har riktig gcc, g++ och Python."}</p>
     <div class="courses">
-      <a class="ccard" href="#lab"><span class="code-badge">{ }</span><div><div class="eyebrow">${NATIVE ? "g++" : "Webbtolk"}</div><h3>Kodlabb</h3></div><p>Fri editor med flera filer, indata och utdata. Prova exemplen eller skriv eget.</p></a>
-      <a class="ccard" href="#app"><span class="code-badge">g++</span><div><div class="eyebrow">${NATIVE ? "Installerad" : "Windows och mobil"}</div><h3>${NATIVE ? "Om appen" : "Skaffa appen"}</h3></div><p>${NATIVE ? "Se vilken kompilator appen använder." : "Desktop-appen med inbyggd g++, och hur du installerar webbversionen på mobilen."}</p></a>
+      <a class="ccard" href="#lab"><span class="code-badge">{ }</span><div><div class="eyebrow">${NATIVE ? "g++" : "Webbtolk"}</div><h3>Kodlabb</h3></div><p>Fri editor med flera filer, indata och utdata, i C++ eller Python. Prova exemplen eller skriv eget.</p></a>
+      <a class="ccard" href="#app"><span class="code-badge">g++</span><div><div class="eyebrow">${NATIVE ? "Installerad" : "Windows och mobil"}</div><h3>${NATIVE ? "Om appen" : "Skaffa appen"}</h3></div><p>${NATIVE ? "Se vilken kompilator appen använder." : "Datorappen i C++ med inbyggd gcc, g++ och Python, och hur du installerar webbversionen på mobilen."}</p></a>
     </div>
   </section>`;
 }

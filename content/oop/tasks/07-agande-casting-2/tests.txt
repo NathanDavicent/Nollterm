@@ -1,0 +1,12 @@
+--- in
+led temp led
+--- out
+2
+--- in
+temp temp
+--- out
+0
+--- in
+
+--- out
+0

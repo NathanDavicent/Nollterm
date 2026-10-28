@@ -6,6 +6,15 @@ const APP = {
 
 /* ================================================================ code lab */
 const LAB_EXAMPLES = {
+  python: { label: "Python: lista och indata (funkar på webben)", files: [{ name: "main.py", content: R`# Läs in mätvärden på en rad och skriv ut lite statistik
+values = [float(x) for x in input().split()]
+mean = sum(values) / len(values)
+print(f"Antal: {len(values)}")
+print(f"Min: {min(values)}  Max: {max(values)}")
+print(f"Medel: {mean:.2f}")
+over = [v for v in values if v > mean]
+print("Över medel:", *over)
+` }], stdin: "21.5 22.0 19.8 23.4 20.1" },
   hello: { label: "Loop + indata (funkar på webben)", files: [{ name: "main.cpp", content: R`#include <iostream>
 using namespace std;
 
@@ -17,7 +26,7 @@ int main() {
     }
     return 0;
 }` }], stdin: "5" },
-  greet: { label: "std::string + getline (desktop)", files: [{ name: "main.cpp", content: R`#include <iostream>
+  greet: { label: "std::string + getline (appen)", files: [{ name: "main.cpp", content: R`#include <iostream>
 #include <string>
 using namespace std;
 
@@ -28,7 +37,7 @@ int main() {
     cout << "Hej " << name << "!" << endl;
     return 0;
 }` }], stdin: "Nathanael" },
-  sensor: { label: "Sensor-klass i tre filer (desktop)", files: [
+  sensor: { label: "Sensor-klass i tre filer (appen)", files: [
     { name: "main.cpp", content: R`#include "sensor.h"
 
 int main() {
@@ -69,7 +78,7 @@ void Sensor::printInfo() const {
     std::cout << "Sensor " << id << " (" << name << "): " << value << "\n";
 }` },
   ], stdin: "" },
-  stats: { label: "vector + statistik (desktop)", files: [{ name: "main.cpp", content: R`#include <iostream>
+  stats: { label: "vector + statistik (appen)", files: [{ name: "main.cpp", content: R`#include <iostream>
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -106,7 +115,7 @@ function labState() {
 function viewLab() {
   return `<nav class="crumbs"><a href="#hem">Kurser</a><span>/</span><span>Kodlabb</span></nav>
   <header class="thead"><div class="eyebrow">Kodlabb · ${NATIVE ? "g++ på din dator" : "webbtolk"}</div><h1>Skriv vad du vill och kör det.</h1>
-  <p class="lead">${NATIVE ? "Fri kodmiljö med riktig g++: flera filer, headers, string, vector, klasser och kompilatorflaggor." : "Fri kodmiljö. På webben körs main.cpp i en förenklad tolk. Flera filer och full C++ kräver desktop-appen."}</p></header>
+  <p class="lead">${NATIVE ? "Fri kodmiljö med riktig g++: flera filer, headers, string, vector, klasser och kompilatorflaggor." : "Fri kodmiljö. På webben körs main.py med riktig Python och main.cpp i en förenklad C++-tolk. Flera filer och full C++ kräver appen."}</p></header>
   <div id="lab" style="margin-top:20px"></div>`;
 }
 function renderLab() {
@@ -115,7 +124,7 @@ function renderLab() {
   box.innerHTML = `
   <div class="controls" style="justify-content:space-between">
     <label for="lab-ex">Exempel <select id="lab-ex"><option value="">Välj…</option>${Object.entries(LAB_EXAMPLES).map(([k, e]) => `<option value="${k}">${esc(e.label)}</option>`).join("")}</select></label>
-    ${NATIVE ? `<label for="lab-flags">Flaggor <input type="text" id="lab-flags" value="${esc(L.flags)}" style="width:220px"></label>` : `<a class="chip" href="#app">Skaffa desktop-appen för full C++ →</a>`}
+    ${NATIVE ? `<label for="lab-flags">Flaggor <input type="text" id="lab-flags" value="${esc(L.flags)}" style="width:220px"></label>` : `<a class="chip" href="#app">Skaffa appen för full C och C++ →</a>`}
   </div>
   <div class="editor">
     <div class="bar2" style="padding:0 6px 0 0;align-items:stretch">
@@ -132,7 +141,7 @@ function renderLab() {
   <div class="ioarea"><div><label for="lab-in">Indata (stdin)</label><textarea id="lab-in" spellcheck="false">${esc(L.stdin)}</textarea></div>
     <div><label>Utdata</label><div class="term" id="lab-out" aria-live="polite"><span class="dim">Tryck Kör (Ctrl+Enter).</span></div></div></div>
   <div class="qactions"><button type="button" class="btn primary" id="lab-run">Kör ▶</button><span class="status" id="lab-st" style="font-weight:400;color:var(--muted)"></span></div>
-  ${NATIVE ? "" : `<p class="runner-note">Webbtolken stöder cout/cin, printf/scanf, funktioner, loopar, arrayer, pekare och C-strängar. Exemplen med flera filer, string och vector körs bara i desktop-appen eller i Compiler Explorer.</p>`}`;
+  ${NATIVE ? "" : `<p class="runner-note">Webbtolken stöder cout/cin, printf/scanf, funktioner, loopar, arrayer, pekare och C-strängar. Exemplen med flera filer, string och vector körs bara i appen eller i Compiler Explorer. Python (main.py) körs fullt ut med Pyodide.</p>`}`;
   const ta = $("#lab-ed"), gut = $(".gut", box);
   const syncGut = () => { gut.textContent = Array.from({ length: ta.value.split("\n").length }, (_, i) => i + 1).join("\n"); ta.style.height = "auto"; ta.style.height = Math.max(320, ta.scrollHeight + 4) + "px"; };
   syncGut();
@@ -157,10 +166,10 @@ function renderLab() {
   $("[data-new]", box).addEventListener("click", () => { const nf = $("#lab-newfile"); nf.hidden = !nf.hidden; if (!nf.hidden) $("#lab-fname").focus(); });
   const create = () => {
     const n = $("#lab-fname").value.trim();
-    if (!/^[\w-]+\.(cpp|cc|c|h|hpp)$/.test(n)) { $("[data-ferr]", box).textContent = "Namn som sensor.h eller utils.cpp"; return; }
+    if (!/^[\w-]+\.(cpp|cc|c|h|hpp|py)$/.test(n)) { $("[data-ferr]", box).textContent = "Namn som sensor.h, utils.cpp eller main.py"; return; }
     if (L.files.some(x => x.name === n)) { $("[data-ferr]", box).textContent = "Filen finns redan"; return; }
     const guard = n.replace(/\W/g, "_").toUpperCase();
-    L.files.push({ name: n, content: /\.(h|hpp)$/.test(n) ? `#ifndef ${guard}\n#define ${guard}\n\n\n\n#endif\n` : `#include <iostream>\n\n` });
+    L.files.push({ name: n, content: /\.(h|hpp)$/.test(n) ? `#ifndef ${guard}\n#define ${guard}\n\n\n\n#endif\n` : /\.py$/.test(n) ? "" : `#include <iostream>\n\n` });
     L.cur = L.files.length - 1; save(); renderLab();
   };
   $("[data-create]", box).addEventListener("click", create);
@@ -176,11 +185,16 @@ function renderLab() {
     const t0 = performance.now();
     let r;
     if (NATIVE) r = await runNative(L.files, L.stdin, L.flags.split(/\s+/).filter(Boolean));
-    else {
+    else if (/\.py$/.test(f.name) || (!L.files.some(x => /\.(cpp|cc|c)$/.test(x.name)) && L.files.some(x => /\.py$/.test(x.name)))) {
+      // Python: kör filen du står i om den är .py, annars main.py
+      const py = /\.py$/.test(L.files[L.cur].name) ? L.files[L.cur] : (L.files.find(x => x.name === "main.py") || L.files.find(x => /\.py$/.test(x.name)));
+      if (!pyWorker) out.innerHTML = '<span class="dim">Laddar Python (första gången ca 10 MB)…</span>';
+      r = await runPy(py.content, L.stdin);
+    } else {
       const srcs = L.files.filter(x => /\.(cpp|cc|c)$/.test(x.name));
       const main = L.files.find(x => /^main\.(cpp|cc|c)$/.test(x.name)) || srcs[0];
       if (!main) { out.innerHTML = '<span class="err">Ingen .cpp-fil att köra.</span>'; return; }
-      if (srcs.length > 1 || /#include\s*"/.test(main.content)) { out.innerHTML = '<span class="err">Flera filer och egna headers kräver desktop-appen (riktig g++). Öppna gärna i Compiler Explorer.</span>'; return; }
+      if (srcs.length > 1 || /#include\s*"/.test(main.content)) { out.innerHTML = '<span class="err">Flera filer och egna headers kräver appen (riktig g++). Öppna gärna i Compiler Explorer.</span>'; return; }
       r = await runInterp(main.content, L.stdin);
     }
     const ms = Math.round(performance.now() - t0);
@@ -194,26 +208,24 @@ function renderLab() {
 function viewApp() {
   const rel = APP.repo + "/releases/latest";
   return `<nav class="crumbs"><a href="#hem">Kurser</a><span>/</span><span>Appen</span></nav>
-  <header class="thead"><div class="eyebrow">Desktop och mobil</div><h1>${NATIVE ? "Du kör desktop-appen." : "Nollterm som app."}</h1>
-  <p class="lead">Samma kurser överallt. Desktop-appen för Windows har riktig g++ inbyggd. Webbversionen funkar på mobilen och kan installeras som en app.</p></header>
+  <header class="thead"><div class="eyebrow">Dator och mobil</div><h1>Nollterm som app.</h1>
+  <p class="lead">Samma kurser överallt. Datorappen är skriven i C++ och har riktig gcc, g++ och Python inbyggt. Webbversionen funkar på mobilen och kan installeras som en app.</p></header>
   <div class="courses" style="margin-top:22px">
-    <div class="ccard"><span class="code-badge">g++</span><div><div class="eyebrow">Windows</div><h3>Desktop-appen</h3></div>
-      <p>All kod kompileras med g++ (MinGW, w64devkit) som följer med installationen. Full C++, flera filer och headers i Kodlabbet, inga tidsgränser från en webbtjänst.</p>
-      ${NATIVE ? `<p id="cinfo" style="font-family:var(--f-mono);font-size:.8rem">Kollar kompilatorn…</p>` : `<div class="cta"><a class="btn primary" href="${rel}" target="_blank" rel="noopener">Ladda ner för Windows ↗</a></div>
-      <ol style="margin:0;padding-left:20px;font-size:.9rem;color:var(--muted)"><li>Ladda ner <code>Nollterm-Setup-….exe</code> under Assets.</li><li>Windows kan varna eftersom appen inte är signerad: klicka <b>Mer information → Kör ändå</b>.</li><li>Följ installationen. Appen uppdateras när du laddar ner en ny version.</li></ol>`}
+    <div class="ccard"><span class="code-badge">C++</span><div><div class="eyebrow">Windows</div><h3>Datorappen</h3></div>
+      <p>Lös kodfrågorna i C, C++ eller Python. Koden kompileras med gcc och g++ (w64devkit) och körs med Python 3.12, som följer med i zip-filen. Ingen installation behövs.</p>
+      <div class="cta"><a class="btn primary" href="${rel}" target="_blank" rel="noopener">Ladda ner för Windows ↗</a></div>
+      <ol style="margin:0;padding-left:20px;font-size:.9rem;color:var(--muted)"><li>Ladda ner <code>Nollterm-Windows.zip</code> under Assets.</li><li>Packa upp hela mappen, till exempel på skrivbordet.</li><li>Starta <code>Nollterm.exe</code>. Windows kan varna eftersom appen inte är signerad: klicka <b>Mer information → Kör ändå</b>.</li></ol>
+      <p style="font-size:.85rem;color:var(--muted);margin:0">Källkoden ligger i <a href="${APP.repo}/tree/main/app" target="_blank" rel="noopener">app/</a> på GitHub, med en läsguide i README.</p>
     </div>
     <div class="ccard"><span class="code-badge">web</span><div><div class="eyebrow">Mobil och webb</div><h3>Webbversionen</h3></div>
-      <p>Teori, frågor, prov och enklare kod i webbläsarens tolk. Fungerar offline efter första besöket.</p>
+      <p>Teori, frågor och prov. Kodfrågor i Python körs med riktig Python i webbläsaren, C och C++ i en enklare tolk. Fungerar offline efter första besöket.</p>
       <p style="font-family:var(--f-mono);font-size:.8rem;overflow-wrap:anywhere">${esc(APP.pages)}</p>
       <ol style="margin:0;padding-left:20px;font-size:.9rem;color:var(--muted)"><li><b>iPhone:</b> öppna länken i Safari → Dela → Lägg till på hemskärmen.</li><li><b>Android:</b> öppna i Chrome → menyn ⋮ → Installera app.</li></ol>
     </div>
   </div>
   <p class="sub" style="margin-top:22px;color:var(--muted);font-size:.88rem">Framsteg sparas per enhet. Källkoden finns på <a href="${APP.repo}" target="_blank" rel="noopener">GitHub ↗</a>.</p>`;
 }
-function bindApp() {
-  const el = $("#cinfo"); if (!el || !window.nollterm || !window.nollterm.info) return;
-  window.nollterm.info().then(i => { el.textContent = i && i.version ? `${i.version}\n${i.path}` : "Hittade ingen g++. Installera om appen."; el.style.whiteSpace = "pre-wrap"; }).catch(() => (el.textContent = "Kunde inte läsa kompilatorn."));
-}
+function bindApp() {}
 
 /* ================================================================ offline (PWA) */
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol) && !NATIVE && !/^localhost$|^127\./.test(location.hostname)) {

@@ -1,0 +1,223 @@
+{
+  "id": "enums",
+  "title": "enum och enum class",
+  "category": "Typer",
+  "minutes": 7,
+  "date": "Tis 4/11",
+  "lead": "Ersätt magiska tal med namngivna värden, och se varför enum class är det typsäkra valet.",
+  "sources": [
+    "Tisdag 4/11 – Arv (avsnitt 7)",
+    "Övningar – enums"
+  ],
+  "goals": [
+    "Ersätta magiska tal med enum",
+    "Förklara skillnaden mellan enum och enum class",
+    "Använda enum class i switch och konvertera till text"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Magiska tal"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int weather = 2;     // vad betyder 2?"
+    },
+    {
+      "type": "p",
+      "html": "Svårt att läsa och lätt att göra fel. Med en enum får varje värde ett namn."
+    },
+    {
+      "type": "h",
+      "text": "Klassisk enum"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "enum Weather { Sunny, Cloudy, Rainy };\n\nWeather today = Sunny;\nstd::cout << today;      // skriver 0: en vanlig enum är i grunden en int"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Alla namn hamnar i samma namnrymd. Två enums med <code>None</code> eller <code>Error</code> krockar.",
+        "Svag typkontroll: värdet omvandlas tyst till int och kan jämföras med vilka tal som helst."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "enum class (scoped enum)"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "enum class Weather { Sunny, Cloudy, Rainy };\n\nWeather w = Weather::Cloudy;      // namnet måste anges med Weather::\n\nif (w == Weather::Cloudy) { }     // OK\n// if (w == 1) { }               // FEL: enum class jämförs inte med int\n\nint raw = static_cast<int>(w);   // explicit omvandling när du verkligen behöver talet"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Inga namnkonflikter.",
+        "Typsäkert: du kan inte blanda med int eller med andra enums av misstag.",
+        "Kräver <code>static_cast&lt;int&gt;(w)</code> för att skriva ut talet."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "switch och text"
+    },
+    {
+      "type": "p",
+      "html": "enum class passar perfekt i <code>switch</code>. För utskrift skriver man oftast en hjälpfunktion som mappar till en sträng."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "enum class Direction { North, East, South, West };\n\nstd::string toString(Direction d) {\n    switch (d) {\n        case Direction::North: return \"norr\";\n        case Direction::East:  return \"öster\";\n        case Direction::South: return \"söder\";\n        case Direction::West:  return \"väster\";\n    }\n    return \"okänd\";\n}"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Med <code>-Wall</code> varnar g++ om en switch över en enum class saknar ett case. Utelämna därför gärna <code>default</code>, så får du hjälp när du lägger till ett nytt värde."
+    },
+    {
+      "type": "h",
+      "text": "enum i en klass"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "enum class MachineState { Idle, Running, Error };\n\nclass Machine {\n    MachineState state_ = MachineState::Idle;\npublic:\n    void start() { state_ = MachineState::Running; }\n    void fail()  { state_ = MachineState::Error; }\n    void printStatus() const {\n        switch (state_) {\n            case MachineState::Idle:    std::cout << \"Väntar\\n\";  break;\n            case MachineState::Running: std::cout << \"Kör\\n\";     break;\n            case MachineState::Error:   std::cout << \"Fel!\\n\";    break;\n        }\n    }\n};"
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Veckodagar",
+      "html": "<ol><li>Skapa en enum för veckodagarna och sätt <code>today</code> till Wednesday. Använd switch för olika meddelanden. Bonus: skriv ut talet (0–6).</li><li>Gör om den till enum class. Vad händer med <code>today == 2</code>? Vad vinner vi?</li></ol>"
+    },
+    {
+      "type": "exercise",
+      "title": "Menyval med enum class",
+      "html": "<p><code>enum class MenuOption { AddUser, RemoveUser, ListUsers, Exit };</code> Läs 1–4 från användaren, mappa till enum med en funktion och hantera valet med switch.</p>",
+      "solution": "MenuOption toOption(int n) {\n    switch (n) {\n        case 1: return MenuOption::AddUser;\n        case 2: return MenuOption::RemoveUser;\n        case 3: return MenuOption::ListUsers;\n        default: return MenuOption::Exit;\n    }\n}",
+      "lang": "cpp"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är ett magiskt tal?",
+      "options": [
+        "Ett primtal",
+        "Ett tal i koden vars betydelse inte framgår",
+        "En konstant med namn",
+        "Ett slumptal"
+      ],
+      "answer": 1,
+      "why": "<code>weather = 2</code> säger inget. <code>Weather::Rainy</code> gör det."
+    },
+    {
+      "type": "mc",
+      "q": "Vad skriver <code>enum Weather { Sunny, Cloudy, Rainy }; std::cout &lt;&lt; Cloudy;</code> ut?",
+      "options": [
+        "Cloudy",
+        "1",
+        "2",
+        "Kompileringsfel"
+      ],
+      "answer": 1,
+      "why": "Värdena numreras från 0, och en vanlig enum omvandlas tyst till int."
+    },
+    {
+      "type": "mc",
+      "q": "Varför kompilerar inte <code>if (w == 1)</code> när w är en <code>enum class</code>?",
+      "options": [
+        "enum class kan inte jämföras alls",
+        "enum class omvandlas inte automatiskt till int",
+        "1 är inte ett giltigt värde",
+        "Det kompilerar visst"
+      ],
+      "answer": 1,
+      "why": "Det är hela poängen: typsäkerhet. Jämför med Weather::Cloudy."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken är en fördel med enum class jämfört med enum?",
+      "options": [
+        "Snabbare",
+        "Inga namnkrockar mellan olika enums",
+        "Kan lagra strängar",
+        "Behöver inga namn"
+      ],
+      "answer": 1,
+      "why": "Namnen ligger i enumens eget scope: <code>Status::None</code> och <code>Error::None</code> kan samexistera."
+    },
+    {
+      "type": "mc",
+      "q": "Hur får du talet ur <code>Weather w</code> om det är en enum class?",
+      "options": [
+        "Det går inte att få fram talet",
+        "<code>static_cast&lt;int&gt;(w)</code>",
+        "<code>w.value()</code>",
+        "<code>toInt(w)</code>"
+      ],
+      "answer": 1,
+      "why": "En explicit omvandling visar att du gör det med flit."
+    },
+    {
+      "type": "mc",
+      "q": "<code>enum class Color { Red, Green };</code> Hur skriver du värdet Green?",
+      "options": [
+        "Green",
+        "Color.Green",
+        "Color::Green",
+        "<code>Color(1)</code> är enda sättet"
+      ],
+      "answer": 2,
+      "why": "Namnen i en enum class ligger i enumens eget scope."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka påståenden om enum class stämmer? Välj alla.",
+      "options": [
+        "Värdena omvandlas inte automatiskt till int",
+        "Två enum class kan ha värden med samma namn",
+        "Kan användas i switch",
+        "Kan bara ha tre värden"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Antalet värden är obegränsat."
+    },
+    {
+      "type": "text",
+      "q": "Skriv uttrycket som omvandlar <code>enum class</code>-värdet <code>w</code> till int.",
+      "accept": [
+        "static_cast<int>(w)",
+        "(int)w",
+        "int(w)"
+      ],
+      "placeholder": "...(w)",
+      "why": "<code>static_cast&lt;int&gt;(w)</code>"
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>std::string toString(Direction d)</code> för <code>enum class Direction { North, East, South, West }</code>. main läser ett tal 0–3 och skriver ut <code>norr</code>, <code>öster</code>, <code>söder</code> eller <code>väster</code>.",
+      "task": "05-enums-1",
+      "why": "En switch utan default låter <code>-Wall</code> varna om du lägger till ett värde utan att hantera det.",
+      "web": false
+    },
+    {
+      "type": "code",
+      "q": "Klassen <code>Machine</code> har en <code>MachineState</code> som startar på Idle. Kommandon på indata: <code>start</code> sätter Running, <code>fail</code> sätter Error. Skriv <code>printStatus()</code> som skriver <code>Idle</code>, <code>Running</code> eller <code>Error</code>.",
+      "task": "05-enums-2",
+      "why": "Tillståndet är en enum class i klassen, och switch översätter det till text.",
+      "web": false
+    }
+  ]
+}

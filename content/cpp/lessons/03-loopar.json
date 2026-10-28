@@ -1,0 +1,323 @@
+{
+  "id": "loopar",
+  "title": "Loopar och iteration",
+  "category": "Kontrollflöde",
+  "minutes": 9,
+  "date": "Tors 2/10",
+  "lead": "Upprepa kod med for, while och do-while, och känn igen de vanligaste loopbuggarna innan de händer.",
+  "sources": [
+    "Torsdag 2/10 – Loopar",
+    "Repetitionsövningar"
+  ],
+  "goals": [
+    "Välja rätt loop: for, while eller do-while",
+    "Gå igenom arrayer och vektorer med index och med range-based for",
+    "Summera, hitta min/max, räkna och söka i en lista",
+    "Känna igen off-by-one, oändliga loopar och division med noll"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vilket problem löser loopar?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Mindre upprepning:</strong> skriv logiken en gång och låt loopen köra den så många gånger som behövs.",
+        "<strong>Bearbeta samlad data:</strong> arrayer, listor och andra sekvenser.",
+        "<strong>Automatisera:</strong> validera input tills den är giltig, summera mätvärden, söka efter ett värde."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Snabbintro: arrayer"
+    },
+    {
+      "type": "p",
+      "html": "En array lagrar flera värden av samma typ bredvid varandra i minnet. Du når varje värde med ett <strong>index som börjar på 0</strong>. En array med 5 element har alltså index 0–4."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int temps[5] = {21, 22, 20, 19, 23};\nprintf(\"%d\\n\", temps[0]);   // 21, första värdet\nprintf(\"%d\\n\", temps[4]);   // 23, sista värdet",
+      "caption": "C"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <vector>\nstd::vector<int> temps = {21, 22, 20, 19, 23};\ntemps.push_back(25);              // vektorn växer\nstd::cout << temps.size();        // 6",
+      "caption": "C++: std::vector är flexiblare och säkrare"
+    },
+    {
+      "type": "h",
+      "text": "for-loopen"
+    },
+    {
+      "type": "p",
+      "html": "Används när du vet hur många varv det blir, eller när du ska gå igenom alla element i en array."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "for (int i = 0; i < 5; i++) {      // start; villkor; uppdatering\n    std::cout << \"Temp \" << i << \": \" << temps[i] << \"\\n\";\n}\n\n// Range-based for (bara C++): inget index behövs\nfor (int t : temps) {\n    std::cout << t << \" \";\n}"
+    },
+    {
+      "type": "widget",
+      "name": "offbyone"
+    },
+    {
+      "type": "h",
+      "text": "while-loopen"
+    },
+    {
+      "type": "p",
+      "html": "Upprepar så länge ett villkor är sant. Du vet inte nödvändigtvis i förväg hur många varv det blir, till exempel när du väntar på giltig input eller på att ett sensorvärde ska passera en tröskel."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int value = -1;\nwhile (value < 0 || value > 100) {\n    std::cout << \"Ange ett värde 0–100: \";\n    std::cin >> value;\n}"
+    },
+    {
+      "type": "h",
+      "text": "do-while-loopen"
+    },
+    {
+      "type": "p",
+      "html": "Som while, men villkoret kontrolleras <em>efter</em> varje varv. Kroppen körs därför alltid minst en gång. Typexemplet är en meny som ska visas innan användaren hunnit välja något."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "int choice;\ndo {\n    printMenu();\n    std::cin >> choice;\n} while (choice != 0);"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Loop",
+        "Använd när",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "for",
+          "antalet varv är känt eller kan räknas",
+          "gå igenom en array"
+        ],
+        [
+          "while",
+          "du upprepar tills något händer",
+          "läs input tills den är giltig"
+        ],
+        [
+          "do-while",
+          "kroppen ska köras minst en gång",
+          "menyprogram"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Iterationsmönster"
+    },
+    {
+      "type": "p",
+      "html": "Fyra mönster återkommer hela tiden: summera, hitta min/max, räkna och söka. Du kommer att använda alla i inlämningsuppgiften."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "std::vector<double> v = {21.5, 22.0, 19.8, 23.4, 20.1};\n\ndouble sum = 0;                     // nollställ före loopen\ndouble minV = v[0], maxV = v[0];    // starta med första värdet, inte 0\nint evenCount = 0;\nint foundAt = -1;\n\nfor (size_t i = 0; i < v.size(); i++) {\n    sum += v[i];\n    if (v[i] < minV) minV = v[i];\n    if (v[i] > maxV) maxV = v[i];\n    if (static_cast<int>(v[i]) % 2 == 0) evenCount++;\n    if (foundAt == -1 && v[i] == 23.4) foundAt = i;\n}\n\nif (!v.empty()) {\n    std::cout << \"Medel: \" << sum / v.size() << \"\\n\";\n}",
+      "caption": "summa, min/max, räkna, sök"
+    },
+    {
+      "type": "h",
+      "text": "Vanliga fel i loopar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Off-by-one:</strong> ett varv för mycket eller för lite, ofta <code>&lt;=</code> där det skulle vara <code>&lt;</code>.",
+        "<strong>Oändlig loop:</strong> loopvariabeln uppdateras aldrig, eller villkoret kan aldrig bli falskt.",
+        "<strong>Felaktig initiering:</strong> summan nollställs inte före loopen.",
+        "<strong>Loopvariabeln ändras inuti loopen</strong> på ett sätt du inte räknat med.",
+        "<strong>Division med noll:</strong> medelvärdet av en tom lista."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "1–10 med alla tre looparna",
+      "html": "<ul><li>Skriv ut talen 1–10 med for, while och do-while.</li><li>Skriv ut 10–1 baklänges med en while-loop.</li><li>Förutsäg vad som skrivs ut innan du kör koden.</li></ul>"
+    },
+    {
+      "type": "exercise",
+      "title": "Statistik på en array",
+      "html": "<ol><li>Skapa en array med minst 5 tal och beräkna summa och medelvärde.</li><li>Hitta det minsta och största talet.</li><li>Räkna hur många av talen som är jämna.</li></ol>"
+    },
+    {
+      "type": "exercise",
+      "title": "FizzBuzz",
+      "html": "<p>Skriv ut 1–100, men byt ut multipler av 3 mot \"Fizz\", multipler av 5 mot \"Buzz\" och multipler av båda mot \"FizzBuzz\".</p>",
+      "solution": "for (int i = 1; i <= 100; i++) {\n    if (i % 15 == 0)      std::cout << \"FizzBuzz\\n\";   // testa det mest specifika först\n    else if (i % 3 == 0)  std::cout << \"Fizz\\n\";\n    else if (i % 5 == 0)  std::cout << \"Buzz\\n\";\n    else                  std::cout << i << \"\\n\";\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Primtalskontroll",
+      "html": "<p>Läs in ett tal med <code>std::cin</code> och avgör med en loop om det är ett primtal. Det räcker att testa delare upp till √n.</p>",
+      "solution": "bool isPrime(int n) {\n    if (n < 2) return false;\n    for (int d = 2; d * d <= n; d++) {\n        if (n % d == 0) return false;\n    }\n    return true;\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Debugga buggyLoops.cpp",
+      "html": "<p>Klona kursens repo och hitta buggarna (oändlig loop, off-by-one) i <code>buggyLoops.cpp</code>: <a href=\"https://github.com/CalleFreme/c-cpp-cj\" target=\"_blank\" rel=\"noopener\">github.com/CalleFreme/c-cpp-cj</a>.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken loop körs alltid minst en gång?",
+      "options": [
+        "for",
+        "while",
+        "do-while",
+        "range-based for"
+      ],
+      "answer": 2,
+      "why": "do-while kontrollerar villkoret efter varje varv, så kroppen hinner köras en gång innan villkoret testas."
+    },
+    {
+      "type": "mc",
+      "q": "<code>int a[5];</code> loopas med <code>for (int i = 0; i &lt;= 5; i++)</code>. Vad är problemet?",
+      "options": [
+        "Inget, loopen går igenom alla fem",
+        "Loopen hoppar över a[0]",
+        "Loopen läser a[5], som ligger utanför arrayen",
+        "Loopen blir oändlig"
+      ],
+      "answer": 2,
+      "why": "Giltiga index är 0–4. Med <code>&lt;=</code> körs ett sjätte varv med i = 5: ett klassiskt off-by-one-fel som läser minne utanför arrayen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är den vanligaste orsaken till en oändlig loop?",
+      "options": [
+        "För många varv i en for-loop",
+        "Loopvariabeln uppdateras aldrig",
+        "Att använda break",
+        "Att loopa över en tom vektor"
+      ],
+      "answer": 1,
+      "why": "Om inget i loopen ändrar det som villkoret testar förblir villkoret sant för evigt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad stämmer om <code>for (int t : temps)</code>?",
+      "options": [
+        "Det fungerar i både C och C++",
+        "Det går igenom varje element utan att du behöver ett index",
+        "Det ändrar elementen i temps",
+        "Det kräver att temps är en std::map"
+      ],
+      "answer": 1,
+      "why": "Range-based for finns bara i C++. <code>t</code> är en kopia av varje element. Vill du ändra elementen skriver du <code>int&amp; t</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Varför kontrollerar man att listan inte är tom innan man beräknar medelvärdet?",
+      "options": [
+        "För att loopen annars blir oändlig",
+        "För att undvika division med noll",
+        "För att summan annars blir negativ",
+        "Det behövs inte"
+      ],
+      "answer": 1,
+      "why": "Medelvärdet är summa / antal. Med 0 element delar du med 0: ett körningsfel för heltal och <code>nan</code> för decimaltal."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många gånger körs kroppen i <code>for (int i = 10; i &gt; 0; i -= 3)</code>?",
+      "options": [
+        "3",
+        "4",
+        "10",
+        "Oändligt många"
+      ],
+      "answer": 1,
+      "why": "i = 10, 7, 4, 1. Sedan blir i = -2 och villkoret är falskt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad skrivs ut?<br><code>int i = 5; while (i &lt; 5) { cout &lt;&lt; i; i++; }</code>",
+      "options": [
+        "5",
+        "Ingenting",
+        "01234",
+        "Oändlig loop"
+      ],
+      "answer": 1,
+      "why": "Villkoret är falskt redan från början, så while-kroppen körs aldrig. Med do-while hade 5 skrivits ut."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är vanliga orsaker till buggar i loopar? Välj alla.",
+      "options": [
+        "Off-by-one i villkoret",
+        "Summan nollställs inte före loopen",
+        "Att använda range-based for",
+        "Loopvariabeln uppdateras aldrig"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "Range-based for är tvärtom ett sätt att undvika indexfel."
+    },
+    {
+      "type": "text",
+      "q": "Vilket nyckelord avbryter en loop direkt?",
+      "accept": [
+        "break",
+        "break;"
+      ],
+      "placeholder": "nyckelord",
+      "why": "<code>break</code> lämnar loopen. <code>continue</code> hoppar bara till nästa varv."
+    },
+    {
+      "type": "text",
+      "q": "En array har 8 element. Vilket är det sista giltiga indexet?",
+      "accept": [
+        "7"
+      ],
+      "placeholder": "index",
+      "why": "Index börjar på 0, så 8 element har index 0–7."
+    },
+    {
+      "type": "code",
+      "q": "Läs in ett heltal <code>n</code> och skriv ut summan 1 + 2 + … + n.",
+      "task": "03-loopar-1",
+      "why": "Här ska loopen ta med n, därför <code>&lt;=</code>.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "FizzBuzz: läs in <code>n</code> och skriv ut 1 till n, ett tal per rad. Byt multipler av 3 mot <code>Fizz</code>, av 5 mot <code>Buzz</code> och av båda mot <code>FizzBuzz</code>.",
+      "task": "03-loopar-2",
+      "why": "Testa det mest specifika fallet (delbart med 15) först.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in <code>n</code> och sedan n heltal. Skriv ut det minsta och det största talet, separerade med ett mellanslag.",
+      "task": "03-loopar-3",
+      "why": "Startar du min med 0 blir svaret fel när alla tal är positiva, och max blir fel när alla är negativa.",
+      "web": true
+    }
+  ]
+}

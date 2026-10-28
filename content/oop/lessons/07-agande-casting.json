@@ -1,0 +1,228 @@
+{
+  "id": "agande-casting",
+  "title": "Slicing, ägande och dynamic_cast",
+  "category": "Polymorfism",
+  "minutes": 9,
+  "date": "Tors 6/11",
+  "lead": "Lagra polymorfa objekt rätt med unique_ptr, undvik object slicing, skapa objekt i fabriker och använd RTTI sparsamt.",
+  "sources": [
+    "Torsdag 6/11 – Polymorfism, casting (avsnitt 4–6)"
+  ],
+  "goals": [
+    "Förklara object slicing och undvika det",
+    "Lagra polymorfa objekt i <code>std::vector&lt;std::unique_ptr&lt;Base&gt;&gt;</code>",
+    "Skriva en enkel fabriksfunktion",
+    "Använda <code>dynamic_cast</code> och <code>typeid</code>, och veta när de bör undvikas"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Object slicing"
+    },
+    {
+      "type": "p",
+      "html": "Virtuell dispatch fungerar bara via pekare eller referenser till basen. Kopierar du ett subklassobjekt till en variabel av bastyp skärs den subklass-specifika delen bort. Det kallas <strong>object slicing</strong>."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "struct Base {\n    virtual ~Base() = default;\n    virtual void f() const { std::cout << \"Base\\n\"; }\n};\nstruct Der : Base {\n    void f() const override { std::cout << \"Der\\n\"; }\n};\n\nint main() {\n    Der d;\n    Base b = d;      // slicing: b är en ren Base\n    b.f();           // \"Base\"\n\n    Base& r = d;     // referens: ingen kopia\n    r.f();           // \"Der\"\n}"
+    },
+    {
+      "type": "p",
+      "html": "Därför fungerar inte <code>std::vector&lt;Base&gt;</code> för polymorfa objekt: varje element är en kopia av bastyp. Lagra pekare istället."
+    },
+    {
+      "type": "h",
+      "text": "Ägande med unique_ptr"
+    },
+    {
+      "type": "p",
+      "html": "I modern C++ undviker vi råa <code>new</code>/<code>delete</code>. <code>std::unique_ptr</code> ger exklusivt ägande: objektet förstörs automatiskt när pekaren försvinner. Behöver flera dela på ett objekt finns <code>std::shared_ptr</code>, men det ska motiveras."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <memory>\n\nstd::vector<std::unique_ptr<Device>> devices;\ndevices.push_back(std::make_unique<TempSensor>());\ndevices.push_back(std::make_unique<LedActuator>());\n// inget delete behövs: vektorn äger objekten\n\nauto p = std::make_unique<TempSensor>();\n// auto q = p;              // FEL: unique_ptr kan inte kopieras\nauto q = std::move(p);      // ägandet flyttas, p blir nullptr"
+    },
+    {
+      "type": "h",
+      "text": "Fabriker"
+    },
+    {
+      "type": "p",
+      "html": "En fabriksfunktion samlar objektskapandet på ett ställe. Resten av koden behöver inte känna till de konkreta typerna."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "struct Effect { virtual ~Effect() = default; virtual void apply() = 0; };\nstruct Slow : Effect { void apply() override { std::cout << \"Slow\\n\"; } };\nstruct Burn : Effect { void apply() override { std::cout << \"Burn\\n\"; } };\n\nstd::unique_ptr<Effect> makeEffect(int code) {\n    switch (code) {\n        case 1: return std::make_unique<Slow>();\n        case 2: return std::make_unique<Burn>();\n        default: return nullptr;\n    }\n}\n\nint main() {\n    std::vector<std::unique_ptr<Effect>> effects;\n    effects.push_back(makeEffect(1));\n    effects.push_back(makeEffect(2));\n    for (auto& e : effects) if (e) e->apply();\n}"
+    },
+    {
+      "type": "h",
+      "text": "RTTI, dynamic_cast och typeid"
+    },
+    {
+      "type": "p",
+      "html": "RTTI (Run-Time Type Information) låter programmet fråga om typen under körning. Det fungerar bara på polymorfa typer, kostar lite vid körning och kan stängas av i kompilatorn (vanligt i inbyggda system)."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<code>dynamic_cast&lt;Derived*&gt;(basePtr)</code> returnerar en pekare, eller <code>nullptr</code> om objektet inte är av den typen.",
+        "<code>dynamic_cast&lt;Derived&amp;&gt;(baseRef)</code> kastar <code>std::bad_cast</code> vid fel.",
+        "<code>typeid(obj)</code> ger ett <code>std::type_info</code>, mest användbart för loggning och diagnos."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "void maybeSpecialHandle(Device& d) {\n    if (auto* led = dynamic_cast<LedActuator*>(&d)) {\n        std::cout << \"Särbehandlar LED\\n\";\n        led->tick();\n    } else {\n        d.tick();\n    }\n}"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Behöver du ofta dynamic_cast är det ett tecken på att gränssnittet saknar en virtuell funktion. RTTI är rimligt i legacy-kod du inte får ändra, i testkod och verktyg, eller i dokumenterade specialfall."
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Fabrik med strängar",
+      "html": "<p>Ändra <code>makeEffect</code> så att den tar <code>\"slow\"</code> eller <code>\"burn\"</code>. Fundera på hur en <code>std::map&lt;std::string, std::function&lt;std::unique_ptr&lt;Effect&gt;()&gt;&gt;</code> med lambdas kan ersätta switchen.</p>",
+      "solution": "std::unique_ptr<Effect> makeEffect(const std::string& name) {\n    static const std::map<std::string, std::function<std::unique_ptr<Effect>()>> table = {\n        {\"slow\", [] { return std::make_unique<Slow>(); }},\n        {\"burn\", [] { return std::make_unique<Burn>(); }},\n    };\n    auto it = table.find(name);\n    return it != table.end() ? it->second() : nullptr;\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Räkna LED-aktuatorer",
+      "html": "<p>Skriv <code>int countLedActuators(const std::vector&lt;std::unique_ptr&lt;Device&gt;&gt;&amp; ds)</code> med dynamic_cast. Diskutera ett alternativ utan RTTI, till exempel en virtuell <code>kind()</code> som returnerar en enum class.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "<code>Der d; Base b = d; b.f();</code> där f är virtuell. Vilken f körs?",
+      "options": [
+        "Der::f",
+        "Base::f",
+        "Båda",
+        "Kompileringsfel"
+      ],
+      "answer": 1,
+      "why": "b är en kopia av bastyp. Der-delen skars bort (slicing)."
+    },
+    {
+      "type": "mc",
+      "q": "Varför passar inte <code>std::vector&lt;Base&gt;</code> för polymorfa objekt?",
+      "options": [
+        "vector kan inte lagra klasser",
+        "Varje element kopieras till en Base och tappar sin subklassdel",
+        "Det är för långsamt",
+        "Base måste vara abstrakt"
+      ],
+      "answer": 1,
+      "why": "Använd <code>std::vector&lt;std::unique_ptr&lt;Base&gt;&gt;</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad returnerar <code>dynamic_cast&lt;Led*&gt;(p)</code> om p inte pekar på en Led?",
+      "options": [
+        "Ett undantag",
+        "<code>nullptr</code>",
+        "Samma pekare",
+        "En kopia"
+      ],
+      "answer": 1,
+      "why": "Pekarvarianten ger nullptr. Referensvarianten kastar <code>std::bad_cast</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer med objektet när en <code>unique_ptr</code> går ur scope?",
+      "options": [
+        "Inget, du måste köra delete",
+        "Objektet förstörs automatiskt",
+        "Det flyttas till stacken",
+        "Det kopieras"
+      ],
+      "answer": 1,
+      "why": "unique_ptr äger objektet och frigör det i sin destruktor."
+    },
+    {
+      "type": "mc",
+      "q": "När är dynamic_cast mest motiverat?",
+      "options": [
+        "I varje polymorft anrop",
+        "När gränssnittet inte går att ändra, eller i test- och diagnoskod",
+        "Istället för virtuella funktioner",
+        "För att omvandla int till double"
+      ],
+      "answer": 1,
+      "why": "Ofta är en extra virtuell funktion i basen en bättre lösning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>auto q = std::move(p);</code> om p är en unique_ptr?",
+      "options": [
+        "Kopierar objektet",
+        "Flyttar ägandet till q, och p blir nullptr",
+        "Raderar objektet",
+        "Ger kompileringsfel"
+      ],
+      "answer": 1,
+      "why": "unique_ptr kan inte kopieras, bara flyttas."
+    },
+    {
+      "type": "multi",
+      "q": "När är RTTI (dynamic_cast, typeid) rimligt enligt materialet? Välj alla.",
+      "options": [
+        "Migrering av legacy-kod där basen inte kan ändras",
+        "Testkod och instrumentation",
+        "I varje polymorft anrop",
+        "Istället för att lägga till en virtuell funktion som saknas"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "why": "Saknas en virtuell funktion är det oftast bättre att lägga till den."
+    },
+    {
+      "type": "text",
+      "q": "Vad kastar <code>dynamic_cast&lt;Led&amp;&gt;(ref)</code> om objektet inte är en Led? Skriv typens namn.",
+      "accept": [
+        "std::bad_cast",
+        "bad_cast"
+      ],
+      "placeholder": "std::...",
+      "why": "<code>std::bad_cast</code>. Pekarvarianten returnerar nullptr istället."
+    },
+    {
+      "type": "text",
+      "q": "Vad kallas det när ett subklassobjekt kopieras till en basvariabel och tappar sin subklassdel? Två ord eller ett på engelska.",
+      "accept": [
+        "object slicing",
+        "slicing",
+        "objektslicing"
+      ],
+      "placeholder": "begrepp",
+      "why": "Object slicing."
+    },
+    {
+      "type": "code",
+      "q": "Fabrik: skriv <code>unique_ptr&lt;Effect&gt; makeEffect(const string&amp; name)</code> som returnerar <code>Slow</code> för \"slow\", <code>Burn</code> för \"burn\" och annars nullptr. main skriver <code>okänd</code> för nullptr.",
+      "task": "07-agande-casting-1",
+      "why": "main känner bara till Effect. Nya effekter läggs till i fabriken.",
+      "web": false
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>int countLeds(const vector&lt;unique_ptr&lt;Device&gt;&gt;&amp; ds)</code> som räknar LedActuator-objekt med <code>dynamic_cast</code>. Indata är en lista med <code>led</code> och <code>temp</code>.",
+      "task": "07-agande-casting-2",
+      "why": "<code>d.get()</code> ger den råa pekaren. dynamic_cast returnerar nullptr för allt som inte är en LedActuator.",
+      "web": false
+    }
+  ]
+}

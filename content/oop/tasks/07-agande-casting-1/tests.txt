@@ -1,0 +1,10 @@
+--- in
+slow burn
+--- out
+Slow
+Burn
+--- in
+freeze slow
+--- out
+okänd
+Slow

@@ -1,0 +1,289 @@
+{
+  "id": "filhantering",
+  "title": "Filhantering",
+  "category": "Data",
+  "minutes": 9,
+  "date": "Tis 21/10",
+  "lead": "Spara sensordata till fil och läs in den igen, rad för rad, till structs i en vector.",
+  "sources": [
+    "Filhantering i C och C++",
+    "Tisdag 21/10 – Felhantering, debugging, nästa steg (avsnitt 3)"
+  ],
+  "goals": [
+    "Öppna, läsa, skriva och stänga filer i C och i C++",
+    "Kontrollera att filen faktiskt gick att öppna",
+    "Läsa en CSV-fil till en vector av structs"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Tre steg"
+    },
+    {
+      "type": "p",
+      "html": "Filhantering (file I/O) följer samma mönster i båda språken: <strong>öppna</strong> filen, <strong>läs eller skriv</strong>, <strong>stäng</strong>. I IoT-program är det så sensordata loggas och analyseras i efterhand."
+    },
+    {
+      "type": "h",
+      "text": "Filer i C"
+    },
+    {
+      "type": "p",
+      "html": "Funktionerna finns i <code>&lt;stdio.h&gt;</code>. <code>fopen</code> returnerar en <code>FILE*</code>, eller <code>NULL</code> om filen inte gick att öppna."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Läge",
+        "Betyder"
+      ],
+      "rows": [
+        [
+          "<code>\"r\"</code>",
+          "läs, filen måste finnas"
+        ],
+        [
+          "<code>\"w\"</code>",
+          "skriv, skapar filen eller tömmer den om den finns"
+        ],
+        [
+          "<code>\"a\"</code>",
+          "lägg till sist (append), skapar filen om den saknas"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include <stdio.h>\n\nint main(void) {\n    FILE* file = fopen(\"data.txt\", \"w\");\n    if (file == NULL) {\n        perror(\"Kunde inte öppna filen\");\n        return 1;\n    }\n    fprintf(file, \"Temperature: %.2f\\n\", 23.5);\n    fclose(file);\n\n    file = fopen(\"data.txt\", \"r\");\n    if (file == NULL) return 1;\n    char line[128];\n    while (fgets(line, sizeof(line), file) != NULL) {\n        printf(\"%s\", line);\n    }\n    fclose(file);\n    return 0;\n}",
+      "caption": "skriv och läs i C"
+    },
+    {
+      "type": "h",
+      "text": "Filer i C++"
+    },
+    {
+      "type": "p",
+      "html": "I C++ använder du <code>&lt;fstream&gt;</code>: <code>std::ofstream</code> för att skriva och <code>std::ifstream</code> för att läsa. Strömmarna fungerar som <code>cout</code> och <code>cin</code>, och filen stängs automatiskt när objektet går ur scope."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <fstream>\n#include <iostream>\n#include <string>\n\nint main() {\n    std::ofstream out(\"data.txt\");                 // std::ios::app för att lägga till\n    if (!out) {\n        std::cerr << \"Kunde inte öppna filen!\\n\";\n        return 1;\n    }\n    out << \"Temperature: \" << 23.5 << \"\\n\";\n    out.close();\n\n    std::ifstream in(\"data.txt\");\n    if (!in.is_open()) return 1;\n    std::string line;\n    while (std::getline(in, line)) {\n        std::cout << line << \"\\n\";\n    }\n}",
+      "caption": "skriv och läs i C++"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "std::ofstream log(\"sensor_log.txt\", std::ios::app);   // skriv inte över, lägg till\nlog << \"2025-10-07 10:01,22.8\\n\";",
+      "caption": "append"
+    },
+    {
+      "type": "h",
+      "text": "Från textfil till datastruktur"
+    },
+    {
+      "type": "p",
+      "html": "Mätdata sparas ofta som CSV, en mätning per rad:"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "2025-10-07,22.5\n2025-10-07,22.7\n2025-10-07,22.8",
+      "caption": "sensor_data.csv"
+    },
+    {
+      "type": "p",
+      "html": "Varje rad blir en <code>Measurement</code> i en vector. <code>std::stringstream</code> låter dig läsa från en sträng som om den vore en fil."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <fstream>\n#include <sstream>\n#include <vector>\n#include <string>\n\nstruct Measurement {\n    std::string timestamp;\n    float value;\n};\n\n// const std::string&           → läser bara filnamnet\n// std::vector<Measurement>&    → listan som ska fyllas på\nbool loadData(const std::string& filename, std::vector<Measurement>& data) {\n    std::ifstream file(filename);\n    if (!file.is_open()) {\n        std::cerr << \"Fel: kunde inte öppna \" << filename << \"\\n\";\n        return false;\n    }\n    std::string line;\n    while (std::getline(file, line)) {\n        std::stringstream ss(line);\n        Measurement m;\n        std::getline(ss, m.timestamp, ',');   // läs fram till kommatecknet\n        if (ss >> m.value) {                   // hoppa över trasiga rader\n            data.push_back(m);\n        }\n    }\n    return true;\n}\n\nvoid printData(const std::vector<Measurement>& data) {\n    for (const auto& m : data)\n        std::cout << m.timestamp << \" -> \" << m.value << \" °C\\n\";\n}\n\nint main() {\n    std::vector<Measurement> data;\n    if (!loadData(\"sensor_data.csv\", data)) return 1;\n    printData(data);\n}",
+      "caption": "CSV → vector<Measurement>"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Kod",
+        "Typ",
+        "Syfte"
+      ],
+      "rows": [
+        [
+          "<code>const string&amp; filename</code>",
+          "konstant referens",
+          "ingen kopia, kan inte ändras"
+        ],
+        [
+          "<code>vector&lt;Measurement&gt;&amp; data</code>",
+          "referens",
+          "funktionen fyller på listan"
+        ],
+        [
+          "<code>const vector&lt;Measurement&gt;&amp; data</code>",
+          "konstant referens",
+          "skickas till utskrift, ska inte ändras"
+        ],
+        [
+          "<code>const auto&amp; m</code>",
+          "konstant referens i loop",
+          "ingen kopia av varje Measurement"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Sensorloggning",
+      "html": "<ol><li>Fråga användaren efter 5 temperaturer.</li><li>Spara dem i <code>temperatures.txt</code>, ett värde per rad.</li><li>Läs tillbaka filen och skriv ut medelvärdet.</li></ol><p>Extra: spara en tidsstämpel med varje värde, och använd <code>std::vector</code>.</p>",
+      "solution": "#include <fstream>\n#include <iostream>\n\nint main() {\n    {\n        std::ofstream out(\"temperatures.txt\");\n        if (!out) { std::cerr << \"Kan inte skriva\\n\"; return 1; }\n        for (int i = 0; i < 5; i++) {\n            float t;\n            std::cout << \"Temperatur \" << i + 1 << \": \";\n            std::cin >> t;\n            out << t << \"\\n\";\n        }\n    }   // out stängs här\n\n    std::ifstream in(\"temperatures.txt\");\n    if (!in) { std::cerr << \"Kan inte läsa\\n\"; return 1; }\n    float t, sum = 0;\n    int n = 0;\n    while (in >> t) { sum += t; n++; }\n    if (n > 0) std::cout << \"Medel: \" << sum / n << \"\\n\";\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Räkna rader och medelvärde",
+      "html": "<p>Skapa <code>tempdata.csv</code> med några rader. Ändra <code>loadData()</code> så att den räknar hur många rader som lästs, och skriv <code>float calcAverage(const vector&lt;Measurement&gt;&amp; data)</code>.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilket läge i <code>fopen</code> lägger till text sist utan att radera det som finns?",
+      "options": [
+        "<code>\"r\"</code>",
+        "<code>\"w\"</code>",
+        "<code>\"a\"</code>",
+        "<code>\"x\"</code>"
+      ],
+      "answer": 2,
+      "why": "<code>\"a\"</code> står för append. <code>\"w\"</code> tömmer filen först."
+    },
+    {
+      "type": "mc",
+      "q": "Vad returnerar <code>fopen</code> om filen inte kan öppnas?",
+      "options": [
+        "-1",
+        "0.0",
+        "<code>NULL</code>",
+        "Ett tomt FILE-objekt"
+      ],
+      "answer": 2,
+      "why": "Kontrollera alltid <code>if (file == NULL)</code> innan du läser. <code>perror</code> skriver ut orsaken."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken klass använder du för att läsa från en fil i C++?",
+      "options": [
+        "<code>std::ofstream</code>",
+        "<code>std::ifstream</code>",
+        "<code>std::cin</code>",
+        "<code>FILE*</code>"
+      ],
+      "answer": 1,
+      "why": "<code>i</code> = input (läsa), <code>o</code> = output (skriva)."
+    },
+    {
+      "type": "mc",
+      "q": "I <code>std::getline(ss, m.timestamp, ',')</code> – vad gör <code>','</code>?",
+      "options": [
+        "Lägger till ett kommatecken",
+        "Läser fram till kommatecknet, som fungerar som avgränsare",
+        "Hoppar över första kommatecknet",
+        "Byter kommatecken mot punkt"
+      ],
+      "answer": 1,
+      "why": "Det tredje argumentet är avgränsaren. Utan det läser <code>getline</code> fram till radslut."
+    },
+    {
+      "type": "mc",
+      "q": "Varför tar <code>loadData</code> parametern <code>std::vector&lt;Measurement&gt;&amp; data</code> utan <code>const</code>?",
+      "options": [
+        "Det är ett misstag",
+        "Funktionen ska fylla på listan, så den måste få ändra den",
+        "const fungerar inte med vector",
+        "För att undvika en kopia av filnamnet"
+      ],
+      "answer": 1,
+      "why": "Referensen låter funktionen ändra anroparens vektor. <code>const</code> skulle förbjuda <code>push_back</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer med innehållet i en befintlig fil som öppnas med <code>std::ofstream out(\"data.txt\");</code>?",
+      "options": [
+        "Det behålls och nytt läggs till sist",
+        "Filen töms",
+        "Det går inte att öppna filen",
+        "Innehållet läses in"
+      ],
+      "answer": 1,
+      "why": "Standardläget skriver över. Använd <code>std::ios::app</code> för att lägga till."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken loop läser en fil rad för rad i C++?",
+      "options": [
+        "<code>while (std::getline(in, line))</code>",
+        "<code>for (line : in)</code>",
+        "<code>while (!in.eof()) in &gt;&gt; line;</code>",
+        "<code>do { getline(line); } while (in);</code>"
+      ],
+      "answer": 0,
+      "why": "getline returnerar strömmen, som blir falsk när inget mer kan läsas. Att testa <code>eof()</code> först ger ofta ett extra varv."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka sätt kontrollerar att <code>std::ifstream in(\"x.txt\")</code> lyckades? Välj alla.",
+      "options": [
+        "<code>if (!in)</code>",
+        "<code>if (!in.is_open())</code>",
+        "<code>if (in == NULL)</code>",
+        "<code>if (in.fail())</code>"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "En ifstream är ett objekt, inte en pekare, så den jämförs inte med NULL."
+    },
+    {
+      "type": "text",
+      "q": "Vilken C-funktion stänger en fil som öppnats med <code>fopen</code>?",
+      "accept": [
+        "fclose",
+        "fclose()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>fclose(file);</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vilken flagga skickar du till ofstream för att lägga till i slutet av filen?",
+      "accept": [
+        "std::ios::app",
+        "ios::app",
+        "app",
+        "ios_base::app",
+        "std::ios_base::app"
+      ],
+      "placeholder": "std::ios::...",
+      "why": "<code>std::ofstream log(\"log.txt\", std::ios::app);</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vilken klass i <code>&lt;sstream&gt;</code> låter dig läsa från en sträng som om den vore en fil?",
+      "accept": [
+        "stringstream",
+        "std::stringstream",
+        "istringstream",
+        "std::istringstream"
+      ],
+      "placeholder": "klass",
+      "why": "<code>std::stringstream ss(line);</code>"
+    }
+  ]
+}

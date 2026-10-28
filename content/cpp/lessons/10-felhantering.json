@@ -1,0 +1,400 @@
+{
+  "id": "felhantering",
+  "title": "Felhantering och debugging",
+  "category": "Robusthet",
+  "minutes": 12,
+  "date": "Tis 21/10",
+  "lead": "Fånga fel innan de blir krascher, hitta buggar med debuggern och se hur samma idéer fungerar på en mikrokontroller.",
+  "sources": [
+    "Tisdag 21/10 – Felhantering, debugging, nästa steg",
+    "Övningar: felhantering, debugging, filhantering"
+  ],
+  "goals": [
+    "Skilja på syntaxfel, körningsfel och logiska fel",
+    "Hantera fel med returvärden i C och exceptions i C++",
+    "Felsöka med utskrifter, breakpoints och assert",
+    "Förklara hur felhantering skiljer sig i inbyggda system"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Tre sorters fel"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Typ",
+        "Exempel",
+        "Upptäcks av"
+      ],
+      "rows": [
+        [
+          "Syntaxfel",
+          "saknat semikolon",
+          "kompilatorn"
+        ],
+        [
+          "Körningsfel (runtime)",
+          "division med noll, null-pekare",
+          "programmet, under körning"
+        ],
+        [
+          "Logiskt fel",
+          "fel formel, fel loopvillkor",
+          "dig, när du testar"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Felhantering i C"
+    },
+    {
+      "type": "p",
+      "html": "C har inga exceptions. Fel signaleras med <strong>returvärden</strong> (ofta <code>NULL</code>, <code>-1</code> eller 0) och ibland med den globala variabeln <code>errno</code>. Du måste själv kontrollera varje anrop som kan misslyckas."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "FILE* file = fopen(\"data.txt\", \"r\");\nif (file == NULL) {\n    perror(\"Kunde inte öppna filen\");   // skriver ut orsaken från errno\n    return 1;\n}"
+    },
+    {
+      "type": "h",
+      "text": "Exceptions i C++"
+    },
+    {
+      "type": "p",
+      "html": "I C++ kan en funktion <strong>kasta</strong> (throw) ett undantag när något går fel. Den som anropar <strong>fångar</strong> det med <code>try</code>/<code>catch</code>. Om ingen fångar det avslutas programmet."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <stdexcept>\n#include <fstream>\n\nvoid readFile(const std::string& filename) {\n    std::ifstream file(filename);\n    if (!file.is_open()) {\n        throw std::runtime_error(\"Kunde inte öppna filen: \" + filename);\n    }\n    std::cout << \"Filen öppnades.\\n\";\n}\n\nfloat divide(float a, float b) {\n    if (b == 0) throw std::invalid_argument(\"Division med noll\");\n    return a / b;\n}\n\nint main() {\n    try {\n        readFile(\"data.txt\");\n        std::cout << divide(10, 0) << \"\\n\";\n    } catch (const std::exception& e) {\n        std::cerr << \"Fel: \" << e.what() << \"\\n\";\n    }\n}"
+    },
+    {
+      "type": "h",
+      "text": "Robust inmatning"
+    },
+    {
+      "type": "p",
+      "html": "Om användaren skriver \"hej\" när programmet väntar på ett tal hamnar <code>std::cin</code> i ett felläge, och alla följande inläsningar misslyckas. Återställ felflaggan och släng den felaktiga raden:"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <limits>\n\nint readNumber() {\n    int n;\n    while (true) {\n        std::cout << \"Ange ett tal: \";\n        if (std::cin >> n) return n;\n        std::cout << \"Fel: ogiltig inmatning! Försök igen.\\n\";\n        std::cin.clear();                                                    // återställ felflaggan\n        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\\n');  // släng resten av raden\n    }\n}",
+      "caption": "readNumber() som aldrig kraschar"
+    },
+    {
+      "type": "h",
+      "text": "Statuskoder: felhantering för inbyggda system"
+    },
+    {
+      "type": "p",
+      "html": "På mikrokontroller är exceptions ofta avstängda, eftersom de kostar kodstorlek och har svårförutsägbar körtid. Istället returnerar funktioner en statuskod, och resultatet skickas ut via en referens."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "enum StatusCode { OK, SENSOR_ERROR, FILE_ERROR };\n\nStatusCode readSensor(float& val) {\n    int raw = std::rand() % 10;\n    if (raw == 0) return SENSOR_ERROR;      // simulerat fel\n    val = 20.0f + raw;\n    return OK;\n}\n\nint main() {\n    float v;\n    for (int attempt = 1; attempt <= 3; attempt++) {      // enkel retry\n        if (readSensor(v) == OK) {\n            std::cout << \"Värde: \" << v << \"\\n\";\n            return 0;\n        }\n        std::cout << \"Sensorfel, försök \" << attempt << \"\\n\";\n    }\n    return 1;\n}"
+    },
+    {
+      "type": "h",
+      "text": "Debugging"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Metod",
+        "Beskrivning"
+      ],
+      "rows": [
+        [
+          "Print-debugging",
+          "skriv ut mellanresultat med <code>cout</code>, snabbt men ta bort efteråt"
+        ],
+        [
+          "Debugger (Visual Studio, gdb)",
+          "stoppa, inspektera variabler, stega rad för rad"
+        ],
+        [
+          "Assertions",
+          "kontrollera antaganden med <code>assert()</code>"
+        ],
+        [
+          "Enhetstester",
+          "testa små funktioner var för sig"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Debugger i Visual Studio"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Klicka i vänstermarginalen för att sätta en <strong>breakpoint</strong>.",
+        "<kbd>F5</kbd> startar med debugging.",
+        "<kbd>F10</kbd> kör nästa rad (step over), <kbd>F11</kbd> går in i funktionen (step into).",
+        "Fönstret <strong>Locals</strong> visar variablernas värden just nu.",
+        "<kbd>F5</kbd> fortsätter, <kbd>Shift</kbd>+<kbd>F5</kbd> stoppar."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Assertions"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <cassert>\n\nfloat divide(float a, float b) {\n    assert(b != 0 && \"Division med noll!\");   // avbryter med radnummer om villkoret är falskt\n    return a / b;\n}"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "<code>assert</code> är till för att fånga programmeringsfel under utveckling. Den stängs av när <code>NDEBUG</code> är definierat (vanligt i release-byggen), så använd den aldrig för att validera användarinput."
+    },
+    {
+      "type": "h",
+      "text": "Hitta buggarna"
+    },
+    {
+      "type": "p",
+      "html": "Programmet ska räkna ut medelvärdet 6, men ger skräp. Hur många buggar hittar du?"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "float average(int arr[], int n) {\n    int sum;\n    for (int i = 0; i <= n; i++)\n        sum += arr[i];\n    return sum / n;\n}\n\nint main() {\n    int numbers[5] = {2, 4, 6, 8, 10};\n    std::cout << \"Average = \" << average(numbers, 5) << \"\\n\";\n}",
+      "caption": "buggy_average.cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Visa buggarna och rättningen",
+      "html": "<ol><li><strong>Oinitierad variabel:</strong> <code>int sum;</code> har ett okänt startvärde. Skriv <code>int sum = 0;</code>.</li><li><strong>Off-by-one:</strong> <code>i &lt;= n</code> läser <code>arr[5]</code>, utanför arrayen. Skriv <code>i &lt; n</code>.</li><li><strong>Heltalsdivision:</strong> <code>sum / n</code> med två int kapar decimalerna. Konvertera till float först.</li></ol>",
+      "solution": "float average(const int arr[], int n) {\n    if (n <= 0) return 0.0f;              // skydda mot division med noll\n    int sum = 0;\n    for (int i = 0; i < n; i++)\n        sum += arr[i];\n    return static_cast<float>(sum) / n;\n}",
+      "lang": "cpp"
+    },
+    {
+      "type": "h",
+      "text": "Nästa steg: inbyggda system"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "PC-program",
+        "Inbyggt system"
+      ],
+      "rows": [
+        [
+          "Miljö",
+          "operativsystem",
+          "inget eller minimalt OS"
+        ],
+        [
+          "Minne",
+          "dynamisk allokering går bra",
+          "ofta statiskt, strikt kontrollerat"
+        ],
+        [
+          "Felhantering",
+          "exceptions möjliga",
+          "oftast returkoder"
+        ],
+        [
+          "Debugging",
+          "IDE, breakpoints",
+          "seriell port, LED-signaler, JTAG"
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fördjupa dig i pekare, arrayer och minneslayout.",
+        "Lär dig CMake eller Makefile.",
+        "Börja med Arduino, ESP32 eller STM32.",
+        "Läs om bitmanipulation och registerhantering.",
+        "Lär dig grunderna i UART, I2C och SPI.",
+        "Öva realtidstänkande: loopar, timers och interrupts."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "Hitta syntaxfelen",
+      "html": "<p>Programmet nedan kompilerar inte. Fixa det, kör det och förklara vad som händer.</p>",
+      "solution": "#include <iostream>\nusing namespace std;          // semikolon saknades\n\nint main() {\n    int a = 10;               // semikolon saknades\n    int b = 0;\n    cout << \"Result: \" << a / b << endl;   // kompilerar, men heltalsdivision med 0\n}                                          // är odefinierat beteende och kraschar oftast",
+      "lang": "cpp"
+    },
+    {
+      "type": "exercise",
+      "title": "Loggning med felhantering",
+      "html": "<p>Läs temperatur, tryck och fuktighet från användaren och skriv varje post till <code>sensor_log.txt</code> med <code>std::ios::app</code>. Om filen inte kan öppnas: kasta ett undantag och fånga det i <code>main</code>. Utmaning: lägg till en tidsstämpel med <code>std::time_t</code>.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "SensorAnalyzer",
+      "html": "<p>Läs <code>data.csv</code> (datum,värde) till en <code>vector&lt;float&gt;</code>. Hoppa över felaktiga rader och räkna dem. Skriv ut medel, max, min och antal giltiga rader, och spara resultatet i <code>summary.txt</code>. Om filen saknas: skapa en ny med exempeldata.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Debugga calcAverage",
+      "html": "<p>Programmet kraschar ibland. Förklara varför och rätta det.</p><pre style=\"background:var(--code-bg);border-radius:8px\"><code>float calcAverage(vector&lt;float&gt; values) {\n    float sum;\n    for (int i = 0; i &lt;= values.size(); i++)\n        sum += values[i];\n    return sum / values.size();\n}</code></pre>",
+      "solution": "float calcAverage(const std::vector<float>& values) {  // const& istället för kopia\n    if (values.empty()) return 0.0f;                     // tom fil → ingen division med 0\n    float sum = 0.0f;                                    // initierad\n    for (size_t i = 0; i < values.size(); i++)           // < istället för <=\n        sum += values[i];\n    return sum / values.size();\n}",
+      "lang": "cpp"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "En beräkning ger fel svar men programmet kraschar inte. Vilken typ av fel är det?",
+      "options": [
+        "Syntaxfel",
+        "Körningsfel",
+        "Logiskt fel",
+        "Länkningsfel"
+      ],
+      "answer": 2,
+      "why": "Programmet gör exakt vad koden säger, men koden säger fel sak. Sådana fel hittar du bara genom att testa."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken tangent går in i en funktion när du stegar i Visual Studio?",
+      "options": [
+        "<kbd>F5</kbd>",
+        "<kbd>F10</kbd>",
+        "<kbd>F11</kbd>",
+        "<kbd>Shift</kbd>+<kbd>F5</kbd>"
+      ],
+      "answer": 2,
+      "why": "F11 = step into, F10 = step over (kör hela funktionsanropet som en rad), F5 = fortsätt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fel med <code>int sum; for (...) sum += arr[i];</code>?",
+      "options": [
+        "sum borde vara float",
+        "sum är inte initierad och startar med ett okänt värde",
+        "+= fungerar inte i loopar",
+        "Inget"
+      ],
+      "answer": 1,
+      "why": "Lokala variabler får inget automatiskt startvärde. Skriv <code>int sum = 0;</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Varför används ofta statuskoder istället för exceptions i inbyggda system?",
+      "options": [
+        "Exceptions finns inte i C++",
+        "Exceptions kostar kodstorlek och körtid, och är ofta avstängda på mikrokontroller",
+        "Statuskoder hittar fler buggar",
+        "Exceptions fungerar bara med filer"
+      ],
+      "answer": 1,
+      "why": "Returkoder är förutsägbara och billiga, och fungerar även i ren C."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>std::cin.clear()</code> efter en misslyckad inläsning?",
+      "options": [
+        "Tömmer konsolen",
+        "Återställer felflaggan så att cin kan läsa igen",
+        "Slänger resten av raden",
+        "Avslutar programmet"
+      ],
+      "answer": 1,
+      "why": "<code>clear()</code> nollställer felläget. Den felaktiga texten ligger kvar i bufferten, så du behöver också <code>ignore()</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Ett saknat semikolon är vilken typ av fel?",
+      "options": [
+        "Logiskt fel",
+        "Körningsfel",
+        "Syntaxfel",
+        "Länkningsfel"
+      ],
+      "answer": 2,
+      "why": "Kompilatorn hittar det innan programmet ens körs."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket block körs om ett undantag kastas inuti <code>try</code>?",
+      "options": [
+        "Det första matchande catch-blocket",
+        "Alla catch-block",
+        "Inget, programmet avslutas alltid",
+        "finally"
+      ],
+      "answer": 0,
+      "why": "Körningen hoppar till första <code>catch</code> vars typ matchar. C++ har inget finally."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är rimliga sätt att felsöka? Välj alla.",
+      "options": [
+        "Breakpoints och stegning",
+        "Utskrifter av mellanresultat",
+        "<code>assert()</code> för antaganden",
+        "Ta bort felkontroller tills det fungerar"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Felkontroller hjälper dig hitta fel. De är inte orsaken till dem."
+    },
+    {
+      "type": "text",
+      "q": "Vilken metod på ett undantag ger felmeddelandet som text?",
+      "accept": [
+        "what",
+        "what()",
+        "e.what()",
+        ".what()"
+      ],
+      "placeholder": "metod",
+      "why": "<code>e.what()</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vilken tangent i Visual Studio kör nästa rad utan att gå in i funktioner (step over)?",
+      "accept": [
+        "f10"
+      ],
+      "placeholder": "tangent",
+      "why": "F10 = step over, F11 = step into."
+    },
+    {
+      "type": "text",
+      "q": "Vilken C-funktion skriver ut ett felmeddelande följt av orsaken från <code>errno</code>?",
+      "accept": [
+        "perror",
+        "perror()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>perror(\"Kunde inte öppna filen\");</code>"
+    },
+    {
+      "type": "code",
+      "q": "Funktionen <code>average</code> har tre buggar (oinitierad summa, off-by-one och heltalsdivision). Rätta den. Om n är 0 ska den returnera 0.",
+      "task": "10-felhantering-1",
+      "why": "<code>sum = 0</code>, <code>i &lt; n</code> och en konvertering till float före divisionen.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Statuskoder: skriv <code>int readSensor(int raw, float* val)</code>. Giltiga råvärden är 0–1023. Vid fel: returnera -1 och rör inte val. Annars: sätt <code>*val = raw * 100.0 / 1023</code> och returnera 0. main skriver ut <code>OK</code> eller <code>SENSOR_ERROR</code>.",
+      "task": "10-felhantering-2",
+      "why": "Felet signaleras via returvärdet och resultatet via pekaren, precis som i många inbyggda bibliotek.",
+      "web": true
+    }
+  ]
+}

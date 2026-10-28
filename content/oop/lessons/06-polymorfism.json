@@ -1,0 +1,242 @@
+{
+  "id": "polymorfism",
+  "title": "Polymorfism och abstrakta klasser",
+  "category": "Polymorfism",
+  "minutes": 10,
+  "date": "Tors 6/11",
+  "lead": "Programmera mot ett gemensamt gränssnitt och låt varje subklass bestämma beteendet: virtual, override, final och rena virtuella funktioner.",
+  "sources": [
+    "Torsdag 6/11 – Polymorfism, casting (avsnitt 1–3, 7–8)"
+  ],
+  "goals": [
+    "Förklara vad som krävs för att en klass ska vara polymorf",
+    "Använda <code>virtual</code>, <code>override</code> och <code>final</code>",
+    "Skriva abstrakta klasser med rena virtuella funktioner",
+    "Förklara varför basklassen behöver en virtuell destruktor"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför polymorfism?"
+    },
+    {
+      "type": "p",
+      "html": "Polymorfism låter oss programmera mot ett gemensamt gränssnitt och byta beteende under körning, utan en <code>switch</code> på typer. Vi skiljer <em>vad</em> som ska göras från <em>hur</em> varje subklass gör det. Samma kodväg kan driva helt olika IoT-enheter."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <iostream>\n#include <memory>\n#include <vector>\n\nstruct Device {\n    virtual ~Device() = default;      // viktigt\n    virtual void tick() = 0;          // ren virtuell (abstrakt)\n};\n\nstruct TempSensor : Device {\n    void tick() override { std::cout << \"TempSensor läser av.\\n\"; }\n};\n\nstruct LedActuator : Device {\n    void tick() override { std::cout << \"LedActuator blinkar.\\n\"; }\n};\n\nint main() {\n    std::vector<std::unique_ptr<Device>> devices;\n    devices.push_back(std::make_unique<TempSensor>());\n    devices.push_back(std::make_unique<LedActuator>());\n    for (auto& d : devices) d->tick();    // samma anrop, olika beteende\n}"
+    },
+    {
+      "type": "p",
+      "html": "För att en klass ska vara polymorf i C++ behöver den minst en <code>virtual</code>-funktion, och anropet måste ske via en <strong>pekare eller referens</strong> till basen."
+    },
+    {
+      "type": "widget",
+      "name": "dispatch"
+    },
+    {
+      "type": "h",
+      "text": "virtual, override och final"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Gör de funktioner <code>virtual</code> i basen där beteendet ska kunna specialiseras.",
+        "Märk överskuggningar med <code>override</code>. Då kontrollerar kompilatorn att signaturen faktiskt matchar en virtuell funktion i basen.",
+        "Använd <code>final</code> för att stoppa vidare överskuggning eller arv när det är avsiktligt.",
+        "Ge polymorfa basklasser en <code>virtual</code> destruktor, så att <code>delete</code> via baspekare river hela objektet."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "struct Logger {\n    virtual ~Logger() = default;\n    virtual void write(const std::string& msg) = 0;\n};\n\nstruct ConsoleLogger : Logger {\n    void write(const std::string& msg) override { std::cout << msg << \"\\n\"; }\n};\n\nstruct QuietLogger final : Logger {          // går inte att ärva vidare\n    void write(const std::string&) override {}\n};"
+    },
+    {
+      "type": "note",
+      "kind": "fix",
+      "html": "Utan <code>override</code> blir ett stavfel eller en saknad <code>const</code> tyst en <em>ny</em> funktion som döljer basens, och den virtuella anropas aldrig. Med <code>override</code> blir det ett kompileringsfel."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Om basens destruktor inte är virtuell och du gör <code>delete</code> via <code>Logger*</code> körs bara basens destruktor. Det är odefinierat beteende och läcker subklassens resurser."
+    },
+    {
+      "type": "h",
+      "text": "Abstrakta klasser"
+    },
+    {
+      "type": "p",
+      "html": "En klass med minst en ren virtuell funktion (<code>= 0</code>) är <strong>abstrakt</strong>. Den kan inte instansieras, bara ärvas. Den fungerar som ett kontrakt: varje konkret subklass måste implementera funktionerna."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "struct Drawable {\n    virtual ~Drawable() = default;\n    virtual void draw() const = 0;\n\n    void render() const {                 // icke-virtuell hjälpfunktion\n        std::cout << \"--- figur ---\\n\";\n        draw();                           // anropar subklassens version\n    }\n};\n\nstruct Line : Drawable {\n    void draw() const override { std::cout << \"Ritar linje\\n\"; }\n};\nstruct Circle : Drawable {\n    void draw() const override { std::cout << \"Ritar cirkel\\n\"; }\n};\n\n// Drawable d;     // FEL: abstrakt klass"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Håll gränssnittet minimalt. Några få väl valda virtuella funktioner är lättare att testa och underhålla."
+    },
+    {
+      "type": "h",
+      "text": "Fallgropar och riktlinjer"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Anropa aldrig virtuella funktioner från konstruktorer eller destruktorer. Där är virtuell dispatch i praktiken avstängd.",
+        "Gör polymorfa basklasser lätta: virtuella funktioner och en virtuell destruktor, inga onödiga beroenden.",
+        "Virtuell dispatch kostar ett indirekt hopp via en <strong>vtable</strong>. Oftast obetydligt, men kan märkas i tighta loopar på en mikrokontroller.",
+        "Välj <code>enum class</code> istället för arv när typerna inte behöver olika data eller tillstånd och antalet fall är litet och slutet."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Övningar"
+    },
+    {
+      "type": "exercise",
+      "title": "render() för Drawable",
+      "html": "<p>Bygg ut <code>Drawable</code> med en icke-virtuell <code>render()</code> som skriver en rubrik och anropar <code>draw()</code>. Lägg några figurer i en <code>std::vector&lt;std::unique_ptr&lt;Drawable&gt;&gt;</code> och anropa render på alla.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Icke-virtuell open()",
+      "html": "<p>Lägg till en metod <code>open()</code> i <code>Logger</code> som inte gör något och inte är virtuell. När är det rimligt att en metod <em>inte</em> är virtuell?</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad krävs för polymorft beteende i C++?",
+      "options": [
+        "Att klassen är en struct",
+        "En virtuell funktion i basen, och anrop via pekare eller referens till basen",
+        "Att alla medlemmar är public",
+        "Att man använder new"
+      ],
+      "answer": 1,
+      "why": "Utan virtual väljs funktionen vid kompilering utifrån den statiska typen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>override</code>?",
+      "options": [
+        "Gör funktionen virtuell i basen",
+        "Låter kompilatorn kontrollera att funktionen verkligen överskuggar en virtuell funktion",
+        "Förhindrar arv",
+        "Gör funktionen snabbare"
+      ],
+      "answer": 1,
+      "why": "Stavfel eller fel signatur blir kompileringsfel istället för tysta buggar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder <code>virtual void draw() const = 0;</code>?",
+      "options": [
+        "draw returnerar 0",
+        "draw är en ren virtuell funktion och klassen blir abstrakt",
+        "draw är private",
+        "draw anropas aldrig"
+      ],
+      "answer": 1,
+      "why": "Subklasserna måste implementera den, och basen kan inte instansieras."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska en polymorf basklass ha en virtuell destruktor?",
+      "options": [
+        "För att kunna skapa objekt",
+        "Så att delete via baspekare kör subklassens destruktor också",
+        "För att få använda override",
+        "Det behövs inte"
+      ],
+      "answer": 1,
+      "why": "Annars körs bara basens destruktor: odefinierat beteende och läckor."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>final</code> på en klass?",
+      "options": [
+        "Gör klassen abstrakt",
+        "Förhindrar att någon ärver från den",
+        "Gör alla metoder const",
+        "Tar bort vtablen"
+      ],
+      "answer": 1,
+      "why": "<code>struct QuietLogger final : Logger</code> kan inte vara basklass. final på en metod stoppar vidare överskuggning."
+    },
+    {
+      "type": "mc",
+      "q": "<code>Base* p = new Derived; p-&gt;f();</code> där f <em>inte</em> är virtual. Vilken f körs?",
+      "options": [
+        "Derived::f",
+        "Base::f",
+        "Båda",
+        "Odefinierat"
+      ],
+      "answer": 1,
+      "why": "Utan virtual bestäms anropet av pekarens statiska typ, Base*."
+    },
+    {
+      "type": "mc",
+      "q": "Kan man skapa ett objekt av en abstrakt klass?",
+      "options": [
+        "Ja, alltid",
+        "Nej, bara av konkreta subklasser som implementerar alla rena virtuella funktioner",
+        "Ja, med new",
+        "Bara om den har en konstruktor"
+      ],
+      "answer": 1,
+      "why": "Men du kan ha pekare och referenser av den abstrakta typen, och det är hela poängen."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka hör hemma i en lätt polymorf basklass? Välj alla.",
+      "options": [
+        "En virtuell destruktor",
+        "Rena virtuella funktioner för gränssnittet",
+        "Många datamedlemmar och beroenden",
+        "Anrop av virtuella funktioner från konstruktorn"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "why": "Virtuella anrop från konstruktorn går inte till subklassen, och tunga baser gör hierarkin svår att ändra."
+    },
+    {
+      "type": "text",
+      "q": "Vilket nyckelord sätter du efter en metod i subklassen för att kompilatorn ska kontrollera att den överskuggar en virtuell funktion?",
+      "accept": [
+        "override"
+      ],
+      "placeholder": "nyckelord",
+      "why": "<code>void tick() override;</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vad kallas tabellen som används för virtuell dispatch? Ett ord.",
+      "accept": [
+        "vtable",
+        "v-table",
+        "virtual table",
+        "vtbl"
+      ],
+      "placeholder": "ord",
+      "why": "vtable: varje polymorf klass har en tabell med pekare till sina virtuella funktioner."
+    },
+    {
+      "type": "code",
+      "q": "Abstrakt <code>Shape</code> med <code>virtual double area() const = 0</code>. Skriv <code>Rect</code> och <code>Circle</code> (π = 3.14). Indata: rader med <code>rect B H</code> eller <code>circle R</code>. Skriv ut total area.",
+      "task": "06-polymorfism-1",
+      "why": "Loopen vet bara om <code>Shape</code>. Varje objekt bidrar med sin egen area via virtuell dispatch.",
+      "web": false
+    }
+  ]
+}

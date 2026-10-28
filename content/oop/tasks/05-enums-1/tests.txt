@@ -1,0 +1,16 @@
+--- in
+0
+--- out
+norr
+--- in
+1
+--- out
+öster
+--- in
+2
+--- out
+söder
+--- in
+3
+--- out
+väster

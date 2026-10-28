@@ -1,0 +1,14 @@
+--- in
+rect 2 3
+circle 1
+--- out
+9.14
+--- in
+rect 4 5
+--- out
+20
+--- in
+circle 2
+circle 2
+--- out
+25.12

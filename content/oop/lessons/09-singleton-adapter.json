@@ -1,0 +1,234 @@
+{
+  "id": "singleton-adapter",
+  "title": "Singleton och Adapter",
+  "category": "Designmönster",
+  "minutes": 8,
+  "date": "Tors 13/11",
+  "lead": "En enda, kontrollerad instans, och när det är en dålig idé. Plus Adapter för att koppla ihop gränssnitt som inte passar.",
+  "sources": [
+    "Torsdag 13/11 – Design Patterns intro (avsnitt 5–6)"
+  ],
+  "goals": [
+    "Skriva en trådsäker Singleton i modern C++",
+    "Avgöra när Singleton passar och när det är en antipattern",
+    "Känna till alternativ som dependency injection",
+    "Använda Adapter för att anpassa ett befintligt gränssnitt"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är Singleton till för?"
+    },
+    {
+      "type": "p",
+      "html": "Ibland ska det bara finnas <strong>en</strong> instans: en global logger, en spelmotor, en konfigurationshanterare. Singleton ser till att endast ett objekt kan skapas, att det är globalt åtkomligt och att det skapas först när det behövs (lazy initialization)."
+    },
+    {
+      "type": "h",
+      "text": "Modern, trådsäker Singleton"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Logger {\npublic:\n    static Logger& instance() {\n        static Logger inst;        // skapas första gången, trådsäkert sedan C++11\n        return inst;\n    }\n    void log(const std::string& msg) { std::cout << \"[LOG] \" << msg << \"\\n\"; }\n\nprivate:\n    Logger() = default;                          // privat konstruktor\n    Logger(const Logger&) = delete;              // ingen kopiering\n    Logger& operator=(const Logger&) = delete;\n};\n\nLogger::instance().log(\"Programmet startar...\");\n// Logger x;           // FEL: konstruktorn är privat\n// Logger y = Logger::instance();   // FEL: kopiering är borttagen"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Den lokala <code>static</code>-variabeln skapas vid första anropet. C++11 garanterar att det är trådsäkert.",
+        "Privat konstruktor och borttagna kopieringsfunktioner gör instance() till enda vägen till objektet."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "När passar Singleton?"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Bra",
+        "Dåligt"
+      ],
+      "rows": [
+        [
+          "en global logger",
+          "nästan allt annat"
+        ],
+        [
+          "konfiguration som läses en gång",
+          "för att slippa skicka parametrar"
+        ],
+        [
+          "spelmotor, resurshanterare, input",
+          "objekt som behöver bytas ut i tester"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Singletons blir lätt en gömd global variabel: svåra att byta ut i tester, svåra att mocka, och de döljer beroenden. I stora system anses de ofta vara en <strong>antipattern</strong> om de används utan försiktighet."
+    },
+    {
+      "type": "h",
+      "text": "Vanliga misstag"
+    },
+    {
+      "type": "list",
+      "items": [
+        "För mycket ansvar i en Singleton.",
+        "Singleton bara för att slippa skicka parametrar.",
+        "Hela programmet byggs runt global delad state.",
+        "Singletons som är omöjliga att testa.",
+        "Den gamla varianten med en statisk pekare på heapen istället för <code>static</code> lokal variabel."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Alternativ"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "// Dependency injection: beroendet skickas in och syns i signaturen\nclass Game {\npublic:\n    explicit Game(GameConfig& config) : config_(config) {}\nprivate:\n    GameConfig& config_;\n};\n\n// Tillståndslös hjälpkod behöver ingen klass alls\nnamespace MathUtil {\n    double clamp(double v, double lo, double hi) { return v < lo ? lo : v > hi ? hi : v; }\n}\n\n// Eller: ett Application-objekt i main äger alla system och skickar referenser"
+    },
+    {
+      "type": "h",
+      "text": "Adapter: få gränssnitt att passa"
+    },
+    {
+      "type": "p",
+      "html": "Ett bibliotek eller äldre kod kan ha ett annat gränssnitt än ditt system förväntar sig. En <strong>Adapter</strong> implementerar ditt gränssnitt och översätter anropen till det gamla."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class OldSensorLib {               // kan inte ändras\npublic:\n    double readValue();\n};\n\nclass ISensor {                     // det vårt system använder\npublic:\n    virtual ~ISensor() = default;\n    virtual double read() = 0;\n};\n\nclass OldSensorAdapter : public ISensor {\npublic:\n    explicit OldSensorAdapter(OldSensorLib os) : old(os) {}\n    double read() override { return old.readValue(); }   // översätt\nprivate:\n    OldSensorLib old;\n};"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Varför är Singletonens konstruktor privat?",
+      "options": [
+        "För att göra den snabbare",
+        "Så att ingen utanför klassen kan skapa fler instanser",
+        "För att kunna ärva",
+        "För att den ska vara virtuell"
+      ],
+      "answer": 1,
+      "why": "Enda vägen till objektet blir <code>instance()</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>static Logger inst;</code> inuti <code>instance()</code>?",
+      "options": [
+        "Skapar en ny logger varje anrop",
+        "Skapar loggern vid första anropet och återanvänder den sedan",
+        "Skapar loggern innan main startar",
+        "Ger kompileringsfel"
+      ],
+      "answer": 1,
+      "why": "Lazy initialization, och C++11 garanterar att den är trådsäker."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är ett bra användningsområde för Singleton?",
+      "options": [
+        "Varje sensor i systemet",
+        "En global konfiguration som bara ska läsas en gång",
+        "Alla spelare i ett spel",
+        "För att slippa skicka parametrar"
+      ],
+      "answer": 1,
+      "why": "Ett exempel ur materialet: Config::instance().getStartHealth()."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en nackdel med Singleton?",
+      "options": [
+        "Den tar mycket minne",
+        "Den döljer beroenden och är svår att byta ut i tester",
+        "Den kan inte ha metoder",
+        "Den måste vara abstrakt"
+      ],
+      "answer": 1,
+      "why": "Därför är dependency injection ofta ett bättre val."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket problem löser Adapter?",
+      "options": [
+        "För många instanser",
+        "Ett befintligt gränssnitt passar inte det ditt system förväntar sig",
+        "Objekt som skapas på fel ställe",
+        "Aviseringar till många mottagare"
+      ],
+      "answer": 1,
+      "why": "OldSensorAdapter implementerar ISensor och översätter read() till readValue()."
+    },
+    {
+      "type": "mc",
+      "q": "Varför markeras Singletonens kopieringskonstruktor med <code>= delete</code>?",
+      "options": [
+        "För att spara minne",
+        "Så att ingen kan skapa en kopia och därmed en andra instans",
+        "För att den ska bli virtuell",
+        "Det behövs inte"
+      ],
+      "answer": 1,
+      "why": "<code>Logger y = Logger::instance();</code> blir då ett kompileringsfel."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är alternativ till Singleton enligt materialet? Välj alla.",
+      "options": [
+        "Dependency injection via konstruktorn",
+        "Tillståndslösa hjälpfunktioner i ett namespace",
+        "En Application-klass i main som äger systemen",
+        "Fler globala variabler"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Globala variabler har samma problem som Singleton, utan kontrollen."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter den statiska metoden som ger åtkomst till singleton-objektet i materialets exempel?",
+      "accept": [
+        "instance",
+        "instance()",
+        "Logger::instance()",
+        "Logger::instance"
+      ],
+      "placeholder": "metod",
+      "why": "<code>Logger::instance()</code>"
+    },
+    {
+      "type": "text",
+      "q": "Vilket mönster översätter ett befintligt gränssnitt till det ditt system förväntar sig? Skriv namnet på engelska.",
+      "accept": [
+        "adapter",
+        "adapter pattern"
+      ],
+      "placeholder": "namn",
+      "why": "Adapter."
+    },
+    {
+      "type": "code",
+      "q": "Skriv en Singleton <code>Config</code> med privat konstruktor som sätter <code>startHealth</code> till 100, borttagen kopiering, <code>static Config&amp; instance()</code>, samt <code>startHealth()</code> och <code>setStartHealth(int)</code>. main sätter värdet om indata finns och läser det via två anrop till instance().",
+      "task": "09-singleton-adapter-1",
+      "why": "Båda referenserna pekar på samma objekt. Den lokala <code>static</code>-variabeln skapas en gång.",
+      "web": false
+    },
+    {
+      "type": "code",
+      "q": "Adapter: <code>OldThermo</code> har <code>int readTenths()</code> (tiondels grader). Skriv <code>ThermoAdapter</code> som implementerar <code>ISensor::read()</code> och returnerar grader som double.",
+      "task": "09-singleton-adapter-2",
+      "why": "Adaptern översätter både metodnamnet och enheten. <code>/ 10.0</code> ger decimaldivision.",
+      "web": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+--- in
+512
+--- out
+OK
+--- in
+2000
+--- out
+SENSOR_ERROR
+--- in
+-1
+--- out
+SENSOR_ERROR
+--- in
+1023
+--- out
+OK

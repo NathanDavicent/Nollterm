@@ -1,0 +1,104 @@
+name: App (Windows)
+
+# Bygger C++-appen för Windows och packar den som en zip med gcc, g++ (w64devkit) och Python.
+# Startas för hand: Actions → App (Windows) → Run workflow. Välj om den ska läggas upp under Releases.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Lägg upp zip-filen under Releases"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+env:
+  W64DEVKIT_VERSION: v2.9.1
+  PYTHON_VERSION: 3.12.7
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ladda ner gcc och g++ (w64devkit ${{ env.W64DEVKIT_VERSION }})
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download $env:W64DEVKIT_VERSION -R skeeto/w64devkit -p "w64devkit-x64-*" -D w64dl
+          if (-not $?) { gh release download $env:W64DEVKIT_VERSION -R skeeto/w64devkit -p "*x64*" -D w64dl }
+          $sfx = Get-ChildItem w64dl | Select-Object -First 1
+          Write-Host "Packar upp $($sfx.Name)"
+          7z x $sfx.FullName -ow64tmp -y | Out-Null
+          $gxx = Get-ChildItem w64tmp -Recurse -Filter g++.exe | Where-Object { $_.Directory.Name -eq "bin" } | Select-Object -First 1
+          if (-not $gxx) { Get-ChildItem w64tmp -Depth 2; throw "g++.exe hittades inte efter uppackning" }
+          New-Item -ItemType Directory -Force package\toolchain | Out-Null
+          Move-Item $gxx.Directory.Parent.FullName package\toolchain\w64devkit
+          package\toolchain\w64devkit\bin\g++.exe --version
+
+      - name: Ladda ner Python ${{ env.PYTHON_VERSION }} (embeddable)
+        run: |
+          $url = "https://www.python.org/ftp/python/$env:PYTHON_VERSION/python-$env:PYTHON_VERSION-embed-amd64.zip"
+          Invoke-WebRequest $url -OutFile python.zip
+          Expand-Archive python.zip -DestinationPath package\toolchain\python
+          package\toolchain\python\python.exe --version
+
+      - name: Installera Ninja
+        run: |
+          if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) { choco install ninja -y --no-progress }
+          ninja --version
+
+      - name: Bygg appen med w64devkit
+        run: |
+          $kit = "$PWD\package\toolchain\w64devkit\bin"
+          # Bara w64devkit först i PATH, så att CMake inte hittar någon annan kompilator.
+          $env:PATH = "$kit;$env:PATH"
+          cmake -S app -B build -G Ninja -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_C_COMPILER="$kit\gcc.exe" -DCMAKE_CXX_COMPILER="$kit\g++.exe" -DCMAKE_MAKE_PROGRAM=(Get-Command ninja).Source
+          cmake --build build --parallel
+
+      - name: Packa ihop
+        run: |
+          Copy-Item build\Nollterm.exe, build\nollterm-check.exe package\
+          Copy-Item -Recurse app\assets package\assets
+          Copy-Item -Recurse content package\content
+          Copy-Item README.md package\LÄSMIG.md
+          Get-ChildItem package
+
+      - name: Självtest (kompilatorer och alla lösningsförslag)
+        working-directory: package
+        run: |
+          .\nollterm-check.exe --selftest
+          if ($LASTEXITCODE -ne 0) { throw "självtestet misslyckades" }
+          .\nollterm-check.exe --verify
+          if ($LASTEXITCODE -ne 0) { throw "lösningsförslagen klarar inte testerna" }
+
+      - name: Läs versionsnummer
+        id: ver
+        run: |
+          $line = Select-String -Path app\CMakeLists.txt -Pattern 'project\(Nollterm VERSION ([0-9.]+)'
+          echo "version=$($line.Matches[0].Groups[1].Value)" >> $env:GITHUB_OUTPUT
+
+      - name: Skapa zip
+        run: Compress-Archive -Path package\* -DestinationPath Nollterm-Windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nollterm-Windows
+          path: Nollterm-Windows.zip
+
+      - name: Lägg upp på GitHub Releases
+        if: inputs.release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Nollterm ${{ steps.ver.outputs.version }}
+          files: Nollterm-Windows.zip
+          generate_release_notes: true
+          make_latest: true

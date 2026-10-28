@@ -1,0 +1,410 @@
+{
+  "id": "cpp",
+  "badge": "C++",
+  "title": "Programmering C/C++",
+  "short": "C/C++",
+  "tag": "IoT",
+  "description": "Från Hello World till pekare, klasser och felhantering, med fokus på sensordata och inbyggda system.",
+  "headline": "Varje byte har en <em>adress</em>.",
+  "lessons": [
+    "01-kom-igang.json",
+    "02-villkor.json",
+    "03-loopar.json",
+    "04-funktioner.json",
+    "05-arrayer-pekare.json",
+    "06-c-strangar.json",
+    "07-klasser.json",
+    "08-headerfiler.json",
+    "09-filhantering.json",
+    "10-felhantering.json",
+    "11-git.json"
+  ],
+  "timeline": [
+    {
+      "date": "Vecka 39",
+      "title": "Introduktion, variabler och villkor",
+      "lessons": [
+        "kom-igang",
+        "villkor"
+      ]
+    },
+    {
+      "date": "Tors 2/10",
+      "title": "Loopar och iteration · Inlämning 1 presenteras",
+      "lessons": [
+        "loopar"
+      ]
+    },
+    {
+      "date": "Tis 6/10",
+      "title": "Funktioner, pekare och referenser",
+      "lessons": [
+        "funktioner"
+      ]
+    },
+    {
+      "date": "Fre 10/10",
+      "title": "Arrayer, pekare, vektorer och maps",
+      "lessons": [
+        "arrayer-pekare",
+        "c-strangar"
+      ]
+    },
+    {
+      "date": "Tors 16/10",
+      "title": "Klasser, structs och objekt · gruppuppgift",
+      "lessons": [
+        "klasser",
+        "headerfiler",
+        "git"
+      ]
+    },
+    {
+      "date": "Tis 21/10",
+      "title": "Felhantering, debugging och nästa steg",
+      "lessons": [
+        "filhantering",
+        "felhantering"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "inl1",
+      "kind": "Inlämningsuppgift 1",
+      "title": "Datainsamlare och analysverktyg för mätvärden",
+      "intro": "I ett IoT-system samlar vi in mätvärden från sensorer (temperatur, luftfuktighet, tryck). Utveckla ett C/C++-program som hanterar en lista av mätvärden. Koden ska ligga i ett GitHub-repo och arbetet dokumenteras i repots README.",
+      "groups": [
+        {
+          "h": "1. Datainmatning",
+          "items": [
+            "Användaren kan ange mätvärden manuellt",
+            "Ogiltig input hanteras robust",
+            "Utmaning: tillåt både hel- och decimaltal"
+          ]
+        },
+        {
+          "h": "2. Databehandling",
+          "items": [
+            "Antal värden",
+            "Summa",
+            "Medelvärde",
+            "Min- och maxvärde",
+            "Varians och standardavvikelse"
+          ]
+        },
+        {
+          "h": "3. Menygränssnitt",
+          "items": [
+            "Lägg till nya mätvärden",
+            "Visa statistiken",
+            "Sök efter ett visst värde",
+            "Sortera listan (valfritt stigande/fallande)",
+            "Avsluta programmet"
+          ]
+        },
+        {
+          "h": "4. Struktur och kvalitet",
+          "items": [
+            "Uppdelat i flera funktioner eller metoder",
+            "Väl kommenterad och dokumenterad kod",
+            "Fel hanteras, t.ex. tom lista vid analys"
+          ]
+        },
+        {
+          "h": "5. Extra utmaningar för VG (välj en eller två)",
+          "items": [
+            "Simulera en sensorström: slumpa temperaturer 20–30 °C och analysera",
+            "Tidsstämpla mätningar och visa när högsta/lägsta värdet togs",
+            "Tröskelvärdesanalys: räkna hur ofta värdet låg över eller under en gräns",
+            "Glidande medelvärde över de senaste 3 eller 5 värdena, jämfört med totalen",
+            "ASCII-histogram av mätvärdena i terminalen"
+          ]
+        }
+      ],
+      "grade": [
+        [
+          "G",
+          "Uppfyller krav 1–4 enligt specifikationen."
+        ],
+        [
+          "VG",
+          "Har dessutom implementerat en eller två extra funktioner, beroende på komplexitet, och motiverat de tekniska valen i dokumentationen."
+        ]
+      ],
+      "topics": [
+        "loopar",
+        "funktioner",
+        "arrayer-pekare",
+        "headerfiler",
+        "filhantering",
+        "git"
+      ],
+      "hint": "Statistik: variansen är medelvärdet av (x − medel)² och standardavvikelsen är roten ur variansen (<code>std::sqrt</code> i <code>&lt;cmath&gt;</code>)."
+    },
+    {
+      "id": "grupp",
+      "kind": "Gruppuppgift, 3–4 personer",
+      "title": "IoT Device Manager",
+      "intro": "Samarbeta kring ett litet IoT-program i C++ med klasser och structs, och öva på Git med branches och pull requests. Basprogrammet finns i kursens repo: <a href=\"https://github.com/CalleFreme/c-cpp-cj/blob/main/DeviceManager/DeviceManager/main.cpp\" target=\"_blank\" rel=\"noopener\">DeviceManager/main.cpp</a>.",
+      "groups": [
+        {
+          "h": "Förberedelser",
+          "items": [
+            "En person skapar repot <code>iot-device-manager</code> på GitHub",
+            "Klona repot och skapa ett C++-projekt i Visual Studio i repots mapp",
+            "Kopiera in basprogrammet",
+            "Första commit: \"Init commit: Basprogram inlagt\", och push",
+            "Övriga i gruppen klonar repot",
+            "README.md med gruppnamn, projektbeskrivning och ansvarsfördelning"
+          ]
+        },
+        {
+          "h": "Uppgift",
+          "items": [
+            "Fördela metoder: <code>removeDevice(int id)</code>, <code>findDevice(int id)</code>, <code>updateValue(int id, float v)</code>, <code>getAverageValue()</code>, <code>printActiveDevices()</code>",
+            "Var och en skapar en egen branch, t.ex. <code>feature/removeDevice</code>",
+            "Implementera och testa i main() innan du commitar",
+            "Skriv tydliga commit-meddelanden",
+            "Skapa en pull request och låt en gruppkamrat granska",
+            "Merga till main när allt fungerar"
+          ]
+        },
+        {
+          "h": "Avslutning",
+          "items": [
+            "Kör hela programmet tillsammans",
+            "Diskutera hur samarbetet gick",
+            "Reflektera kort över vad ni lärt er"
+          ]
+        }
+      ],
+      "topics": [
+        "klasser",
+        "git"
+      ]
+    },
+    {
+      "id": "labb",
+      "kind": "Labb",
+      "title": "Miniräknare med meny",
+      "intro": "Bygg en miniräknare där menyn upprepas tills användaren väljer Avsluta.",
+      "groups": [
+        {
+          "h": "Grund",
+          "items": [
+            "1. Addera två tal",
+            "2. Subtrahera två tal",
+            "3. Multiplicera två tal",
+            "4. Dividera två tal (hantera division med noll)",
+            "5. Avsluta"
+          ]
+        },
+        {
+          "h": "Extra",
+          "items": [
+            "Potens (x^y) och rest (%)",
+            "Program som frågar efter ålder och skriver ut kategori: barn, ungdom, vuxen, pensionär"
+          ]
+        }
+      ],
+      "topics": [
+        "villkor",
+        "loopar"
+      ]
+    },
+    {
+      "id": "rep",
+      "kind": "Repetition",
+      "title": "Diagnostiska repetitionsövningar",
+      "intro": "Lös uppgifterna utan att titta på lösningar. Försök förklara vad varje rad gör, inte bara få rätt output.",
+      "groups": [
+        {
+          "h": "Variabler och villkor",
+          "items": [
+            "Skriv ut en int, float, double och char",
+            "Summa, skillnad, produkt och kvot av två inmatade tal",
+            "Celsius till Fahrenheit",
+            "Cirkelns area med en konstant för π",
+            "Positivt, negativt eller noll",
+            "Skottår",
+            "Meny med switch: area, volym, avsluta"
+          ]
+        },
+        {
+          "h": "Loopar och funktioner",
+          "items": [
+            "Summan av 1–100",
+            "Största talet i en array med 5 heltal",
+            "Medelvärde av användarinmatade tal",
+            "Funktion som skriver ut det största av tre tal",
+            "void-funktion som skriver ut en snygg meny"
+          ]
+        },
+        {
+          "h": "Pekare och referenser",
+          "items": [
+            "Funktion som tar en int-pekare och ökar värdet med 10",
+            "<code>swap</code> med pekare och med referenser",
+            "<code>getRange(float* min, float* max)</code>",
+            "<code>printData(const vector&lt;int&gt;&amp; data)</code>"
+          ]
+        },
+        {
+          "h": "Större uppgifter",
+          "items": [
+            "5 temperaturer → min, max och medel via funktioner",
+            "Meny: summa av två tal, medel av tre tal, avsluta",
+            "FizzBuzz med funktioner",
+            "Standardavvikelse för en lista av tal"
+          ]
+        }
+      ],
+      "topics": [
+        "kom-igang",
+        "villkor",
+        "loopar",
+        "funktioner"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "kind": "V39",
+      "title": "C/C++ – V39 Studiehäfte",
+      "description": "Setup, Hello World, variabler, operatorer, if/else, switch och menylabben.",
+      "lessons": [
+        "kom-igang",
+        "villkor"
+      ]
+    },
+    {
+      "kind": "2/10",
+      "title": "Torsdag 2/10 – Loopar",
+      "description": "for, while, do-while, iterationsmönster, vanliga fel och Inlämningsuppgift 1.",
+      "lessons": [
+        "loopar"
+      ]
+    },
+    {
+      "kind": "6/10",
+      "title": "Tis 6/10 – Funktioner",
+      "description": "Parametrar, stacken, pekare, referenser, const och överlagring.",
+      "lessons": [
+        "funktioner"
+      ]
+    },
+    {
+      "kind": "10/10",
+      "title": "Fredag 10/10 – Arrays, pekare, vektorer och maps",
+      "description": "Arrayer i minnet, pekararitmetik, std::vector, malloc, 2D-arrayer och std::map.",
+      "lessons": [
+        "arrayer-pekare"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningar: C-strängar, pekare och säker indata",
+      "description": "15 övningar med lösningsförslag om '\\0', fgets, strcmp och kommandotolkning.",
+      "lessons": [
+        "c-strangar"
+      ]
+    },
+    {
+      "kind": "16/10",
+      "title": "Torsdag 16/10 – Klasser, structs, objekt",
+      "description": "Structs, stack och heap, class, åtkomst, konstruktorer, headerfiler och gruppuppgiften.",
+      "lessons": [
+        "klasser",
+        "headerfiler"
+      ]
+    },
+    {
+      "kind": "Mall",
+      "title": "Startkod för klasser och structs",
+      "description": "Filstruktur och kodskelett för DataManager och Measurement, plus tabellen om const, & och *.",
+      "lessons": [
+        "headerfiler",
+        "funktioner"
+      ]
+    },
+    {
+      "kind": "Guide",
+      "title": "Filhantering i C och C++",
+      "description": "fopen/fprintf/fclose, ifstream/ofstream och övningen sensorloggning.",
+      "lessons": [
+        "filhantering"
+      ]
+    },
+    {
+      "kind": "21/10",
+      "title": "Tisdag 21/10 – Felhantering, debugging, nästa steg",
+      "description": "Feltyper, exceptions, CSV till struct, debugging, assert och embedded.",
+      "lessons": [
+        "felhantering",
+        "filhantering"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningar: felhantering, debugging, filhantering",
+      "description": "12 övningar i tre nivåer, från syntaxfel till statuskoder.",
+      "lessons": [
+        "felhantering"
+      ]
+    },
+    {
+      "kind": "Guide",
+      "title": "Kom igång med Git och GitHub i Visual Studio",
+      "description": "Skapa och klona repo, pull/commit/push och cheat sheet.",
+      "lessons": [
+        "git"
+      ]
+    },
+    {
+      "kind": "Guide",
+      "title": "Guide till kodgranskning och Git-flöde",
+      "description": "Vad man tittar på, checklista, branches och pull requests.",
+      "lessons": [
+        "git"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Repetitionsövningar i C och C++",
+      "description": "Diagnostiska uppgifter om variabler, villkor, loopar, funktioner och pekare.",
+      "lessons": [
+        "kom-igang",
+        "villkor",
+        "loopar",
+        "funktioner"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Ref",
+      "title": "cppreference.com",
+      "url": "https://en.cppreference.com/w/",
+      "description": "Referensen kursen hänvisar till. Slå upp varje nytt begrepp här, både C och C++."
+    },
+    {
+      "kind": "Repo",
+      "title": "Kursens GitHub-repo (c-cpp-cj)",
+      "url": "https://github.com/CalleFreme/c-cpp-cj",
+      "description": "Exempelkod, buggyLoops.cpp och DeviceManager-basprogrammet."
+    },
+    {
+      "kind": "Git",
+      "title": "Pro Git (gratis bok)",
+      "url": "https://git-scm.com/book/sv/v2",
+      "description": "Hela Git-boken, delvis på svenska."
+    },
+    {
+      "kind": "Docs",
+      "title": "Visual Studio: debugga C++",
+      "url": "https://learn.microsoft.com/visualstudio/debugger/getting-started-with-the-debugger-cpp",
+      "description": "Breakpoints, stegning och Locals-fönstret."
+    }
+  ]
+}
