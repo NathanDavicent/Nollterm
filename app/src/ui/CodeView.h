@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include <cstdint>  // TextEditor.h använder uint8_t utan att inkludera <cstdint>
 #include <TextEditor.h>
 
 namespace nt::ui {

@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include <cstdint>  // TextEditor.h använder uint8_t utan att inkludera <cstdint>
 #include <TextEditor.h>
 
 #include "QuestionView.h"
