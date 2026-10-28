@@ -1,6 +1,6 @@
 // Kör Python i webbläsaren med Pyodide (CPython kompilerat till WebAssembly), i en Web Worker
 // så att sidan inte fryser. Sidan skickar {id, code, input} och får tillbaka {id, ok, out, error}.
-const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+const PYODIDE = "https://cdn.jsdelivr.net/npm/pyodide@0.26.4/";
 
 let pyodide = null;
 try {
