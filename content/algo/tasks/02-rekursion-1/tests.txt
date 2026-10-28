@@ -1,0 +1,32 @@
+--- in
+3
+--- out
+sum(3) anropas
+sum(2) anropas
+sum(1) anropas
+sum(1) returnerar 1
+sum(2) returnerar 3
+sum(3) returnerar 6
+--- in
+1
+--- out
+sum(1) anropas
+sum(1) returnerar 1
+--- in
+0
+--- out
+sum(0) anropas
+sum(0) returnerar 0
+--- in
+5
+--- out
+sum(5) anropas
+sum(4) anropas
+sum(3) anropas
+sum(2) anropas
+sum(1) anropas
+sum(1) returnerar 1
+sum(2) returnerar 3
+sum(3) returnerar 6
+sum(4) returnerar 10
+sum(5) returnerar 15

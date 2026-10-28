@@ -1,0 +1,65 @@
+--- in
+18
+addFirst 3
+addFirst 2
+addFirst 1
+print
+addLast 4
+addLast 5
+print
+removeFirst
+print
+removeLast
+print
+remove 3
+print
+remove 99
+print
+contains 2
+contains 99
+length
+--- out
+[1, 2, 3]
+[1, 2, 3, 4, 5]
+[2, 3, 4, 5]
+[2, 3, 4]
+1
+[2, 4]
+0
+[2, 4]
+1
+0
+2
+--- in
+8
+print
+length
+contains 1
+remove 1
+addLast 7
+print
+removeLast
+print
+--- out
+[]
+0
+0
+0
+[7]
+[]
+--- in
+8
+addLast 1
+addLast 2
+addLast 1
+remove 1
+print
+remove 1
+print
+length
+--- out
+1
+[2, 1]
+1
+[2]
+1

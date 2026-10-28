@@ -1,0 +1,28 @@
+--- in
+if (a[i] > (b + c)) { x = 1; }
+--- out
+OK
+--- in
+((())
+--- out
+FEL
+--- in
+{[()()]}
+--- out
+OK
+--- in
+([)]
+--- out
+FEL
+--- in
+int main() { return 0; }}
+--- out
+FEL
+--- in
+x = f(a[0], {1, 2})
+--- out
+OK
+--- in
+]
+--- out
+FEL

@@ -1,0 +1,304 @@
+{
+  "id": "inbyggda-signaler",
+  "title": "Inbyggda system och signaler",
+  "category": "Inbyggda system",
+  "minutes": 11,
+  "lead": "Vad ett inbyggt system är och varför de finns överallt, och hur analoga och digitala signaler möts via ADC, DAC och PWM.",
+  "sources": [
+    "Lektion 2 – Intro inbyggda system, sensorer och signaler"
+  ],
+  "goals": [
+    "Förklara vad som skiljer ett inbyggt system från en vanlig dator",
+    "Beskriva lagren hårdvara, drivrutiner, OS, middleware och applikation",
+    "Skilja på analoga och digitala signaler",
+    "Förklara vad ADC, DAC och PWM gör och räkna med dem"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är ett inbyggt system?"
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>inbyggt system</strong> är en dator med en bestämd uppgift inuti en större produkt: en termostat, en bils motorstyrning (ECU), en pacemaker eller ett industriellt styrsystem. Hårdvaran och mjukvaran är gjorda för just den uppgiften."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Specialbyggt för en tillämpning",
+        "Resursbegränsat: lite minne, långsam processor, liten energibudget",
+        "Ofta krav på realtid: svaret måste komma inom en viss tid",
+        "Höga krav på tillförlitlighet, ofta i 10–20 år"
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Aspekt",
+        "Inbyggt system",
+        "Vanlig dator"
+      ],
+      "rows": [
+        [
+          "Syfte",
+          "En dedikerad funktion",
+          "Många tillämpningar"
+        ],
+        [
+          "Resurser",
+          "KB–MB RAM",
+          "GB RAM"
+        ],
+        [
+          "Gränssnitt",
+          "Minimalt eller inget",
+          "Grafiskt"
+        ],
+        [
+          "Strömförbrukning",
+          "Extremt låg",
+          "Inte huvudfokus"
+        ],
+        [
+          "Kostnad",
+          "Optimerad för låg kostnad",
+          "Optimerad för prestanda"
+        ],
+        [
+          "Livslängd",
+          "10–20 år",
+          "3–5 år"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Varför bygga så? För att det blir <strong>billigt, litet, energisnålt, snabbt i realtid, robust och säkert</strong>. Ett system som bara gör en sak har färre sätt att gå sönder."
+    },
+    {
+      "type": "h",
+      "text": "Arkitekturen i lager"
+    },
+    {
+      "type": "p",
+      "html": "Ett inbyggt system byggs i lager, där varje lager bara pratar med lagret närmast:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Hårdvara:</strong> SoC (System on Chip), minnen och kringutrustning. Den fysiska grunden.",
+        "<strong>Drivrutiner:</strong> kod som kan prata med en viss hårdvara, till exempel en sensor eller UART.",
+        "<strong>Operativsystem:</strong> hanterar resurser och låter flera uppgifter köra (ofta ett RTOS som FreeRTOS, eller inget OS alls).",
+        "<strong>Middleware:</strong> återanvändbara tjänster, som en nätverksstack eller ett filsystem.",
+        "<strong>Applikation:</strong> det som gör produktens jobb."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Analoga och digitala signaler"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>analog signal</strong> kan ha vilket värde som helst inom ett intervall, till exempel spänningen från en ljussensor som glider mellan 0 och 3,3 V. En <strong>digital signal</strong> har bara två lägen: låg (0) och hög (1)."
+    },
+    {
+      "type": "p",
+      "html": "Vi behöver båda: sensorer ger ofta analoga signaler, men mikrokontrollern räknar digitalt. Därför finns omvandlare."
+    },
+    {
+      "type": "h",
+      "text": "ADC, DAC och PWM"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Omvandlare",
+        "Från → till",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "ADC (Analog-to-Digital)",
+          "Spänning → tal",
+          "Temperatursensorns spänning blir ett värde 0–4095"
+        ],
+        [
+          "DAC (Digital-to-Analog)",
+          "Tal → spänning",
+          "512 av 1024 blir ca 1,65 V vid 3,3 V referens"
+        ],
+        [
+          "PWM (Pulse Width Modulation)",
+          "Digital puls som låtsas vara analog",
+          "Dimma en LED, styra motorhastighet eller ett servo"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "En ADC med <strong>n bitar</strong> delar referensspänningen i 2ⁿ steg. En 10-bitars ADC har 1024 steg, en 12-bitars 4096. Spänningen räknas ut som <strong>U = värde · Vref / 2ⁿ</strong>."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "10 bitar, Vref = 3,3 V:   värde 512  ->  512 · 3,3 / 1024 = 1,65 V\n12 bitar, Vref = 3,3 V:   värde 2048 -> 2048 · 3,3 / 4096 = 1,65 V\n",
+      "caption": "ADC-räkning"
+    },
+    {
+      "type": "p",
+      "html": "<strong>PWM</strong> slår av och på en pinne mycket snabbt. Andelen av tiden den är hög kallas <strong>duty cycle</strong>. 50 % duty ger i medel halva spänningen, så en LED lyser ungefär halvt. På Arduino tar <code>analogWrite()</code> ett värde 0–255, där 255 är 100 %."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "const int LED = 9;\nconst int SENSOR = A0;\n\nvoid setup() {\n    pinMode(LED, OUTPUT);\n    Serial.begin(115200);\n}\n\nvoid loop() {\n    int raw = analogRead(SENSOR);          // 0-1023 på en 10-bitars ADC\n    int brightness = map(raw, 0, 1023, 0, 255);\n    analogWrite(LED, brightness);          // PWM: starkare ljus när sensorn ger mer\n    Serial.println(raw);\n    delay(50);\n}\n",
+      "caption": "Arduino: sensorvärde styr LED-styrka"
+    },
+    {
+      "type": "exercise",
+      "title": "Wokwi: sensor styr LED",
+      "html": "<p>Öppna exemplen <em>LED PWM Control</em> och <em>SENSOR ADC</em> på wokwi.com. Kombinera dem så att LED:ens styrka beror på sensorvärdet, som i koden ovan.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad kännetecknar ett inbyggt system?",
+      "options": [
+        "Det kör många olika program",
+        "Det har en dedikerad funktion i en större produkt",
+        "Det har alltid en skärm",
+        "Det kräver mycket RAM"
+      ],
+      "answer": 1,
+      "why": "En termostat eller en bil-ECU gör en sak och gör den bra."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är typiska egenskaper hos inbyggda system?",
+      "options": [
+        "Begränsat minne",
+        "Krav på realtid",
+        "Lång livslängd",
+        "Stort grafiskt gränssnitt"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Grafiska gränssnitt hör till allmänna datorer."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket lager innehåller kod som pratar direkt med en viss sensor?",
+      "options": [
+        "Applikation",
+        "Middleware",
+        "Drivrutin",
+        "Användargränssnitt"
+      ],
+      "answer": 2,
+      "why": "Drivrutinen kapslar in hur hårdvaran fungerar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en digital signal?",
+      "options": [
+        "En signal med vilket värde som helst",
+        "En signal med bara två lägen, låg och hög",
+        "En signal från en mikrofon",
+        "En växelspänning"
+      ],
+      "answer": 1,
+      "why": "Digitala signaler är diskreta: 0 eller 1."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en ADC?",
+      "options": [
+        "Gör om ett tal till en spänning",
+        "Gör om en spänning till ett tal",
+        "Förstärker en signal",
+        "Skapar en PWM-signal"
+      ],
+      "answer": 1,
+      "why": "Analog-to-Digital Converter."
+    },
+    {
+      "type": "text",
+      "q": "Hur många steg har en 10-bitars ADC?",
+      "accept": [
+        "1024"
+      ],
+      "placeholder": "antal",
+      "why": "2¹⁰ = 1024 steg, värden 0–1023."
+    },
+    {
+      "type": "mc",
+      "q": "En 10-bitars ADC med Vref 3,3 V ger värdet 512. Vilken spänning motsvarar det ungefär?",
+      "options": [
+        "0,5 V",
+        "1,65 V",
+        "3,3 V",
+        "5 V"
+      ],
+      "answer": 1,
+      "why": "512 · 3,3 / 1024 = 1,65 V, alltså halva referensen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder 25 % duty cycle i PWM?",
+      "options": [
+        "Signalen är hög en fjärdedel av tiden",
+        "Spänningen är 25 V",
+        "Frekvensen är 25 Hz",
+        "Signalen är låg en fjärdedel av tiden"
+      ],
+      "answer": 0,
+      "why": "Duty cycle är andelen av perioden som signalen är hög."
+    },
+    {
+      "type": "multi",
+      "q": "Vad används PWM till?",
+      "options": [
+        "Dimma en LED",
+        "Styra motorhastighet",
+        "Ställa in ett servos vinkel",
+        "Mäta temperatur"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Att mäta temperatur görs med en ADC eller ett digitalt protokoll."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket värde ger ungefär 50 % till analogWrite() på Arduino?",
+      "options": [
+        "50",
+        "128",
+        "255",
+        "512"
+      ],
+      "answer": 1,
+      "why": "analogWrite tar 0–255, så hälften är ca 128."
+    },
+    {
+      "type": "code",
+      "q": "Läs in ett ADC-värde, antal bitar och referensspänningen, till exempel <code>512 10 3.3</code>. Skriv ut spänningen med två decimaler, som <code>1.65 V</code>. Det högsta värdet (2ⁿ − 1) ska räknas som full referensspänning.",
+      "task": "03-inbyggda-signaler-1",
+      "why": "U = värde · Vref / 2ⁿ. Med specialfallet blir 4095 på 12 bitar exakt 3,30 V.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in en duty cycle i procent (0–100) och skriv ut värdet till <code>analogWrite()</code> (0–255), avrundat till närmaste heltal, som <code>analogWrite: 128</code>.",
+      "task": "03-inbyggda-signaler-2",
+      "why": "(procent · 255 + 50) / 100 i heltalsaritmetik avrundar rätt.",
+      "web": true
+    }
+  ]
+}

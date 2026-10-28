@@ -1,0 +1,277 @@
+{
+  "id": "hashtabeller",
+  "title": "Hashtabeller",
+  "category": "Datastrukturer",
+  "minutes": 13,
+  "lead": "Snabb uppslagning via nycklar: hashfunktion, kollisioner, länkad kollisionshantering och linjär sondering, delete och load factor.",
+  "sources": [
+    "Hashtabeller",
+    "Mini-quiz – Hashtabeller",
+    "Gruppuppgift – Hashtabeller"
+  ],
+  "goals": [
+    "Förklara hur en hashfunktion gör om en nyckel till ett index",
+    "Förklara vad en kollision är och två sätt att hantera dem",
+    "Simulera insert och lookup med linjär sondering",
+    "Förklara varför delete är svårt i öppen adressering",
+    "Räkna ut load factor och förklara hur den påverkar prestandan"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är en hashtabell?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>hashtabell</strong> kallas också dictionary eller hashmap. För användaren fungerar den nästan som en array, men index kallas <strong>nycklar</strong> och kan vara vilket heltal som helst, eller i mer generella varianter en sträng eller struct. Uppslagning är O(1) i medel, men blir långsammare ju fler element tabellen innehåller."
+    },
+    {
+      "type": "h",
+      "text": "Hashfunktionen"
+    },
+    {
+      "type": "p",
+      "html": "Tabellen har en intern array och en <strong>hashfunktion</strong> som gör om en nyckel till ett index i arrayen. Den enklaste är <code>key % size</code>."
+    },
+    {
+      "type": "p",
+      "html": "Olika nycklar kan få samma index. Det kallas en <strong>kollision</strong>. Ju fler kollisioner, desto längre tid tar det att söka. Därför sparas både nyckeln och datan på varje plats, som ett par (key, data) som kallas en <strong>bucket</strong>. Annars vet vi inte vilken nyckel värdet hör till."
+    },
+    {
+      "type": "h",
+      "text": "Operationer"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>insert:</strong> hasha nyckeln. Är platsen tagen av en annan nyckel, lägg bucketen på en närliggande ledig plats. Finns nyckeln redan, skriv över värdet, precis som <code>arr[5] = 15</code> skriver över det gamla.",
+        "<strong>lookup:</strong> hasha och sök vidare tills rätt nyckel hittas, eller tills vi vet att den inte finns.",
+        "<strong>delete:</strong> hitta och ta bort bucketen, och se till att tabellen fortfarande fungerar för senare sökningar."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Länkad kollisionshantering (chaining)"
+    },
+    {
+      "type": "p",
+      "html": "Varje plats i arrayen är en lista av buckets som alla har samma hashvärde. Alla operationer tittar bara på ett index, så det är enkelt."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "size = 50, hash = key % 50\nindex  buckets\n 0     -\n15     (15, 10) -> (65, 20) -> (115, 30)\n45     (95, 40)\n",
+      "caption": "chaining"
+    },
+    {
+      "type": "h",
+      "text": "Öppen adressering med linjär sondering"
+    },
+    {
+      "type": "p",
+      "html": "Varje plats i arrayen är en enda bucket. Är platsen tagen, prova nästa, och nästa, och börja om från 0 efter sista platsen."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "CAP = 11, hash = key % 11\nput 15 -> 15 % 11 = 4, ledig           -> index 4\nput 26 -> 26 % 11 = 4, tagen, prova 5  -> index 5\nput 37 -> 37 % 11 = 4, tagen, 5 tagen  -> index 6\n\nget 26: kollar index 4 (15), 5 (26)  -> hittad\nget 99: 99 % 11 = 0, tom             -> NOT FOUND\n",
+      "caption": "linjär sondering"
+    },
+    {
+      "type": "p",
+      "html": "Vid lookup kan vi sluta när vi hittar en tom plats. Insättningen hoppar aldrig förbi en tom plats, så nyckeln kan inte ligga längre fram."
+    },
+    {
+      "type": "h",
+      "text": "Varför delete är svårt"
+    },
+    {
+      "type": "p",
+      "html": "Tar vi bara bort en bucket blir det ett hål. En nyckel som hamnade längre fram på grund av en kollision blir då omöjlig att hitta, eftersom lookup stannar vid hålet. Lösningen: efter borttagningen, ta ut varje efterföljande bucket och sätt in den igen, tills en tom plats nås. (Ett alternativ är en \"tombstone\" som markerar att platsen var använd.)"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "före:   [5] 55   [6] 105   [7] 57   [8] 56\ndelete 55\nefter:  [5] 105  [6] 56    [7] 57   [8] -\n        (105 och 56 hoppar bakåt, 57 stannar på sin egen plats)\n",
+      "caption": "korrekt delete"
+    },
+    {
+      "type": "h",
+      "text": "Load factor"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Load factor</strong> = antal element / kapacitet. Med 3 element i en tabell med plats för 11 är den 3/11 ≈ 0,27. När den ökar blir det fler kollisioner och längre sonderingar. Därför gör riktiga hashtabeller tabellen större (rehash) när load factor passerar en gräns, ofta runt 0,7."
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Average",
+        "Worst"
+      ],
+      "rows": [
+        [
+          "put / get / delete",
+          "O(1)",
+          "O(n), om många nycklar hamnar i samma kedja eller tabellen är nästan full"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Hashtabeller är rätt när du ofta slår upp värden via nycklar, som id → data. De är fel när du behöver datan sorterad hela tiden. Då passar ett BST bättre."
+    },
+    {
+      "type": "exercise",
+      "title": "HashMap i C",
+      "html": "<p>Komplettera den givna HashMap:en med CAP = 11 och <code>key == 0</code> som tom plats: <code>f()</code>, <code>init()</code>, <code>put()</code> med insert och update, <code>get()</code> som stoppar på tom plats, och <code>printTable()</code>. Vilka tre nycklar i main är valda för att tvinga kollisioner? (15, 26 och 37, som alla ger 4.)</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken beskrivning passar bäst för en hashtabell?",
+      "options": [
+        "En sorterad lista med O(log n)-sökning",
+        "En struktur som mappar nycklar till platser i en array via en hashfunktion",
+        "En länkad lista med O(1)-sökning",
+        "Ett binärt träd"
+      ],
+      "answer": 1,
+      "why": "Mini-quizens fråga 1."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör hashfunktionen?",
+      "options": [
+        "Sorterar nycklarna",
+        "Gör om en nyckel till ett index 0..size−1",
+        "Krypterar värdena",
+        "Räknar elementen"
+      ],
+      "answer": 1,
+      "why": "Till exempel key % size."
+    },
+    {
+      "type": "text",
+      "q": "size = 10. Vad är hash(27) med key % size?",
+      "accept": [
+        "7"
+      ],
+      "placeholder": "index",
+      "why": "27 % 10 = 7."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en kollision?",
+      "options": [
+        "När tabellen är full",
+        "När två olika nycklar får samma index",
+        "När samma nyckel läggs in två gånger",
+        "När hashfunktionen kraschar"
+      ],
+      "answer": 1,
+      "why": "Då måste en av dem hamna någon annanstans."
+    },
+    {
+      "type": "mc",
+      "q": "Varför sparas (key, data) och inte bara data?",
+      "options": [
+        "För att kunna jämföra nycklar vid kollisioner och lookup",
+        "Hashfunktionen kräver två tal",
+        "Det sparar minne",
+        "För sorteringens skull"
+      ],
+      "answer": 0,
+      "why": "Annars vet vi inte vems värde som ligger på platsen."
+    },
+    {
+      "type": "mc",
+      "q": "Vid linjär sondering är index 7 upptaget av en annan nyckel. Vad gör vi?",
+      "options": [
+        "Ger upp",
+        "Provar 8, 9, … och börjar om från 0 efter sista",
+        "Sorterar tabellen",
+        "Skriver över"
+      ],
+      "answer": 1,
+      "why": "Wrap-around med (start + step) % CAP."
+    },
+    {
+      "type": "text",
+      "q": "CAP = 11. Vilket index hamnar 37 på om 15 och 26 redan är insatta med linjär sondering?",
+      "accept": [
+        "6"
+      ],
+      "placeholder": "index",
+      "why": "Alla tre ger 4. 15 tar 4, 26 tar 5 och 37 tar 6."
+    },
+    {
+      "type": "mc",
+      "q": "Varför kan lookup stanna vid en tom plats?",
+      "options": [
+        "För att tabellen är sorterad",
+        "Insättningen hoppar aldrig förbi en tom plats, så nyckeln kan inte ligga längre fram",
+        "För att det är snabbare",
+        "Den kan inte det"
+      ],
+      "answer": 1,
+      "why": "Så länge vi inte har delete utan reparation."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer om man bara tar bort en nyckel och lämnar ett hål?",
+      "options": [
+        "Ingenting",
+        "Lookup kan stanna för tidigt och missa nycklar längre fram",
+        "Tabellen blir sorterad",
+        "Load factor ökar"
+      ],
+      "answer": 1,
+      "why": "Därför måste efterföljande buckets sättas in igen."
+    },
+    {
+      "type": "text",
+      "q": "Vad är load factor med 3 element och kapacitet 11? Avrunda till två decimaler.",
+      "accept": [
+        "0.27",
+        "0,27"
+      ],
+      "placeholder": "decimaltal",
+      "why": "3 / 11 ≈ 0,2727."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer med prestandan när load factor ökar?",
+      "options": [
+        "Den blir bättre",
+        "Fler kollisioner och längre sonderingar gör den sämre",
+        "Ingen skillnad",
+        "Tabellen blir sorterad"
+      ],
+      "answer": 1,
+      "why": "I värsta fall nära O(n)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ett rimligt användningsfall för en hashtabell?",
+      "options": [
+        "Data som alltid måste vara sorterad",
+        "Slå upp värden snabbt via nycklar, som id → data",
+        "Små listor där ordningen är viktigast",
+        "Rita grafer"
+      ],
+      "answer": 1,
+      "why": "Mini-quizens fråga 15."
+    },
+    {
+      "type": "code",
+      "q": "HashMap med linjär sondering. CAP = 11, hash = key % 11, nyckeln 0 är tom plats. Kör kommandona <code>put k v</code>, <code>get k</code> (skriv <code>get(26) -&gt; 260</code> eller <code>get(99) -&gt; NOT FOUND</code>) och <code>print</code> (alla 11 platser, som <code>[4] key=15 value=150</code> eller <code>[0] EMPTY</code>).",
+      "task": "07-hashtabeller-1",
+      "why": "put: tom plats ger insert, samma nyckel ger update, annars nästa plats. get: stanna på tom plats.",
+      "web": true
+    }
+  ]
+}

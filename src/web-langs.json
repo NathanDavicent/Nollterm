@@ -107,5 +107,77 @@
   ],
   "oop/09-singleton-adapter-2": [
     "py"
+  ],
+  "elek/02-ellagar-1": [
+    "cpp",
+    "py"
+  ],
+  "elek/02-ellagar-2": [
+    "py"
+  ],
+  "elek/02-ellagar-3": [
+    "cpp",
+    "py"
+  ],
+  "elek/03-inbyggda-signaler-1": [
+    "cpp",
+    "py"
+  ],
+  "elek/03-inbyggda-signaler-2": [
+    "cpp",
+    "py"
+  ],
+  "elek/08-mikroprocessor-talbaser-1": [
+    "py"
+  ],
+  "elek/08-mikroprocessor-talbaser-2": [
+    "py"
+  ],
+  "elek/08-mikroprocessor-talbaser-3": [
+    "py"
+  ],
+  "elek/09-logik-1": [
+    "cpp",
+    "py"
+  ],
+  "elek/09-logik-2": [
+    "py"
+  ],
+  "algo/01-komplexitet-1": [
+    "py"
+  ],
+  "algo/02-rekursion-1": [
+    "cpp",
+    "py"
+  ],
+  "algo/02-rekursion-2": [
+    "py"
+  ],
+  "algo/03-sortering-1": [
+    "py"
+  ],
+  "algo/03-sortering-2": [
+    "py"
+  ],
+  "algo/04-adt-listor-1": [
+    "py"
+  ],
+  "algo/05-stack-ko-mangd-1": [
+    "py"
+  ],
+  "algo/05-stack-ko-mangd-2": [
+    "py"
+  ],
+  "algo/06-trad-1": [
+    "py"
+  ],
+  "algo/07-hashtabeller-1": [
+    "py"
+  ],
+  "algo/08-grafer-1": [
+    "py"
+  ],
+  "algo/08-grafer-2": [
+    "py"
   ]
 }

@@ -1,0 +1,389 @@
+{
+  "id": "sql",
+  "title": "Databaser och SQL",
+  "category": "Databaser",
+  "minutes": 14,
+  "lead": "Varför databaser, tabeller, nycklar och relationer, SQL-frågorna som kommer på tentan, och hur C-program pratar med SQLite och Postgres.",
+  "sources": [
+    "Föreläsning 8 – Databaser och SQL"
+  ],
+  "goals": [
+    "Förklara när en databas behövs i stället för filer",
+    "Använda begreppen rad, kolumn, primärnyckel och främmande nyckel",
+    "Skriva SELECT med WHERE, DISTINCT, ORDER BY, LIMIT, LIKE och NULL",
+    "Skilja på DDL och DML och använda CRUD",
+    "Förklara normalisering, GROUP BY och JOIN på grundnivå"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför databaser?"
+    },
+    {
+      "type": "p",
+      "html": "Ibland vill vi spara data mer eller mindre permanent och kunna söka effektivt bland stora mängder. Filer och CSV räcker när du bara loggar och läser allt senare. En databas behövs när du vill fråga flexibelt (\"senaste 10 events för sensor 3\", \"antal ERROR per sensor idag\"), vill ha integritet utan trasiga referenser, eller har flera klienter samtidigt."
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "SQLite",
+        "PostgreSQL"
+      ],
+      "rows": [
+        [
+          "Typ",
+          "Filbaserad, inbyggd, ingen server",
+          "Serverdatabas"
+        ],
+        [
+          "Passar",
+          "Edge-enheter, gateways, offline-loggning",
+          "Flera program och klienter, system som växer"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Tabeller och nycklar"
+    },
+    {
+      "type": "p",
+      "html": "En tabell är en datastruktur som databasen optimerar för sökning, sortering och indexering."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Rad (row):</strong> en post, till exempel ett event",
+        "<strong>Kolumn (column):</strong> ett attribut, till exempel namn",
+        "<strong>Primärnyckel (PK):</strong> unik identitet för raden",
+        "<strong>Främmande nyckel (FK):</strong> pekar på en primärnyckel i en annan tabell. Så skapas relationer."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Sensors                    Events\nid  name      loc          id  ts                   sensor_id  type    value\n1   Temp-A    Lab1         10  2026-01-22 10:03:00  1          TEMP    21.7\n2   Motion-1  Hall         11  2026-01-22 10:03:02  2          MOTION  1\n",
+      "caption": "en sensor har många events (1 till *)"
+    },
+    {
+      "type": "h",
+      "text": "SQL-kärnan (tentan)"
+    },
+    {
+      "type": "table",
+      "head": [
+        "ID",
+        "Name",
+        "Program",
+        "Enrolled"
+      ],
+      "rows": [
+        [
+          "1",
+          "Frida",
+          "IOT",
+          "2021"
+        ],
+        [
+          "2",
+          "Elin",
+          "AI",
+          "2021"
+        ],
+        [
+          "3",
+          "Börje",
+          "AI",
+          "2020"
+        ],
+        [
+          "4",
+          "Ingrid",
+          "Engineering",
+          "2023"
+        ],
+        [
+          "5",
+          "Karl",
+          "Engineering",
+          "2022"
+        ],
+        [
+          "6",
+          "Erik",
+          "AI",
+          "2021"
+        ],
+        [
+          "7",
+          "Jonathan",
+          "IOT",
+          "2020"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "sql",
+      "code": "SELECT Name FROM Students;                          -- alla namn\n\nSELECT Name FROM Students WHERE Program = 'IOT';    -- Frida, Jonathan\n\nSELECT DISTINCT Program FROM Students;              -- IOT, AI, Engineering (unika)\n\nSELECT DISTINCT Program FROM Students\nORDER BY Program DESC;                              -- sorterat baklänges\n\nSELECT DISTINCT Enrolled FROM Students\nWHERE Program = 'AI';                               -- 2021, 2020\n",
+      "caption": "SELECT, WHERE, DISTINCT, ORDER BY"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Strängar skrivs med enkla citattecken: <code>'AI'</code>. Dubbla citattecken betyder ett kolumnnamn i Postgres."
+    },
+    {
+      "type": "h",
+      "text": "Lite mer SELECT"
+    },
+    {
+      "type": "code",
+      "lang": "sql",
+      "code": "SELECT * FROM Events ORDER BY ts DESC LIMIT 10;            -- de 10 senaste\n\nSELECT Name FROM Students\nWHERE Program = 'AI' AND Enrolled >= 2021;                 -- Elin, Erik\n\nSELECT Name FROM Students WHERE Name LIKE 'J%';            -- namn som börjar på J\n\nSELECT * FROM Events WHERE value IS NULL;                  -- saknat värde\n",
+      "caption": "LIMIT, AND, LIKE, NULL"
+    },
+    {
+      "type": "p",
+      "html": "<strong>NULL</strong> betyder saknat eller okänt värde. Det är inte samma sak som 0, och du jämför med <code>IS NULL</code> eller <code>IS NOT NULL</code>, aldrig med <code>= NULL</code>."
+    },
+    {
+      "type": "h",
+      "text": "DDL, DML och CRUD"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>DDL</strong> (Data Definition Language) definierar strukturen: <code>CREATE TABLE</code>, <code>ALTER TABLE</code>, <code>DROP TABLE</code>.",
+        "<strong>DML</strong> (Data Manipulation Language) ändrar data: <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>.",
+        "<strong>DQL</strong> frågar data: <code>SELECT</code>.",
+        "<strong>CRUD</strong> är Create, Read, Update, Delete: INSERT, SELECT, UPDATE, DELETE."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "sql",
+      "code": "CREATE TABLE Sensors (\n    id   INTEGER PRIMARY KEY,\n    name TEXT NOT NULL,\n    loc  TEXT\n);\n\nCREATE TABLE Events (\n    id        INTEGER PRIMARY KEY,\n    ts        TEXT NOT NULL,\n    sensor_id INTEGER NOT NULL,\n    type      TEXT NOT NULL,\n    value     REAL,\n    FOREIGN KEY (sensor_id) REFERENCES Sensors(id)\n);\n\nINSERT INTO Students (ID, Name, Program, Enrolled) VALUES (8, 'Maja', 'IOT', 2022);\nUPDATE Students SET Program = 'AI' WHERE ID = 8;\nDELETE FROM Students WHERE ID = 8;\n",
+      "caption": "DDL och DML"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "DELETE utan WHERE tar bort alla rader i tabellen."
+    },
+    {
+      "type": "h",
+      "text": "Normalisering"
+    },
+    {
+      "type": "p",
+      "html": "Lägger vi sensorns namn och plats direkt i varje event måste vi uppdatera många rader när sensorn flyttas, och glömmer vi en blir databasen inkonsekvent. <strong>Normaliserat</strong> sparas sensorn en gång i Sensors, och Events pekar dit med <code>sensor_id</code>. Då räcker <code>UPDATE Sensors SET loc = 'Lab2' WHERE id = 1;</code>."
+    },
+    {
+      "type": "h",
+      "text": "GROUP BY och JOIN"
+    },
+    {
+      "type": "code",
+      "lang": "sql",
+      "code": "SELECT sensor_id, COUNT(*) AS n_events\nFROM Events\nGROUP BY sensor_id\nHAVING COUNT(*) >= 100\nORDER BY n_events DESC;\n\nSELECT e.ts, s.name, e.type, e.value\nFROM Events e\nJOIN Sensors s ON s.id = e.sensor_id\nORDER BY e.ts DESC\nLIMIT 20;\n",
+      "caption": "aggregat och JOIN"
+    },
+    {
+      "type": "h",
+      "text": "Verktyg och SQL från C"
+    },
+    {
+      "type": "p",
+      "html": "<strong>DBeaver</strong>, pgAdmin och DB Browser for SQLite är grafiska verktyg. I terminalen finns <code>psql</code> (<code>\\dt</code> listar tabeller) och <code>sqlite3</code> (<code>.tables</code>, <code>.schema</code>). Från C öppnar programmet en anslutning, skickar en SQL-sträng, får rader tillbaka och itererar över dem. Använd <strong>prepared statements</strong> med parametrar (<code>?</code> i SQLite) i stället för att klistra ihop strängar, så slipper du SQL injection."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "sqlite3_stmt* stmt = NULL;\nsqlite3_prepare_v2(db, \"INSERT INTO Events(ts, sensor_id, type, value) VALUES(?,?,?,?);\", -1, &stmt, NULL);\nsqlite3_bind_int(stmt, 1, 1001);\nsqlite3_bind_int(stmt, 2, 7);\nsqlite3_bind_text(stmt, 3, \"TEMP\", -1, SQLITE_STATIC);\nsqlite3_bind_int(stmt, 4, 42);\nsqlite3_step(stmt);\nsqlite3_finalize(stmt);\n",
+      "caption": "SQLite i C (kompilera med -lsqlite3)"
+    },
+    {
+      "type": "exercise",
+      "title": "Öva SQL",
+      "html": "<p>Gör lektionerna på sqlbolt.com, och skriv frågor mot Students-tabellen: alla som började 2021, alla program sorterade i bokstavsordning utan dubbletter, och alla namn som slutar på \"n\".</p><p><strong>Förslag:</strong> <code>SELECT Name FROM Students WHERE Enrolled = 2021;</code>, <code>SELECT DISTINCT Program FROM Students ORDER BY Program;</code>, <code>SELECT Name FROM Students WHERE Name LIKE '%n';</code></p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en primärnyckel?",
+      "options": [
+        "En nyckel som pekar på en annan tabell",
+        "Unik identitet för en rad",
+        "Ett lösenord till databasen",
+        "Den första kolumnen"
+      ],
+      "answer": 1,
+      "why": "En främmande nyckel pekar på en primärnyckel i en annan tabell."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en främmande nyckel (FK)?",
+      "options": [
+        "Krypterar kolumnen",
+        "Pekar på en primärnyckel i en annan tabell och skapar en relation",
+        "Gör kolumnen unik",
+        "Sorterar tabellen"
+      ],
+      "answer": 1,
+      "why": "Den garanterar att till exempel sensor_id faktiskt finns."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken fråga ger varje program en gång?",
+      "options": [
+        "SELECT Program FROM Students;",
+        "SELECT DISTINCT Program FROM Students;",
+        "SELECT UNIQUE Students;",
+        "SELECT * FROM Program;"
+      ],
+      "answer": 1,
+      "why": "DISTINCT tar bort dubbletter."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka studenter ger <code>SELECT Name FROM Students WHERE Program = 'AI' AND Enrolled &gt;= 2021;</code>?",
+      "options": [
+        "Elin",
+        "Börje",
+        "Erik",
+        "Frida"
+      ],
+      "answers": [
+        0,
+        2
+      ],
+      "why": "Börje började 2020 och Frida går IOT."
+    },
+    {
+      "type": "mc",
+      "q": "Hur sorterar du fallande?",
+      "options": [
+        "ORDER BY x UP",
+        "ORDER BY x DESC",
+        "SORT x DOWN",
+        "ORDER x REVERSE"
+      ],
+      "answer": 1,
+      "why": "ASC är stigande och standard."
+    },
+    {
+      "type": "mc",
+      "q": "Hur kollar du om ett värde saknas?",
+      "options": [
+        "value = NULL",
+        "value IS NULL",
+        "value == 0",
+        "value = ''"
+      ],
+      "answer": 1,
+      "why": "NULL jämförs med IS NULL. NULL är inte 0."
+    },
+    {
+      "type": "text",
+      "q": "Vilket nyckelord begränsar antalet rader som returneras?",
+      "accept": [
+        "LIMIT"
+      ],
+      "placeholder": "nyckelord",
+      "why": "<code>... ORDER BY ts DESC LIMIT 10;</code>"
+    },
+    {
+      "type": "mc",
+      "q": "Vilka namn matchar <code>LIKE 'J%'</code>?",
+      "options": [
+        "Namn som innehåller J",
+        "Namn som börjar på J",
+        "Namn som slutar på J",
+        "Bara \"J\""
+      ],
+      "answer": 1,
+      "why": "% matchar valfritt antal tecken."
+    },
+    {
+      "type": "mc",
+      "q": "Är CREATE TABLE DDL eller DML?",
+      "options": [
+        "DDL",
+        "DML",
+        "DQL",
+        "Inget av dem"
+      ],
+      "answer": 0,
+      "why": "DDL definierar strukturen. INSERT, UPDATE och DELETE är DML."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka hör till CRUD?",
+      "options": [
+        "INSERT",
+        "SELECT",
+        "UPDATE",
+        "DELETE",
+        "CREATE TABLE"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Create, Read, Update, Delete. CREATE TABLE skapar strukturen, inte data."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer med <code>DELETE FROM Students;</code>?",
+      "options": [
+        "Ingenting utan WHERE",
+        "Alla rader tas bort",
+        "Tabellen tas bort",
+        "Den första raden tas bort"
+      ],
+      "answer": 1,
+      "why": "Glöm aldrig WHERE."
+    },
+    {
+      "type": "mc",
+      "q": "Varför normaliserar man?",
+      "options": [
+        "För att databasen ska bli snabbare att skapa",
+        "För att undvika dubblerad data som kan bli inkonsekvent",
+        "För att slippa nycklar",
+        "För att kunna använda LIKE"
+      ],
+      "answer": 1,
+      "why": "Då ändras en uppgift på ett ställe."
+    },
+    {
+      "type": "mc",
+      "q": "När passar SQLite bättre än Postgres?",
+      "options": [
+        "Många klienter samtidigt",
+        "På en edge-enhet eller gateway utan server",
+        "När systemet ska skalas upp",
+        "Aldrig"
+      ],
+      "answer": 1,
+      "why": "SQLite är en fil, utan server."
+    },
+    {
+      "type": "mc",
+      "q": "Varför använder man prepared statements?",
+      "options": [
+        "De är kortare",
+        "De skyddar mot SQL injection och är snabbare vid upprepning",
+        "De behövs för SELECT",
+        "De sorterar resultatet"
+      ],
+      "answer": 1,
+      "why": "Parametrarna skickas separat från SQL-texten."
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "id": "trad",
+  "title": "Träd och binära sökträd",
+  "category": "Datastrukturer",
+  "minutes": 15,
+  "lead": "Träd ger struktur och snabb sökning. Binära sökträd: insättning, sökning, traversering, höjd, borttagning och balans.",
+  "sources": [
+    "Träd",
+    "Övningar 5 – Träd (BT/BST)"
+  ],
+  "goals": [
+    "Förklara rot, barn, löv, djup och höjd",
+    "Skilja på binärt träd och binärt sökträd",
+    "Implementera insert och contains i ett BST",
+    "Traversera inorder, preorder, postorder och levelorder",
+    "Förklara varför balans avgör sökningens komplexitet"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Problemet"
+    },
+    {
+      "type": "p",
+      "html": "Att leta efter ett tal i en osorterad array eller lista är O(n): vi måste titta på alla element. Vi vill ha en struktur där varje jämförelse gör problemet mindre."
+    },
+    {
+      "type": "h",
+      "text": "Träd"
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>träd</strong> liknar en lista, men varje nod kan ha flera barn i stället för en enda \"rest\". Det har en <strong>rot</strong> högst upp. En nod utan barn är ett <strong>löv</strong>. Inga cykler är tillåtna, så trädet har bara en riktning. Varje nod är själv roten i ett delträd."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Binärt träd (BT):</strong> varje nod har högst två barn, vänster och höger.",
+        "<strong>Binärt sökträd (BST):</strong> ett binärt träd där allt i vänster delträd är mindre än noden och allt i höger delträd är större, för varje nod."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "typedef struct Node {\n    int value;\n    struct Node* left;\n    struct Node* right;\n} Node;\n",
+      "caption": "C"
+    },
+    {
+      "type": "h",
+      "text": "Sökning och insättning"
+    },
+    {
+      "type": "p",
+      "html": "Vill vi veta om x finns: är x större än nodens värde, gå höger. Mindre, gå vänster. Finns ingen nod åt det hållet finns x inte i trädet. Insättning går på samma sätt: gå ner tills platsen är tom och sätt noden där. Lika värden ignoreras."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "Node* bst_insert(Node* root, int x) {\n    if (root == NULL) return node_create(x);\n    if (x < root->value) root->left = bst_insert(root->left, x);\n    else if (x > root->value) root->right = bst_insert(root->right, x);\n    return root;     // returnera (ev. ny) rot, så att anroparen kan koppla in noden\n}\n",
+      "caption": "C"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Samma idé på en sorterad array kallas binärsökning."
+    },
+    {
+      "type": "h",
+      "text": "Djup och balans"
+    },
+    {
+      "type": "p",
+      "html": "Trädets <strong>höjd</strong> är antalet steg man längst kan gå nedåt från roten. Det <strong>minsta</strong> möjliga djupet bestäms av antalet noder (ungefär log₂ n). Är höjden lika med minimidjupet är trädet <strong>balanserat</strong>. Sökning tar O(höjd): O(log n) i ett balanserat träd, men O(n) om du stoppar in 1, 2, 3, 4, 5 i ordning, för då blir trädet en lång kedja åt höger."
+    },
+    {
+      "type": "h",
+      "text": "Traversering"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Ordning",
+        "Algoritm",
+        "Bra till"
+      ],
+      "rows": [
+        [
+          "Inorder",
+          "vänster, nod, höger",
+          "Ger sorterad utskrift av ett BST"
+        ],
+        [
+          "Preorder",
+          "nod, vänster, höger",
+          "Kopiera trädet, roten skrivs först"
+        ],
+        [
+          "Postorder",
+          "vänster, höger, nod",
+          "Tömma trädet: barnen frigörs före föräldern"
+        ],
+        [
+          "Levelorder",
+          "nivå för nivå med en kö (BFS)",
+          "Visa trädet lager för lager"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Insättning: 8, 3, 10, 1, 6, 14, 4, 7, 13\n\n            8\n          /   \\\n         3     10\n        / \\      \\\n       1   6      14\n          / \\    /\n         4   7  13\n\nInorder:   1 3 4 6 7 8 10 13 14\nPreorder:  8 3 1 6 4 7 10 14 13\nPostorder: 1 4 7 6 3 13 14 10 8\nHöjd: 3\n",
+      "caption": "exempelträdet"
+    },
+    {
+      "type": "h",
+      "text": "Ta bort en nod"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Inga barn:</strong> frigör noden och sätt pekaren till NULL.",
+        "<strong>Ett barn:</strong> koppla förälderns pekare till barnet och frigör noden, som i en länkad lista.",
+        "<strong>Två barn:</strong> hitta det minsta värdet i höger delträd (inorder successor), kopiera det till noden och ta bort det från höger delträd."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Balansering"
+    },
+    {
+      "type": "p",
+      "html": "Insättningsordningen avgör formen. För att balansera: spara trädet inorder i en sorterad array, töm trädet och bygg om det med mittelementet som rot, rekursivt för varje halva. Det finns också självbalanserande träd som röd-svarta träd, men de är överkurs."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "map på ett BST kan förstöra sorteringen. f(x) = x + 1 bevarar ordningen, men f(x) = x · x gör det inte om trädet har både negativa och positiva tal."
+    },
+    {
+      "type": "exercise",
+      "title": "Bygg och mät ett BST",
+      "html": "<p>Implementera <code>node_create</code>, <code>tree_destroy</code> (postorder), de tre utskrifterna, <code>bst_contains</code>, <code>bst_insert</code>, <code>tree_height</code> (tomt träd −1), <code>tree_count_nodes</code> och <code>tree_count_leaves</code>. Bygg trädet från 8, 3, 10, 1, 6, 14, 4, 7, 13. Hitta sedan inorder successor till 10 med <code>bst_min</code> på höger delträd. (Svar: 13.) Bonus: levelorder med kö, <code>bst_delete</code> och balansering via rebuild.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är ett löv?",
+      "options": [
+        "Roten",
+        "En nod utan barn",
+        "En nod med två barn",
+        "Den djupaste noden"
+      ],
+      "answer": 1,
+      "why": "Löven sitter längst ut i trädet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gäller i ett binärt sökträd?",
+      "options": [
+        "Varje nod har exakt två barn",
+        "Allt till vänster är mindre och allt till höger är större, för varje nod",
+        "Trädet är alltid balanserat",
+        "Värdena ligger i levelorder"
+      ],
+      "answer": 1,
+      "why": "Det är BST-egenskapen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken traversering ger sorterad utskrift av ett BST?",
+      "options": [
+        "Preorder",
+        "Inorder",
+        "Postorder",
+        "Levelorder"
+      ],
+      "answer": 1,
+      "why": "Vänster (mindre), nod, höger (större)."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken traversering använder du för att tömma ett träd?",
+      "options": [
+        "Preorder",
+        "Inorder",
+        "Postorder",
+        "Levelorder"
+      ],
+      "answer": 2,
+      "why": "Barnen måste frigöras innan föräldern, annars tappar vi pekarna till dem."
+    },
+    {
+      "type": "mc",
+      "q": "Vad blir trädets form om du stoppar in 1, 2, 3, 4, 5 i den ordningen?",
+      "options": [
+        "Balanserat",
+        "En lång kedja åt höger",
+        "En lång kedja åt vänster",
+        "Ett fullt träd"
+      ],
+      "answer": 1,
+      "why": "Varje nytt tal är större, så det hamnar alltid till höger."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken komplexitet har sökning i ett balanserat BST?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "answer": 1,
+      "why": "Varje steg halverar ungefär det som är kvar."
+    },
+    {
+      "type": "mc",
+      "q": "Och i ett helt obalanserat BST (en kedja)?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "answer": 2,
+      "why": "Det är i praktiken en länkad lista."
+    },
+    {
+      "type": "text",
+      "q": "Trädet från 8, 3, 10, 1, 6, 14, 4, 7, 13. Vad är preorder? Skriv talen med mellanslag.",
+      "accept": [
+        "8 3 1 6 4 7 10 14 13"
+      ],
+      "placeholder": "tal",
+      "why": "Nod, vänster, höger."
+    },
+    {
+      "type": "text",
+      "q": "Vad är inorder successor till 10 i samma träd?",
+      "accept": [
+        "13"
+      ],
+      "placeholder": "tal",
+      "why": "Minsta värdet i 10:s högra delträd: gå till 14 och sedan så långt vänster som möjligt, 13."
+    },
+    {
+      "type": "mc",
+      "q": "Hur tar man bort en nod med två barn?",
+      "options": [
+        "Tar bort hela delträdet",
+        "Ersätter värdet med minsta i höger delträd och tar bort den noden",
+        "Byter plats på barnen",
+        "Det går inte"
+      ],
+      "answer": 1,
+      "why": "Eller största i vänster delträd."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken datastruktur används för levelorder?",
+      "options": [
+        "Stack",
+        "Kö",
+        "Mängd",
+        "Hashtabell"
+      ],
+      "answer": 1,
+      "why": "BFS: lägg barnen i en kö och ta ut dem i ordning."
+    },
+    {
+      "type": "mc",
+      "q": "Varför är det praktiskt att bst_insert returnerar en Node*?",
+      "options": [
+        "Det är snabbare",
+        "Anroparen kan koppla in en ny nod där det var NULL, även i roten",
+        "Det krävs av C",
+        "Den returnerar alltid samma nod"
+      ],
+      "answer": 1,
+      "why": "<code>root-&gt;left = bst_insert(root-&gt;left, x);</code>"
+    },
+    {
+      "type": "code",
+      "q": "Binärt sökträd. Läs in n och n heltal och stoppa in dem i tur och ordning (dubbletter ignoreras). Skriv ut inorder, preorder och postorder, höjden i kanter (tomt träd −1, en nod 0) och antalet löv, som i exemplet.",
+      "task": "06-trad-1",
+      "why": "Varje traversering är tre rader rekursion med olika ordning.",
+      "web": true
+    }
+  ]
+}

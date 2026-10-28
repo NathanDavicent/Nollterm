@@ -1,6 +1,3 @@
 {
-  "courses": [
-    "cpp",
-    "oop"
-  ]
+  "courses": ["cpp", "oop", "elek", "algo"]
 }

@@ -1,0 +1,6 @@
+n = int(input())
+resistanser = [float(x) for x in input().split()]
+serie = sum(resistanser)                          # R = R1 + R2 + ...
+parallell = 1 / sum(1 / r for r in resistanser)   # 1/R = 1/R1 + 1/R2 + ...
+print(f"Serie: {serie:.2f} ohm")
+print(f"Parallell: {parallell:.2f} ohm")

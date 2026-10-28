@@ -1,0 +1,321 @@
+{
+  "id": "stack-ko-mangd",
+  "title": "Stack, kö och mängd",
+  "category": "Datastrukturer",
+  "minutes": 13,
+  "lead": "Tre klassiska ADT:er byggda ovanpå listan: stacken (LIFO), kön (FIFO) och mängden utan dubbletter. Plus högre ordningens funktioner: map och fold.",
+  "sources": [
+    "Stack, Kö, Mängd",
+    "Övning 4 – Stack, Queue, Set"
+  ],
+  "goals": [
+    "Beskriva stack, kö och mängd och deras operationer",
+    "Bygga dem ovanpå en länkad lista (komposition)",
+    "Implementera union, snitt och differens",
+    "Förklara och använda map och fold",
+    "Förklara vad static betyder på en C-funktion"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "static i C"
+    },
+    {
+      "type": "p",
+      "html": "Nyckelordet <code>static</code> på en funktion eller global variabel gör att den bara syns i filen där den skapas. Det passar för hjälpfunktioner till en ADT som användaren inte ska kunna anropa av misstag, ungefär som <code>private</code> i C++."
+    },
+    {
+      "type": "h",
+      "text": "Stack"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>stack</strong> är en hög där man bara kommer åt det översta elementet: <strong>LIFO</strong>, last in first out. Funktionsanrop, ångra-knappar, backtracking och parsing av parenteser använder stackar."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Operation",
+        "Gör",
+        "Med listan"
+      ],
+      "rows": [
+        [
+          "push(x)",
+          "Lägger x överst",
+          "addFirst"
+        ],
+        [
+          "peek()",
+          "Tittar på det översta",
+          "första elementet"
+        ],
+        [
+          "pop()",
+          "Tar bort och returnerar det översta",
+          "första elementet + removeFirst"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Kö"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>kö</strong> lägger till längst bak och tar bort längst fram: <strong>FIFO</strong>, first in first out. Buffertar, schemaläggning, meddelandeköer och BFS använder köer."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Operation",
+        "Gör",
+        "Med listan"
+      ],
+      "rows": [
+        [
+          "enqueue(x)",
+          "Lägger x längst bak",
+          "addLast"
+        ],
+        [
+          "peek()",
+          "Tittar på det främsta (äldsta)",
+          "första elementet"
+        ],
+        [
+          "dequeue()",
+          "Tar bort och returnerar det främsta",
+          "första elementet + removeFirst"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "pop, peek och dequeue på en tom struktur är inte tillåtet. Skriv det som en precondition med <code>assert(!empty())</code>."
+    },
+    {
+      "type": "h",
+      "text": "Mängd"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>mängd</strong> (set) är som i diskret matematik: en påse där ett element antingen finns med eller inte. Elementen har ingen ordning, och dubbletter är inte tillåtna. Det kallas mängdens <strong>invariant</strong>: den ska gälla efter varje operation."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<code>isInSet(x)</code>: finns x?",
+        "<code>add(x)</code>: lägg till om x inte redan finns",
+        "<code>remove(x)</code>: ta bort om x finns",
+        "<code>union(a, b)</code>: allt som finns i a eller b",
+        "<code>intersection(a, b)</code>: det som finns i både a och b",
+        "<code>subtract(a, b)</code>: det som finns i a men inte i b"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "a = {1, 2, 3, 4}     b = {3, 4, 5}\nunion         = {1, 2, 3, 4, 5}\nintersection  = {3, 4}\na - b         = {1, 2}\n",
+      "caption": "mängdoperationer"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Bygg stack, kö och mängd ovanpå listans publika funktioner, utan att gå in i noderna direkt. Det är ADT-tänk och komposition."
+    },
+    {
+      "type": "h",
+      "text": "Högre ordningens funktioner"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>högre ordningens funktion</strong> tar en funktion som parameter eller returnerar en. I C skickar man funktionspekare."
+    },
+    {
+      "type": "p",
+      "html": "<strong>map</strong> anropar en funktion på varje element och ersätter elementet med resultatet:"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int plusTwo(int a) { return a + 2; }\n\nvoid mapArray(int arr[], int size, int (*f)(int)) {\n    for (int i = 0; i < size; i++)\n        arr[i] = f(arr[i]);\n}\n\nint myArr[5] = {1, 2, 3, 4, 5};\nmapArray(myArr, 5, plusTwo);     // myArr blir {3, 4, 5, 6, 7}\n",
+      "caption": "map i C"
+    },
+    {
+      "type": "p",
+      "html": "<strong>fold</strong> viker ihop en samling till ett värde med en funktion som tar två argument. Med summa som funktion blir fold av {1, 2, 3, 4, 5} lika med 15. Ordningen spelar roll för operationer som subtraktion, så det finns <strong>leftfold</strong> (börjar från vänster) och <strong>rightfold</strong> (börjar från höger)."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "leftfold  med a - b på [1, 2, 3]:  (1 - 2) - 3 = -4\nrightfold med a - b på [1, 2, 3]:   1 - (2 - 3) =  2\n",
+      "caption": "ordningen spelar roll"
+    },
+    {
+      "type": "exercise",
+      "title": "Stack, kö och mängd",
+      "html": "<p>Komplettera <code>stack</code>, <code>queue</code> och <code>set</code> ovanpå den givna listan. Lägg till <code>set_union</code>, <code>set_intersection</code> och <code>set_difference</code>, och sist <code>map</code> och <code>fold</code> på listan: <code>[1,2,3]</code> map x · 2 ger <code>[2,4,6]</code>, och fold med init 0 och acc + x ger 6.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad betyder LIFO?",
+      "options": [
+        "Last in, first out",
+        "Last in, final out",
+        "List in, first out",
+        "Linear input, fast output"
+      ],
+      "answer": 0,
+      "why": "Stacken: det som läggs på sist tas bort först."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken struktur är FIFO?",
+      "options": [
+        "Stack",
+        "Kö",
+        "Mängd",
+        "Träd"
+      ],
+      "answer": 1,
+      "why": "Kön: först in, först ut."
+    },
+    {
+      "type": "mc",
+      "q": "Om du byggt stacken på en länkad lista, vad motsvarar push?",
+      "options": [
+        "addFirst",
+        "addLast",
+        "removeLast",
+        "isInList"
+      ],
+      "answer": 0,
+      "why": "Toppen är listans första element, så både push och pop blir O(1)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad motsvarar enqueue i en kö byggd på en lista?",
+      "options": [
+        "addFirst",
+        "addLast",
+        "removeFirst",
+        "removeLast"
+      ],
+      "answer": 1,
+      "why": "Längst bak, och dequeue tar bort först."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gäller alltid för en mängd?",
+      "options": [
+        "Elementen är sorterade",
+        "Det finns inga dubbletter",
+        "Den har högst 10 element",
+        "Den är en stack"
+      ],
+      "answer": 1,
+      "why": "Det är mängdens invariant."
+    },
+    {
+      "type": "text",
+      "q": "a = {1, 2, 3, 4} och b = {3, 4, 5}. Vad är snittet? Skriv som 3,4",
+      "accept": [
+        "3,4",
+        "{3,4}",
+        "3 4"
+      ],
+      "placeholder": "element",
+      "why": "Det som finns i båda."
+    },
+    {
+      "type": "text",
+      "q": "a = {1, 2, 3, 4} och b = {3, 4, 5}. Vad är a − b? Skriv som 1,2",
+      "accept": [
+        "1,2",
+        "{1,2}",
+        "1 2"
+      ],
+      "placeholder": "element",
+      "why": "Det som finns i a men inte i b."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör map?",
+      "options": [
+        "Viker ihop en lista till ett värde",
+        "Anropar en funktion på varje element och ersätter det med resultatet",
+        "Sorterar",
+        "Tar bort dubbletter"
+      ],
+      "answer": 1,
+      "why": "[1,2,3] map x · 2 ger [2,4,6]."
+    },
+    {
+      "type": "text",
+      "q": "Vad blir fold med init 0 och funktionen acc + x på [1, 2, 3, 4, 5]?",
+      "accept": [
+        "15"
+      ],
+      "placeholder": "tal",
+      "why": "0 + 1 + 2 + 3 + 4 + 5 = 15."
+    },
+    {
+      "type": "mc",
+      "q": "Vad blir leftfold med a − b på [1, 2, 3]?",
+      "options": [
+        "-4",
+        "2",
+        "0",
+        "6"
+      ],
+      "answer": 0,
+      "why": "(1 − 2) − 3 = −4."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>static</code> på en funktion i C?",
+      "options": [
+        "Den körs bara en gång",
+        "Den syns bara i filen där den skapas",
+        "Den blir snabbare",
+        "Den kan inte returnera något"
+      ],
+      "answer": 1,
+      "why": "Bra för ADT:ns interna hjälpfunktioner."
+    },
+    {
+      "type": "multi",
+      "q": "Var används stackar?",
+      "options": [
+        "Funktionsanrop",
+        "Ångra-funktion",
+        "Kontrollera att parenteser matchar",
+        "Skrivarkö"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "En skrivarkö är en kö: först in, först utskriven."
+    },
+    {
+      "type": "code",
+      "q": "Matchande parenteser. Läs in en rad och skriv <code>OK</code> om alla parenteser <code>()</code>, <code>[]</code> och <code>{}</code> matchar, annars <code>FEL</code>. Andra tecken ignoreras. Använd en stack.",
+      "task": "05-stack-ko-mangd-1",
+      "why": "Öppnande: push. Stängande: stacken får inte vara tom, och toppen måste vara rätt sorts öppnande. Till sist måste stacken vara tom.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Mängdoperationer. Läs in två samlingar heltal (antal på en rad, talen på nästa). Skriv ut union, snitt och differens (a minus b) utan dubbletter och i stigande ordning, som <code>Union: 1 2 3 4 5</code>.",
+      "task": "05-stack-ko-mangd-2",
+      "why": "Ta bort dubbletter först. En tom mängd skrivs som bara <code>Snitt:</code>.",
+      "web": true
+    }
+  ]
+}

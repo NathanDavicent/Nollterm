@@ -25,6 +25,8 @@ Finns i två versioner som läser samma kursfiler i `content/`:
 |---|---|---|---|
 | Programmering C/C++ (IoT) | 11 | 135 | 17, i C, C++ och Python |
 | Objektorienterad programmering och design | 10 | 104 | 15, i C++ och Python |
+| Digitalteknik och elektronik | 9 | 111 | 10, i C, C++ och Python |
+| Algoritmer, datastrukturer och design patterns | 10 | 129 | 12, i C, C++ och Python |
 
 ## Kom igång första gången
 

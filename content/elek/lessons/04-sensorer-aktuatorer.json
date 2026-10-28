@@ -1,0 +1,335 @@
+{
+  "id": "sensorer-aktuatorer",
+  "title": "Sensorer och aktuatorer",
+  "category": "Inbyggda system",
+  "minutes": 11,
+  "lead": "Sensorerna som mäter världen och aktuatorerna som påverkar den, hur de läses av och hur du provar allt i en simulator.",
+  "sources": [
+    "Lektion 2 – Intro inbyggda system, sensorer och signaler"
+  ],
+  "goals": [
+    "Ge exempel på sensorer och om de ger analog eller digital utsignal",
+    "Beskriva de vanligaste motortyperna och när de används",
+    "Förklara vad ett relä och en breadboard är",
+    "Använda en simulator som Wokwi för att testa en krets"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Hur en sensor läses av"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Digital läsning:</strong> pinnen är hög eller låg. En knapp eller en PIR-rörelsesensor.",
+        "<strong>Analog läsning:</strong> en ADC mäter spänningen. En LDR (ljussensor) i en spänningsdelare.",
+        "<strong>Digitalt protokoll:</strong> sensorn skickar färdiga mätvärden via I2C, SPI eller UART."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Vanliga sensorer"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Sensor",
+        "Mäter",
+        "Signal",
+        "Används i"
+      ],
+      "rows": [
+        [
+          "Temperatur (DS18B20, DHT22)",
+          "Temperatur, ibland luftfuktighet",
+          "Digital via protokoll, eller analog",
+          "Klimatövervakning, smarta hem"
+        ],
+        [
+          "Halleffektsensor",
+          "Magnetfält",
+          "Digital eller analog",
+          "Dörrsensorer, varvtal, motorposition"
+        ],
+        [
+          "LDR",
+          "Ljus (resistansen ändras)",
+          "Analog",
+          "Automatisk belysning"
+        ],
+        [
+          "Fotodiod",
+          "Ljus (ger ström)",
+          "Analog",
+          "IR-mottagare, optisk kommunikation"
+        ],
+        [
+          "Gyroskop",
+          "Rotationshastighet",
+          "Digital via protokoll",
+          "Drönare, spelkontroller"
+        ],
+        [
+          "Accelerometer",
+          "Acceleration i flera axlar",
+          "Digital via protokoll",
+          "Stegräknare, falldetektering"
+        ],
+        [
+          "Kapacitiv sensor / touch",
+          "Närhet eller beröring",
+          "Digital (ibland analog)",
+          "Touchknappar, nivåmätning"
+        ],
+        [
+          "Trycksensor",
+          "Luft- eller vätsketryck",
+          "Ofta digital",
+          "Väderstationer, höjdmätare"
+        ],
+        [
+          "Ultraljudssensor",
+          "Avstånd via ljudets eko",
+          "Digital puls",
+          "Parkeringssensorer, robotar"
+        ],
+        [
+          "PIR",
+          "Rörelse via infraröd strålning",
+          "Digital",
+          "Larm, belysning som tänds"
+        ],
+        [
+          "Mikrofon",
+          "Ljud",
+          "Analog",
+          "Ljudnivå, röststyrning"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "En ultraljudssensor som HC-SR04 mäter tiden tills ekot kommer tillbaka. Avståndet blir tid · ljudets hastighet / 2, eftersom ljudet går fram och tillbaka."
+    },
+    {
+      "type": "h",
+      "text": "Aktuatorer"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>aktuator</strong> gör något i den fysiska världen: rör sig, lyser, låter eller slår på något."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Aktuator",
+        "Styrs med",
+        "Fördel",
+        "Nackdel",
+        "Används i"
+      ],
+      "rows": [
+        [
+          "Borstad DC-motor",
+          "PWM",
+          "Enkel och billig",
+          "Borstarna slits",
+          "Fläktar, små robotar, pumpar"
+        ],
+        [
+          "Borstlös motor",
+          "PWM + styrkrets",
+          "Lång livslängd, effektiv",
+          "Kräver styrelektronik",
+          "Drönare, elcyklar"
+        ],
+        [
+          "Stegmotor",
+          "Digitala pulser",
+          "Exakt positionering",
+          "Kan tappa steg",
+          "3D-skrivare, CNC"
+        ],
+        [
+          "Servo",
+          "PWM (vinkel)",
+          "Exakt vinkel",
+          "Begränsad rotation",
+          "Robotarmar, RC-bilar"
+        ],
+        [
+          "Relä",
+          "Digital av/på",
+          "Låg spänning styr hög",
+          "Mekaniskt, långsamt",
+          "Lampor, pumpar"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Koppla aldrig en motor direkt till en GPIO-pinne. Använd en drivkrets (transistor eller motordrivare) och en diod över motorn som tar hand om spänningsspiken när den stängs av."
+    },
+    {
+      "type": "h",
+      "text": "Breadboard"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>kopplingsplatta (breadboard)</strong> låter dig bygga kretsar utan att löda. Hålen i varje kort rad på mitten är ihopkopplade, och de långa skenorna längs kanterna används för plus och jord."
+    },
+    {
+      "type": "h",
+      "text": "Simulatorer"
+    },
+    {
+      "type": "p",
+      "html": "En simulator låter dig testa en krets och kod innan du har hårdvaran, utan risk att bränna något. <strong>LTspice</strong> simulerar analoga kretsar, <strong>Fritzing</strong> ritar kopplingar och <strong>Wokwi</strong> simulerar mikrokontroller som Arduino och ESP32 direkt i webbläsaren."
+    },
+    {
+      "type": "exercise",
+      "title": "Wokwi: Serial Hello world",
+      "html": "<p>Öppna ett Arduino-projekt på wokwi.com och skriv ut text med <code>Serial.println()</code> en gång per sekund. Lägg sedan till en knapp och skriv ut när den trycks.</p>",
+      "solution": "const int BUTTON = 2;\n\nvoid setup() {\n    Serial.begin(115200);\n    pinMode(BUTTON, INPUT_PULLUP);   // knappen mellan pinne och GND\n}\n\nvoid loop() {\n    if (digitalRead(BUTTON) == LOW) {   // intryckt = LOW med pull-up\n        Serial.println(\"Knappen trycktes\");\n        delay(200);                     // enkel avstudsning\n    }\n}\n",
+      "lang": "cpp"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken typ av signal ger en LDR?",
+      "options": [
+        "Digital",
+        "Analog",
+        "I2C",
+        "PWM"
+      ],
+      "answer": 1,
+      "why": "Resistansen ändras med ljuset och läses som spänning via en ADC."
+    },
+    {
+      "type": "mc",
+      "q": "Vad mäter ett gyroskop?",
+      "options": [
+        "Acceleration",
+        "Rotationshastighet",
+        "Tryck",
+        "Avstånd"
+      ],
+      "answer": 1,
+      "why": "Accelerometern mäter acceleration, gyroskopet rotation."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken sensor passar för att tända en lampa när någon går förbi?",
+      "options": [
+        "Trycksensor",
+        "PIR-sensor",
+        "Halleffektsensor",
+        "Mikrofon"
+      ],
+      "answer": 1,
+      "why": "PIR känner av rörelse via infraröd strålning."
+    },
+    {
+      "type": "mc",
+      "q": "Hur mäter en ultraljudssensor avstånd?",
+      "options": [
+        "Den mäter ljusets styrka",
+        "Den mäter tiden tills ljudets eko kommer tillbaka",
+        "Den mäter magnetfält",
+        "Den mäter temperatur"
+      ],
+      "answer": 1,
+      "why": "Avstånd = tid · ljudhastighet / 2."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka sensorer kopplas ofta via ett digitalt protokoll som I2C?",
+      "options": [
+        "Accelerometer",
+        "Gyroskop",
+        "Trycksensor",
+        "LDR"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "LDR är en enkel analog komponent."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken motor passar bäst när du behöver exakt position i en 3D-skrivare?",
+      "options": [
+        "Borstad DC-motor",
+        "Stegmotor",
+        "Relä",
+        "Borstlös fläktmotor"
+      ],
+      "answer": 1,
+      "why": "Stegmotorn roterar i exakta steg."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör ett relä?",
+      "options": [
+        "Mäter ström",
+        "Låter en låg spänning slå av och på en hög",
+        "Omvandlar AC till DC",
+        "Förstärker ljud"
+      ],
+      "answer": 1,
+      "why": "Reläet är en strömbrytare som styrs elektriskt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan ett servo och en vanlig DC-motor?",
+      "options": [
+        "Servot har återkoppling och kan ställas på en exakt vinkel",
+        "Servot snurrar fortare",
+        "DC-motorn har ingen PWM",
+        "Det finns ingen skillnad"
+      ],
+      "answer": 0,
+      "why": "Ett servo är en DC-motor med återkoppling och begränsad rotation."
+    },
+    {
+      "type": "text",
+      "q": "Vilken webbsimulator används i kursen för Arduino och ESP32?",
+      "accept": [
+        "wokwi",
+        "wokwi.com"
+      ],
+      "placeholder": "namn",
+      "why": "Wokwi kör koden och kretsen i webbläsaren."
+    },
+    {
+      "type": "mc",
+      "q": "Med <code>INPUT_PULLUP</code> och knappen mellan pinnen och GND, vad läser pinnen när knappen är intryckt?",
+      "options": [
+        "HIGH",
+        "LOW",
+        "Ett analogt värde",
+        "Det varierar"
+      ],
+      "answer": 1,
+      "why": "Pull-up håller pinnen hög tills knappen drar den till jord."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska en motor inte kopplas direkt till en GPIO-pinne?",
+      "options": [
+        "Pinnen kan inte ge tillräckligt med ström och kan skadas",
+        "Motorn behöver AC",
+        "Det blir för långsamt",
+        "GPIO kan bara läsa"
+      ],
+      "answer": 0,
+      "why": "Använd en transistor eller motordrivare."
+    }
+  ]
+}

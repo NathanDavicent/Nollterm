@@ -102,9 +102,10 @@ bool loadFonts(const std::filesystem::path& dir, float scale) {
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
 
-    // Teckenintervall: latin (å, ä, ö), grekiska (π), skiljetecken, pilar, matematik, ramtecken (UML), former och bockar.
+    // Teckenintervall: latin (å, ä, ö), grekiska (π, Ω), skiljetecken, upphöjda och nedsänkta siffror (2ⁿ, CO₂),
+    // pilar, matematik, ramtecken (UML), former och bockar.
     static const ImWchar ranges[] = {
-        0x0020, 0x00FF, 0x0100, 0x017F, 0x0370, 0x03FF, 0x2000, 0x206F, 0x2190, 0x21FF, 0x2200, 0x22FF,
+        0x0020, 0x00FF, 0x0100, 0x017F, 0x0370, 0x03FF, 0x2000, 0x206F, 0x2070, 0x209F, 0x2190, 0x21FF, 0x2200, 0x22FF,
         0x2300, 0x23FF, 0x2500, 0x257F, 0x25A0, 0x25FF, 0x2600, 0x26FF, 0x2700, 0x27BF, 0};
 
     auto load = [&](const char* file, float size) -> ImFont* {

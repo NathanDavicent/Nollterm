@@ -1,0 +1,261 @@
+{
+  "id": "elek",
+  "badge": "EL",
+  "title": "Digitalteknik och elektronik",
+  "short": "Elektronik",
+  "tag": "IoT · Hårdvara",
+  "description": "Ström, spänning och komponenter, sensorer och mikrokontroller, IoT-protokoll, talbaser och logiska grindar.",
+  "headline": "Från <em>elektron</em> till IoT.",
+  "lessons": [
+    "01-grunder-el.json",
+    "02-ellagar.json",
+    "03-inbyggda-signaler.json",
+    "04-sensorer-aktuatorer.json",
+    "05-mcu-arduino.json",
+    "06-iot-protokoll.json",
+    "07-internet-sakerhet-minne.json",
+    "08-mikroprocessor-talbaser.json",
+    "09-logik.json"
+  ],
+  "timeline": [
+    {
+      "date": "Lektion 1",
+      "title": "Grunderna i elektronik och el-lagar · labb med enkla kretsar",
+      "lessons": [
+        "grunder-el",
+        "ellagar"
+      ]
+    },
+    {
+      "date": "Lektion 2",
+      "title": "Inbyggda system, signaler, sensorer och aktuatorer · Wokwi",
+      "lessons": [
+        "inbyggda-signaler",
+        "sensorer-aktuatorer"
+      ]
+    },
+    {
+      "date": "Lektion 3",
+      "title": "MCU, mjukvara och Arduino IDE · labb på ESP32",
+      "lessons": [
+        "mcu-arduino"
+      ]
+    },
+    {
+      "date": "Lektion 4",
+      "title": "IoT-intro och protokoll · inlämningsuppgiften presenteras",
+      "lessons": [
+        "iot-protokoll"
+      ]
+    },
+    {
+      "date": "Lektion 5",
+      "title": "Internet, säkerhet och minne",
+      "lessons": [
+        "internet-sakerhet-minne"
+      ]
+    },
+    {
+      "date": "Lektion 6",
+      "title": "Workshop: IoT-system för ett smart kontor",
+      "lessons": [
+        "iot-protokoll",
+        "sensorer-aktuatorer"
+      ]
+    },
+    {
+      "date": "Lektion 8",
+      "title": "Mikroprocessorer och talbaser",
+      "lessons": [
+        "mikroprocessor-talbaser"
+      ]
+    },
+    {
+      "date": "Lektion 9",
+      "title": "Logiska grindar och minne",
+      "lessons": [
+        "logik"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "smartkontor",
+      "kind": "Workshop, grupp om max 3",
+      "title": "IoT-system för ett smart kontor",
+      "intro": "Designa ett IoT-system som övervakar och optimerar arbetsmiljön på ett kontor med 5 områden och 2 in- och utgångar. Ingen vanlig kamera får användas av integritetsskäl, och lösningen ska vara kostnads- och energieffektiv, robust och inte vara i vägen. Avsluta med en kort presentation av problemet och er arkitektur.",
+      "groups": [
+        {
+          "h": "Krav",
+          "items": [
+            "Mäta temperatur och luftkvalitet",
+            "Räkna hur många personer som är i kontoret",
+            "Se vilka områden som används mest (mötesrum, öppna ytor)",
+            "Fler idéer som förbättrar arbetsmiljön"
+          ]
+        },
+        {
+          "h": "Research",
+          "items": [
+            "Hitta sensorer och komponenter som löser kraven",
+            "Läs databladen: funktion, gränssnitt och begränsningar",
+            "Tänk på integritet: PIR, ljusridåer eller CO₂-nivå i stället för kamera"
+          ]
+        },
+        {
+          "h": "Arkitektur",
+          "items": [
+            "Bestäm hur sensorerna skickar sin data (internt och externt protokoll)",
+            "Bestäm var datan lagras och hur den presenteras",
+            "Uppskatta kostnad och strömförbrukning"
+          ]
+        }
+      ],
+      "topics": [
+        "sensorer-aktuatorer",
+        "iot-protokoll",
+        "internet-sakerhet-minne"
+      ],
+      "hint": "Personräkning utan kamera: en ljusridå eller ToF-avståndssensor i varje dörr ger in och ut. CO₂-halten avslöjar också hur många som är i ett rum."
+    },
+    {
+      "id": "inlamning",
+      "kind": "Inlämningsuppgift, par",
+      "title": "Eget IoT-projekt",
+      "intro": "Görs i par, men alla lämnar in egen dokumentation och presenterar projektet själva. Uppgiften presenteras på lektion 4. Exakta krav och datum kommer från läraren.",
+      "groups": [
+        {
+          "h": "Förberedelse",
+          "items": [
+            "Arduino IDE med ESP32-stöd installerat",
+            "Konto på Arduino IoT Cloud",
+            "ESP32-C6 kopplat och testat med ett blinkprogram"
+          ]
+        },
+        {
+          "h": "Dokumentation",
+          "items": [
+            "Problem och lösning",
+            "Komponenter och varför de valdes",
+            "Kopplingsschema och protokoll",
+            "Säkerhet och strömförbrukning"
+          ]
+        }
+      ],
+      "topics": [
+        "mcu-arduino",
+        "iot-protokoll",
+        "internet-sakerhet-minne"
+      ],
+      "hint": "Börja i Wokwi. När koden fungerar där är det mycket lättare att felsöka den riktiga kopplingen."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "L1",
+      "title": "Lektion 1 – Grunderna i elektronik",
+      "description": "Ström, spänning, resistans, komponenter, Ohms lag, Kirchhoff, verktyg och 11 labbuppgifter.",
+      "lessons": [
+        "grunder-el",
+        "ellagar"
+      ]
+    },
+    {
+      "kind": "L2",
+      "title": "Lektion 2 – Inbyggda system, sensorer och signaler",
+      "description": "Inbyggda system, analogt och digitalt, ADC/DAC/PWM, sensorer, aktuatorer och Wokwi.",
+      "lessons": [
+        "inbyggda-signaler",
+        "sensorer-aktuatorer"
+      ]
+    },
+    {
+      "kind": "Setup",
+      "title": "Arduino IDE setup",
+      "description": "Installera Arduino IDE, ESP32-stöd och CP210x-drivrutinen.",
+      "lessons": [
+        "mcu-arduino"
+      ]
+    },
+    {
+      "kind": "L3",
+      "title": "Lektion 3 – MCU, mjukvara och Arduino IDE",
+      "description": "Datablad, MCU, GPIO, pull-up, register och från kod till körning.",
+      "lessons": [
+        "mcu-arduino"
+      ]
+    },
+    {
+      "kind": "L4",
+      "title": "Lektion 4 – IoT-intro",
+      "description": "IoT, användningsområden, UART, I2C, SPI, CAN, LoRaWAN, Zigbee och internetprotokoll.",
+      "lessons": [
+        "iot-protokoll"
+      ]
+    },
+    {
+      "kind": "L5",
+      "title": "Lektion 5 – Internet, säkerhet och minne",
+      "description": "Router, switch, DNS, OSI-modellen, IoT-säkerhet och minnestyper.",
+      "lessons": [
+        "internet-sakerhet-minne"
+      ]
+    },
+    {
+      "kind": "L6",
+      "title": "Lektion 6 – Workshop",
+      "description": "IoT-system för ett smart kontor.",
+      "lessons": [
+        "iot-protokoll"
+      ]
+    },
+    {
+      "kind": "L8",
+      "title": "Lektion 8 – Mikroprocessorer och matematik",
+      "description": "Register, ALU, bussar, MCU och talbaser med övningar.",
+      "lessons": [
+        "mikroprocessor-talbaser"
+      ]
+    },
+    {
+      "kind": "L9",
+      "title": "Lektion 9 – Logik",
+      "description": "Grindar, sanningstabeller, latch, D-vippa, heladderare, register och minne.",
+      "lessons": [
+        "logik"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Sim",
+      "title": "Wokwi",
+      "url": "https://wokwi.com/",
+      "description": "Simulera Arduino och ESP32 med komponenter direkt i webbläsaren."
+    },
+    {
+      "kind": "IDE",
+      "title": "Arduino IDE",
+      "url": "https://www.arduino.cc/en/software/",
+      "description": "Utvecklingsmiljön för att skriva och flasha koden."
+    },
+    {
+      "kind": "Docs",
+      "title": "ESP32-C6-DevKitC-1 användarguide",
+      "url": "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32c6/esp32-c6-devkitc-1/user_guide_v1.1.html",
+      "description": "Pinnar, strömförsörjning och minne på kursens kort."
+    },
+    {
+      "kind": "Moln",
+      "title": "Arduino IoT Cloud",
+      "url": "https://cloud.arduino.cc/",
+      "description": "Dashboards och fjärrstyrning för dina kort."
+    },
+    {
+      "kind": "Ref",
+      "title": "Arduino Language Reference",
+      "url": "https://docs.arduino.cc/language-reference/",
+      "description": "pinMode, digitalWrite, analogRead, analogWrite och resten."
+    }
+  ]
+}

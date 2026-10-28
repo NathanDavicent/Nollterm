@@ -1,0 +1,409 @@
+{
+  "id": "algo",
+  "badge": "ADS",
+  "title": "Algoritmer, datastrukturer och design patterns",
+  "short": "Algoritmer",
+  "tag": "C · C++ · Python",
+  "description": "Tidskomplexitet, rekursion, sortering, listor, stackar, köer, träd, hashtabeller, grafer, SQL och design patterns.",
+  "headline": "Rätt struktur, <em>rätt tid</em>.",
+  "lessons": [
+    "01-komplexitet.json",
+    "02-rekursion.json",
+    "03-sortering.json",
+    "04-adt-listor.json",
+    "05-stack-ko-mangd.json",
+    "06-trad.json",
+    "07-hashtabeller.json",
+    "08-grafer.json",
+    "09-sql.json",
+    "10-designmonster.json"
+  ],
+  "timeline": [
+    {
+      "date": "Fre 2/1",
+      "title": "Introduktion, tidskomplexitet, algoritmer och rekursion",
+      "lessons": [
+        "komplexitet",
+        "rekursion"
+      ]
+    },
+    {
+      "date": "Ons 7/1",
+      "title": "Sortering",
+      "lessons": [
+        "sortering"
+      ]
+    },
+    {
+      "date": "Tors 8/1",
+      "title": "ADT och listor · inlämningsuppgiften presenteras",
+      "lessons": [
+        "adt-listor"
+      ]
+    },
+    {
+      "date": "Tis 13/1",
+      "title": "Stack, kö och mängd",
+      "lessons": [
+        "stack-ko-mangd"
+      ]
+    },
+    {
+      "date": "Tors 15/1",
+      "title": "Träd",
+      "lessons": [
+        "trad"
+      ]
+    },
+    {
+      "date": "Fre 16/1",
+      "title": "Hashtabeller",
+      "lessons": [
+        "hashtabeller"
+      ]
+    },
+    {
+      "date": "Tis 20/1",
+      "title": "Grafer",
+      "lessons": [
+        "grafer"
+      ]
+    },
+    {
+      "date": "Tors 22/1",
+      "title": "SQL och databaser",
+      "lessons": [
+        "sql"
+      ]
+    },
+    {
+      "date": "Fre 23/1",
+      "title": "Design patterns",
+      "lessons": [
+        "designmonster"
+      ]
+    },
+    {
+      "date": "Fre 30/1",
+      "title": "Tenta (labbstöd och repetition tis 27/1)",
+      "lessons": [
+        "komplexitet",
+        "sortering",
+        "trad",
+        "hashtabeller",
+        "grafer",
+        "sql"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "eventsystem",
+      "kind": "Inlämningsuppgift (del A + B)",
+      "title": "Embedded event-system",
+      "intro": "Utveckla ett program som tar emot och hanterar events, och reflektera kring dina val av algoritmer, datastrukturer och patterns. Uppgiften presenteras torsdag 8/1, och detaljerna om krav och deadline kommer då. Det här är det som nämns i kursmaterialet.",
+      "groups": [
+        {
+          "h": "Kommandon",
+          "items": [
+            "Textkommandon som <code>tick</code>, <code>print</code>, <code>sort</code> och <code>find</code>",
+            "<code>sort insertion</code> / <code>sort selection</code> väljer sorteringsalgoritm"
+          ]
+        },
+        {
+          "h": "Design",
+          "items": [
+            "Strategy-light: välj sorteringsfunktion via funktionspekare (C) eller <code>std::function</code> (C++)",
+            "Facade: en enkel EventSystem-front som döljer intern logg och kö",
+            "Bonus: Observer-light, där Logger och AlarmManager meddelas när ett event hanteras"
+          ]
+        },
+        {
+          "h": "Reflektion (viktigt för VG)",
+          "items": [
+            "Motivera val av datastruktur för loggen och kön",
+            "Analysera tidskomplexiteten för dina operationer",
+            "Jämför för- och nackdelar med alternativen"
+          ]
+        }
+      ],
+      "topics": [
+        "sortering",
+        "adt-listor",
+        "stack-ko-mangd",
+        "designmonster"
+      ],
+      "hint": "Alla sorteringsfunktioner måste ha exakt samma signatur för att Strategy-light ska fungera."
+    },
+    {
+      "id": "hashgrupp",
+      "kind": "Gruppuppgift, ca 3 personer",
+      "title": "Hashtabeller och HashMap i C",
+      "intro": "Förstå hashning, kollisioner och linjär sondering, och komplettera en enkel HashMap i C med CAP = 11 där nyckeln 0 betyder tom plats. Ca 60–120 minuter. Facit finns i slutet av dokumentet.",
+      "groups": [
+        {
+          "h": "Del 1: papper och penna",
+          "items": [
+            "Hasha 15, 26, 37, 99, 8 och 19 med key % 11",
+            "Simulera insert av 15, 26, 37 och rita tabellen",
+            "Visa vilka index som kontrolleras för get(26) och get(99)",
+            "Genomsnitt och worst case för put och get, och load factor 3/11"
+          ]
+        },
+        {
+          "h": "Del 2: kodläsning",
+          "items": [
+            "Vad representerar Entry, och varför key == 0 som tom plats?",
+            "Varför får get() stanna på en tom plats här?",
+            "Vad händer om tabellen blir full, eller CAP = 3?"
+          ]
+        },
+        {
+          "h": "Del 3: skriv klart",
+          "items": [
+            "<code>f()</code>, <code>init()</code>, <code>put()</code> med insert och update",
+            "<code>get()</code> och <code>printTable()</code>",
+            "Kör testerna och hitta kollisionerna i utskriften"
+          ]
+        }
+      ],
+      "topics": [
+        "hashtabeller"
+      ],
+      "hint": "Probing: <code>idx = (start + step) % CAP</code> för step = 0 .. CAP − 1."
+    },
+    {
+      "id": "grafgrupp",
+      "kind": "Gruppuppgift, 3 personer",
+      "title": "Grafer: BFS och DFS",
+      "intro": "Resonera om graftyper och representationer, kör BFS och DFS för hand och implementera BFS i C med en kö. Rotera rollerna Driver, Navigator och Verifierare.",
+      "groups": [
+        {
+          "h": "Del 1: begrepp",
+          "items": [
+            "Riktad/oriktad och viktad/oviktad för fyra exempel",
+            "In- och ut-grad i en riktad graf",
+            "Grannlista eller grannmatris för 10 000 noder?",
+            "Varför behövs visited?"
+          ]
+        },
+        {
+          "h": "Del 2: för hand",
+          "items": [
+            "Grannlista för grafen med noderna 0..6",
+            "BFS från 0 med köns lägen",
+            "Rekursiv DFS från 0 med anropsstacken"
+          ]
+        },
+        {
+          "h": "Del 3: kod",
+          "items": [
+            "queue_push och queue_pop",
+            "BFS enligt pseudokoden",
+            "Kontrollera att utskriften stämmer med Del 2"
+          ]
+        },
+        {
+          "h": "Del 4: stretch",
+          "items": [
+            "Grannmatris till grannlista",
+            "Rekursiv DFS på den riktade grafen",
+            "Hitta cykeln"
+          ]
+        }
+      ],
+      "topics": [
+        "grafer"
+      ],
+      "hint": "Markera visited[u] = 1 innan du lägger u i kön."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "Intro",
+      "title": "Kursintro",
+      "description": "Kursens syfte, mål, schema, examination och hur man lyckas.",
+      "lessons": [
+        "komplexitet"
+      ]
+    },
+    {
+      "kind": "F1",
+      "title": "F1 – Algoritmer, komplexitet, rekursion",
+      "description": "Algoritmer, rekursion, exponenter, logaritmer och Big-O med exempel.",
+      "lessons": [
+        "komplexitet",
+        "rekursion"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningar 1",
+      "description": "Rekursiv sum med utskrift, badFib och goodFib, och komplexitetsfrågor.",
+      "lessons": [
+        "rekursion",
+        "komplexitet"
+      ]
+    },
+    {
+      "kind": "F2",
+      "title": "F2 – Sortering",
+      "description": "Stabil och in-place, bubble, selection, insertion, quick, merge och bogosort.",
+      "lessons": [
+        "sortering"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningsuppgifter 2 – Sortering",
+      "description": "Sorteringsverktygslåda och mätning av byten, tilldelningar och jämförelser.",
+      "lessons": [
+        "sortering"
+      ]
+    },
+    {
+      "kind": "F3",
+      "title": "F3 – ADT, Listor",
+      "description": "ADT, interface, länkade listor, dubbelpekare och pre- och postconditions.",
+      "lessons": [
+        "adt-listor"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övning 3 – ADT, linked list",
+      "description": "Implementera list.c mot list.h med meny och tester.",
+      "lessons": [
+        "adt-listor"
+      ]
+    },
+    {
+      "kind": "F4",
+      "title": "Stack, Kö, Mängd",
+      "description": "static, stack, kö, mängd och map och fold.",
+      "lessons": [
+        "stack-ko-mangd"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övning 4 – Stack, Queue, Set",
+      "description": "Stack, kö och mängd ovanpå listan, mängdoperationer, map och fold.",
+      "lessons": [
+        "stack-ko-mangd"
+      ]
+    },
+    {
+      "kind": "F5",
+      "title": "Träd",
+      "description": "BT, BST, sökning, djup, traversering, borttagning och balansering.",
+      "lessons": [
+        "trad"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningar 5 – Träd (BT/BST)",
+      "description": "BST i C med traverseringar, höjd, löv, successor och bonusuppgifter.",
+      "lessons": [
+        "trad"
+      ]
+    },
+    {
+      "kind": "F6",
+      "title": "Hashtabeller",
+      "description": "Hashfunktion, buckets, chaining, öppen adressering och delete.",
+      "lessons": [
+        "hashtabeller"
+      ]
+    },
+    {
+      "kind": "Quiz",
+      "title": "Mini-quiz – Hashtabeller",
+      "description": "15 frågor med facit.",
+      "lessons": [
+        "hashtabeller"
+      ]
+    },
+    {
+      "kind": "Grupp",
+      "title": "Gruppuppgift – Hashtabeller",
+      "description": "Papper och penna, kodläsning och HashMap i C med facit.",
+      "lessons": [
+        "hashtabeller"
+      ]
+    },
+    {
+      "kind": "F7",
+      "title": "Grafer",
+      "description": "Graftyper, representation, BFS, DFS, MST, Dijkstra, A*, Floyd-Warshall och kappsäcksproblemet.",
+      "lessons": [
+        "grafer"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Övningar 7 – Grafer",
+      "description": "Gruppuppgift med begrepp, handtraversering och BFS i C.",
+      "lessons": [
+        "grafer"
+      ]
+    },
+    {
+      "kind": "F8",
+      "title": "Föreläsning 8 – Databaser och SQL",
+      "description": "Tabeller, nycklar, SELECT, CRUD, DDL, normalisering, JOIN och SQLite i C.",
+      "lessons": [
+        "sql"
+      ]
+    },
+    {
+      "kind": "F9",
+      "title": "Design Patterns",
+      "description": "Familjerna, Builder, Singleton och Template Method.",
+      "lessons": [
+        "designmonster"
+      ]
+    },
+    {
+      "kind": "Över",
+      "title": "Design Patterns översikt",
+      "description": "Strategy och Strategy-light, och en översikt över GoF-mönstren.",
+      "lessons": [
+        "designmonster"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Repo",
+      "title": "Kursens GitHub-repo (CJ-algorithms)",
+      "url": "https://github.com/CalleFreme/CJ-algorithms",
+      "description": "Startkod till övningarna, bland annat list.h, list.c och main.c."
+    },
+    {
+      "kind": "SQL",
+      "title": "SQLBolt",
+      "url": "https://sqlbolt.com/",
+      "description": "Interaktiva SQL-lektioner direkt i webbläsaren."
+    },
+    {
+      "kind": "Viz",
+      "title": "VisuAlgo",
+      "url": "https://visualgo.net/en",
+      "description": "Animerade sorteringar, träd, hashtabeller och grafalgoritmer."
+    },
+    {
+      "kind": "Ref",
+      "title": "Refactoring.Guru: Design Patterns",
+      "url": "https://refactoring.guru/design-patterns",
+      "description": "Alla GoF-mönster med bilder och kodexempel i C++."
+    },
+    {
+      "kind": "Ref",
+      "title": "Big-O Cheat Sheet",
+      "url": "https://www.bigocheatsheet.com/",
+      "description": "Komplexiteten för vanliga datastrukturer och sorteringar."
+    }
+  ]
+}

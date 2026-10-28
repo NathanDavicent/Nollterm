@@ -1,0 +1,292 @@
+{
+  "id": "komplexitet",
+  "title": "Algoritmer och tidskomplexitet",
+  "category": "Grunder",
+  "minutes": 13,
+  "lead": "Vad en algoritm är, och hur vi med Big-O pratar om hur snabb en lösning är när datan växer.",
+  "sources": [
+    "F1 – Algoritmer, komplexitet, rekursion",
+    "Kursintro"
+  ],
+  "goals": [
+    "Förklara vad en algoritm är och att den inte beror på språket",
+    "Bestämma tidskomplexiteten för loopar, nästlade loopar och funktionsanrop",
+    "Känna igen O(1), O(log n), O(n), O(n log n), O(n²) och O(2ⁿ)",
+    "Skilja på best case, average case och worst case"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad handlar kursen om?"
+    },
+    {
+      "type": "p",
+      "html": "Kursen handlar om att bygga program som är <strong>effektiva, robusta och begripliga</strong> genom att välja rätt <strong>algoritmer</strong> (hur vi löser ett problem steg för steg), <strong>datastrukturer</strong> (hur vi organiserar datan) och <strong>design patterns</strong> (beprövade mallar för hur koden struktureras). I IoT och inbyggda system är det extra viktigt, eftersom minne, CPU och batteri är begränsade."
+    },
+    {
+      "type": "p",
+      "html": "En checklista för nya problem: Vad är datan? Vilka operationer är viktigast? Vilken datastruktur passar? Vilken algoritm? Hur skalar det? Hur gör jag koden hållbar?"
+    },
+    {
+      "type": "h",
+      "text": "Algoritmer"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>algoritm</strong> är en serie instruktioner som löser ett problem. Den har inget med syntax att göra. Samma algoritm kan skrivas i C, C++ eller Python. Att lista ut hur man löser ett problem är inte samma sak som att programmera lösningen."
+    },
+    {
+      "type": "p",
+      "html": "Samma problem har ofta flera algoritmer. 2 · 5 kan räknas som 2 + 2 + 2 + 2 + 2 eller slås upp i multiplikationstabellen. Lösningar kan vara bra på olika saker: antal operationer (tid), minne, hur generella de är och hur lättlästa de är. De tre första beror på storleken på indatan."
+    },
+    {
+      "type": "h",
+      "text": "Big-O"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Tidskomplexitet</strong> beskriver hur antalet operationer växer när indatan växer. Vi skriver det med Big-O, till exempel <strong>O(n)</strong>, uttalat \"ordo n\". Det handlar om hur det beter sig för stora n, inte om exakta sekunder."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void foo1(int n) {                      // O(n): printf körs n gånger\n    for (int i = 0; i < n; i++) printf(\"%d\\n\", i);\n}\n\nvoid foo2(int n) {                      // O(1): alltid 100 gånger, oavsett n\n    for (int i = 0; i < 100; i++) printf(\"%d\\n\", i);\n}\n\nvoid foo3(int n) {                      // O(n^2): n gånger n\n    for (int i = 0; i < n; i++)\n        for (int j = 0; j < n; j++) printf(\"%d\\n\", i);\n}\n\nvoid foo4(int n) {                      // O(log n): i dubblas varje varv\n    for (int i = 1; i < n; i *= 2) printf(\"%d\\n\", i);\n}\n\nint foo5(int n) {                       // O(2^n): varje anrop gör två nya\n    if (n == 0) return 1;\n    return foo5(n - 1) + foo5(n - 1);\n}\n",
+      "caption": "komplexitetsexempel"
+    },
+    {
+      "type": "h",
+      "text": "Två räkneregler"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Kod i serie:</strong> den största termen bestämmer. O(1) + O(n) = O(n). En loop med 100 varv före en loop med n varv spelar ingen roll när n blir stort.",
+        "<strong>Kod i varandra:</strong> multiplicera. En loop med n varv som anropar en O(n)-funktion blir O(n) · O(n) = O(n²)."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Big-O bryr sig inte om konstanter eller logaritmbas. 3n + 7 är O(n), och log₂ n är O(log n)."
+    },
+    {
+      "type": "h",
+      "text": "Vanliga komplexitetsklasser"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Klass",
+        "Namn",
+        "Exempel",
+        "n = 1000 ger ungefär"
+      ],
+      "rows": [
+        [
+          "O(1)",
+          "Konstant",
+          "Läsa arr[i], slå upp i en hashtabell",
+          "1"
+        ],
+        [
+          "O(log n)",
+          "Logaritmisk",
+          "Binärsökning, sökning i balanserat BST",
+          "10"
+        ],
+        [
+          "O(n)",
+          "Linjär",
+          "Gå igenom en lista",
+          "1 000"
+        ],
+        [
+          "O(n log n)",
+          "",
+          "Mergesort, quicksort i medel",
+          "10 000"
+        ],
+        [
+          "O(n²)",
+          "Kvadratisk",
+          "Bubblesort, två nästlade loopar",
+          "1 000 000"
+        ],
+        [
+          "O(2ⁿ)",
+          "Exponentiell",
+          "Naiv rekursiv fibonacci",
+          "fler än atomer i universum"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Best, average och worst case"
+    },
+    {
+      "type": "p",
+      "html": "Samma algoritm kan ha olika komplexitet beroende på indatan. Linjär sökning hittar ibland talet direkt (best case O(1)) och ibland sist eller inte alls (worst case O(n)). För sortering är det intressant hur algoritmen beter sig på redan sorterad och på baklänges sorterad data."
+    },
+    {
+      "type": "h",
+      "text": "Binärsökning"
+    },
+    {
+      "type": "p",
+      "html": "I en <strong>sorterad</strong> array kan vi söka mycket snabbare: titta på mittelementet, och fortsätt i den halva där talet måste ligga. Varje steg halverar problemet, så det tar O(log n) steg. 1000 element kräver högst 10 jämförelser."
+    },
+    {
+      "type": "exercise",
+      "title": "Vad är komplexiteten?",
+      "html": "<p>a) En funktion som tar en sträng av längd n och skriver ut den på rövarspråket. b) En funktion som söker efter ett tal i en array av storlek n. c) En funktion som skriver ut ett kvadratiskt spelbräde n × n. d) En funktion som summerar två tal.</p><p><strong>Svar:</strong> a) O(n). b) O(n) med linjär sökning, O(log n) med binärsökning om arrayen är sorterad. c) O(n²). d) O(1).</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Rekursiv komplexitet",
+      "html": "<p><code>foo1(x)</code> returnerar 10 om x &lt; 1, anropar <code>foo1(x - 1)</code> om x &lt; 15, och annars <code>foo1(x / 3)</code>. <code>foo2(x)</code> anropar <code>foo1(x)</code> två gånger, och <code>foo3(x)</code> anropar <code>foo1(x)</code> i en loop x gånger. Vilken komplexitet har de?</p><p><strong>Svar:</strong> foo1 delar x med 3 tills det är under 15, sedan högst 15 steg till: O(log n). foo2: O(log n) + O(log n) = O(log n). foo3: n · O(log n) = O(n log n).</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en algoritm?",
+      "options": [
+        "Ett programspråk",
+        "En serie instruktioner som löser ett problem",
+        "En datastruktur",
+        "En kompilator"
+      ],
+      "answer": 1,
+      "why": "Algoritmen beror inte på vilket språk den skrivs i."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken komplexitet har en loop som går från 0 till n?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "answer": 2,
+      "why": "Den kör n gånger."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken komplexitet har <code>for (int i = 1; i &lt; n; i *= 2)</code>?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(n²)",
+        "O(1)"
+      ],
+      "answer": 1,
+      "why": "i dubblas, så antalet varv är log₂ n."
+    },
+    {
+      "type": "mc",
+      "q": "En loop med 100 varv följt av en loop med n varv. Vilken komplexitet?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(100n)",
+        "O(n²)"
+      ],
+      "answer": 1,
+      "why": "I serie bestämmer den största termen."
+    },
+    {
+      "type": "mc",
+      "q": "En loop med n varv som i varje varv anropar en O(n)-funktion. Vilken komplexitet?",
+      "options": [
+        "O(n)",
+        "O(2n)",
+        "O(n²)",
+        "O(n log n)"
+      ],
+      "answer": 2,
+      "why": "Nästlat: multiplicera."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken komplexitet har en funktion som anropar sig själv två gånger med n − 1?",
+      "options": [
+        "O(n)",
+        "O(n²)",
+        "O(2ⁿ)",
+        "O(log n)"
+      ],
+      "answer": 2,
+      "why": "Antalet anrop dubblas för varje steg."
+    },
+    {
+      "type": "text",
+      "q": "Hur många gånger kan man halvera 1024 element innan bara ett återstår?",
+      "accept": [
+        "10"
+      ],
+      "placeholder": "antal",
+      "why": "log₂ 1024 = 10. Därför klarar binärsökning 1024 element med ungefär 10 jämförelser."
+    },
+    {
+      "type": "mc",
+      "q": "Vad krävs för att binärsökning ska fungera?",
+      "options": [
+        "Att arrayen är sorterad",
+        "Att arrayen har jämnt antal element",
+        "Att talen är positiva",
+        "Att det är en länkad lista"
+      ],
+      "answer": 0,
+      "why": "Annars vet vi inte vilken halva vi ska fortsätta i."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är O(1)?",
+      "options": [
+        "Läsa arr[5]",
+        "Summera två tal",
+        "Gå igenom en lista",
+        "Slå upp en nyckel i en välfungerande hashtabell (i medel)"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "Att gå igenom en lista är O(n)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är 3n² + 5n + 100 i Big-O?",
+      "options": [
+        "O(n)",
+        "O(n²)",
+        "O(3n²)",
+        "O(100)"
+      ],
+      "answer": 1,
+      "why": "Konstanter och mindre termer stryks."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan worst case och best case?",
+      "options": [
+        "Ingen",
+        "Worst case är det sämsta möjliga för en viss storlek på indata, best case det bästa",
+        "Best case gäller bara små n",
+        "Worst case är medelvärdet"
+      ],
+      "answer": 1,
+      "why": "Linjär sökning: best O(1), worst O(n)."
+    },
+    {
+      "type": "code",
+      "q": "Binärsökning. Läs in n, n sorterade heltal, q och q tal att söka efter. Skriv för varje tal ut index (eller −1) och antalet jämförelser med ett mittelement, som <code>7: 3 (1 steg)</code>. Använd <code>mid = (lo + hi) / 2</code> med heltalsdivision.",
+      "task": "01-komplexitet-1",
+      "why": "lo = 0, hi = n − 1. Räkna ett steg för varje mittelement du tittar på.",
+      "web": true
+    }
+  ]
+}

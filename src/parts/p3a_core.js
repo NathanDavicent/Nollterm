@@ -18,6 +18,21 @@ const HERO_CARDS = {
           <div class="urow"><div class="ubox" style="animation-delay:.15s"><b>TempSensor</b><span>+ tick() override</span></div><div class="ubox" style="animation-delay:.3s"><b>LedActuator</b><span>+ tick() override</span></div></div>
         </div>
         <div class="foot">Samma anrop, olika beteende.<br>Polymorfism via en virtuell funktion i basklassen.</div></div>`,
+  elek: () => {
+    const cells = [..."101101"].map((ch, i) => `<div><span class="cell ${ch === "1" ? "z" : ""}" style="animation-delay:${i * 90}ms">${ch}</span><span class="ad">2^${5 - i}</span></div>`).join("");
+    return `<div class="memcard" aria-label="Exempel: talet 45 binärt">
+        <div class="decl"><span class="k">int</span> n = <span class="s">0b101101</span>;</div>
+        <div class="mem">${cells}</div>
+        <div class="foot">32 + 8 + 4 + 1 = 45.<br>Varje bit är en ledning som är hög eller låg.</div></div>`;
+  },
+  algo: () => {
+    const arr = [2, 5, 8, 12, 16, 23, 38];
+    const cells = arr.map((v, i) => `<div><span class="cell ${i === 3 || i === 5 ? "z" : ""}" style="animation-delay:${i * 90}ms">${v}</span><span class="ad">[${i}]</span></div>`).join("");
+    return `<div class="memcard" aria-label="Binärsökning efter 23">
+        <div class="decl">binarySearch(arr, <span class="s">23</span>);</div>
+        <div class="mem">${cells}</div>
+        <div class="foot">Mitten först: 12, sedan 23. Två steg i stället för sex.<br>Halvera varje gång: O(log n).</div></div>`;
+  },
 };
 const COURSES = CONTENT.map(c => Object.assign(c, {
   card: HERO_CARDS[c.id] || (() => `<div class="memcard"><div class="decl">${esc(c.badge)}</div><div class="foot">${c.lessons.length} lektioner.</div></div>`),
@@ -203,8 +218,10 @@ function viewCourse(c) {
 
 /* ================================================================ lesson */
 function codeBlock(lang, src, cap) {
-  const label = cap || (lang === "c" ? "C" : lang === "cpp" ? "C++" : lang === "bash" ? "terminal" : lang);
-  return `<div class="codewrap"><div class="cap"><span>${esc(label)}</span><button class="copy" type="button">Kopiera</button></div><pre><code class="language-${lang === "c" ? "c" : lang === "bash" ? "bash" : "cpp"}">${esc(src)}</code></pre></div>`;
+  const names = { c: "C", cpp: "C++", bash: "terminal", py: "Python", python: "Python", sql: "SQL", text: "" };
+  const label = cap || (lang in names ? names[lang] : lang);
+  const hl = ({ c: "c", bash: "bash", py: "python", python: "python", sql: "sql", text: "plaintext" })[lang] || "cpp";
+  return `<div class="codewrap"><div class="cap"><span>${esc(label)}</span><button class="copy" type="button">Kopiera</button></div><pre><code class="language-${hl}">${esc(src)}</code></pre></div>`;
 }
 function renderBlocks(t, ti) {
   let si = 0, exn = 0;

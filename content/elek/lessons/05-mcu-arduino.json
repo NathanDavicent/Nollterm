@@ -1,0 +1,258 @@
+{
+  "id": "mcu-arduino",
+  "title": "Mikrokontroller och Arduino IDE",
+  "category": "Inbyggda system",
+  "minutes": 12,
+  "lead": "Vad som finns inuti en mikrokontroller, hur GPIO, pull-up och register fungerar, och hur koden kommer från datorn till chippet.",
+  "sources": [
+    "Lektion 3 – MCU, mjukvara och Arduino IDE",
+    "Arduino IDE setup (inför lektionen)"
+  ],
+  "goals": [
+    "Beskriva delarna i en mikrokontroller",
+    "Förklara GPIO, pull-up och pull-down",
+    "Förklara vad register och avbrott är",
+    "Beskriva stegen från kod till körning",
+    "Installera Arduino IDE med stöd för ESP32"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är en MCU?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>mikrokontroller (MCU)</strong> är en hel liten dator på ett chip. Den arbetar med binära signaler och innehåller:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>CPU</strong> som kör instruktionerna",
+        "<strong>Flash</strong> där programmet ligger kvar utan ström",
+        "<strong>RAM</strong> för variabler medan programmet kör",
+        "<strong>Register</strong>, små och snabba lagringsplatser i CPU:n",
+        "<strong>Kringutrustning</strong> (periferienheter): GPIO, UART, I2C, SPI, ADC, timers",
+        "En <strong>kristall</strong> som ger klockfrekvensen"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "GPIO"
+    },
+    {
+      "type": "p",
+      "html": "<strong>GPIO</strong> (General Purpose Input/Output) är pinnar som programmet kan ställa som in- eller utgång. Många pinnar har fler funktioner:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "ADC för analoga värden",
+        "Timers för exakt tidtagning och PWM",
+        "Avbrott (interrupts) som reagerar direkt när en pinne ändras",
+        "Sömnlägen som sparar ström",
+        "Interna pull-up- och pull-down-resistorer"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Pull-up och pull-down"
+    },
+    {
+      "type": "p",
+      "html": "En ingång som inte är kopplad till något <strong>flyter</strong>: den kan läsa slumpmässigt 0 eller 1. En <strong>pull-up</strong>-resistor drar pinnen till hög nivå när inget annat händer, och en <strong>pull-down</strong> drar den till låg. Med pull-up kopplas knappen mellan pinnen och jord, så en intryckt knapp läses som LOW."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "pinMode(2, INPUT_PULLUP);           // intern pull-up, ingen extra resistor behövs\nbool pressed = digitalRead(2) == LOW;\n",
+      "caption": "Arduino"
+    },
+    {
+      "type": "h",
+      "text": "Register och avbrott"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Register</strong> är små lagringsplatser i CPU:n. Allmänna register håller värden som CPU:n räknar med. Specialregister håller status och kontroll. <strong>I/O-register</strong> styr kringutrustningen: att skriva en etta till rätt bit i ett GPIO-register är det som till slut tänder en LED. <strong>Avbrottsregister</strong> styr avbrott, som stoppar det vanliga programmet en kort stund för att hantera en händelse, till exempel en knapptryckning."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "// Det digitalWrite gör i grunden: sätt en bit i ett register.\n#define LED_BIT 5\nvolatile unsigned int *GPIO_OUT = (unsigned int *)0x60004004; // adress från databladet\n\n*GPIO_OUT |=  (1u << LED_BIT);   // sätt bit 5: LED på\n*GPIO_OUT &= ~(1u << LED_BIT);   // nollställ bit 5: LED av\n",
+      "caption": "registerskrivning (adressen är bara ett exempel)"
+    },
+    {
+      "type": "h",
+      "text": "Från kod till körning"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Skriv kod</strong> i C eller C++",
+        "<strong>Kompilera och länka</strong> till en binärfil med maskinkod för just den processorn",
+        "<strong>Flasha</strong>: binärfilen skrivs till MCU:ns flashminne via USB",
+        "<strong>Kör</strong>: vid start läser CPU:n instruktionerna från flash"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Datablad"
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>datablad</strong> beskriver en komponent: spänningar den tål, hur den kopplas, hur man pratar med den och hur exakt den är. Läs till exempel databladen för temperatursensorerna DS18B20 (digital, 1-Wire) och TMP235 (analog spänning) och jämför."
+    },
+    {
+      "type": "h",
+      "text": "Arduino IDE och ESP32"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Arduino IDE</strong> är en utvecklingsmiljö för att skriva, kompilera och flasha kod till mikrokontroller. Arduino-mjukvaran ger färdiga funktioner som <code>pinMode</code>, <code>digitalWrite</code> och <code>analogRead</code>. Varje program har <code>setup()</code>, som körs en gång, och <code>loop()</code>, som körs om och om igen."
+    },
+    {
+      "type": "exercise",
+      "title": "Installera Arduino IDE för ESP32-C6",
+      "html": "<ol><li>Ladda ner Arduino IDE från arduino.cc/en/software och installera.</li><li><em>File → Preferences</em>: lägg till <code>https://espressif.github.io/arduino-esp32/package_esp32_index.json</code> under <em>Additional Board Manager URLs</em>.</li><li><em>Tools → Board → Boards Manager</em>: sök på <code>esp32</code> och installera <em>esp32 by Espressif Systems</em>.</li><li>Installera USB-drivrutinen <em>CP210x Windows Drivers</em> från Silicon Labs om kortet inte syns.</li><li>Välj kortet <em>ESP32C6 Dev Module</em> och rätt COM-port, och ladda upp ett blinkprogram.</li></ol>"
+    },
+    {
+      "type": "exercise",
+      "title": "Från simulator till riktig hårdvara",
+      "html": "<p>Ta koden där sensorvärdet styr LED:ens styrka från Wokwi-labben och kör den på ditt ESP32-kort med riktiga komponenter. Mät spänningen på sensorpinnen med multimetern och jämför med värdet i Serial Monitor.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en mikrokontroller?",
+      "options": [
+        "En processor som kräver externt RAM",
+        "En hel liten dator på ett chip",
+        "Ett program för att flasha kod",
+        "En typ av sensor"
+      ],
+      "answer": 1,
+      "why": "CPU, minne och kringutrustning på samma chip."
+    },
+    {
+      "type": "multi",
+      "q": "Vad finns oftast inuti en MCU?",
+      "options": [
+        "CPU",
+        "Flashminne",
+        "RAM",
+        "Grafikkort"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Grafikkort hör till vanliga datorer."
+    },
+    {
+      "type": "mc",
+      "q": "Varför behövs en pull-up- eller pull-down-resistor på en ingång?",
+      "options": [
+        "För att öka strömmen",
+        "För att ingången inte ska flyta och läsa slumpmässiga värden",
+        "För att spara minne",
+        "För att göra den analog"
+      ],
+      "answer": 1,
+      "why": "Utan den kan en okopplad ingång läsa vad som helst."
+    },
+    {
+      "type": "mc",
+      "q": "Var ligger programmet kvar när strömmen stängs av?",
+      "options": [
+        "RAM",
+        "Register",
+        "Flash",
+        "Cache"
+      ],
+      "answer": 2,
+      "why": "Flash är icke-flyktigt. RAM och register töms."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ett avbrott (interrupt)?",
+      "options": [
+        "Ett fel som kraschar programmet",
+        "En händelse som pausar det vanliga programmet för att hanteras direkt",
+        "När strömmen går",
+        "En sorts loop"
+      ],
+      "answer": 1,
+      "why": "Avbrottsrutinen körs och sedan fortsätter programmet där det var."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är rätt ordning från kod till körning?",
+      "options": [
+        "Flasha, skriv, kompilera, kör",
+        "Skriv, kompilera och länka, flasha, kör",
+        "Kompilera, skriv, kör, flasha",
+        "Skriv, kör, flasha"
+      ],
+      "answer": 1,
+      "why": "Binärfilen måste finnas innan den kan flashas."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken funktion körs om och om igen i ett Arduino-program?",
+      "options": [
+        "setup()",
+        "loop()",
+        "main()",
+        "run()"
+      ],
+      "answer": 1,
+      "why": "setup() körs en gång, loop() hela tiden därefter."
+    },
+    {
+      "type": "text",
+      "q": "Vilken Arduino-funktion ställer in en pinne som in- eller utgång?",
+      "accept": [
+        "pinMode",
+        "pinMode()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>pinMode(13, OUTPUT);</code>"
+    },
+    {
+      "type": "mc",
+      "q": "Vad beskriver ett datablad?",
+      "options": [
+        "Komponentens pris",
+        "Hur komponenten kopplas, vad den tål och hur den kommuniceras med",
+        "Hur man skriver C",
+        "Kursens schema"
+      ],
+      "answer": 1,
+      "why": "Databladet är tillverkarens beskrivning av komponenten."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör I/O-register?",
+      "options": [
+        "Lagrar programmet",
+        "Styr och läser kringutrustning som GPIO och UART",
+        "Räknar ut matematik",
+        "Håller kristallens frekvens"
+      ],
+      "answer": 1,
+      "why": "Att skriva till rätt bit i ett register är det som sätter en pinne hög."
+    },
+    {
+      "type": "text",
+      "q": "Vilken bitoperator använder du för att sätta (ettställa) en bit utan att ändra de andra: <code>reg ? (1 &lt;&lt; 5)</code>?",
+      "accept": [
+        "|=",
+        "|"
+      ],
+      "placeholder": "operator",
+      "why": "<code>reg |= (1 &lt;&lt; 5);</code> Med <code>&amp;= ~(1 &lt;&lt; 5)</code> nollställer du den."
+    }
+  ]
+}

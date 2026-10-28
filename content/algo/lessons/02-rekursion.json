@@ -1,0 +1,250 @@
+{
+  "id": "rekursion",
+  "title": "Rekursion",
+  "category": "Grunder",
+  "minutes": 11,
+  "lead": "Funktioner som anropar sig själva: basfall, rekursiva anrop, anropsstacken och när rekursion är rätt verktyg.",
+  "sources": [
+    "F1 – Algoritmer, komplexitet, rekursion",
+    "Övningar 1"
+  ],
+  "goals": [
+    "Skriva en rekursiv funktion med basfall och rekursivt anrop",
+    "Förklara hur anropsstacken byggs upp och avvecklas",
+    "Förklara varför naiv rekursiv fibonacci är långsam och hur man fixar det",
+    "Använda exponenter och logaritmer i komplexitetsresonemang"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är rekursion?"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Rekursion</strong> är ett sätt att upprepa kod utan for, while eller do-while. En funktion anropar sig själv, tills något anrop bestämmer att det inte behövs fler."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int fakultet(int n) {\n    if (n == 0)\n        return 1;                  // basfall\n    return n * fakultet(n - 1);    // rekursivt anrop med ett mindre problem\n}\n",
+      "caption": "C"
+    },
+    {
+      "type": "p",
+      "html": "Alla rekursiva funktioner har:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Minst ett basfall:</strong> det enklaste fallet, som besvaras direkt.",
+        "<strong>Ett rekursivt anrop</strong> med en mindre del av indatan. Det garanterar att basfallet nås till slut."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Anropsstacken"
+    },
+    {
+      "type": "p",
+      "html": "Det första anropet körs först men blir klart sist, eftersom det måste vänta på svaret från sitt rekursiva anrop. Basfallet anropas sist men returnerar först. Varje anrop som väntar ligger på <strong>stacken</strong>, minnet där funktionsanrop sparas."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "sum(3) anropas\nsum(2) anropas\nsum(1) anropas\nsum(1) returnerar 1\nsum(2) returnerar 3\nsum(3) returnerar 6\n",
+      "caption": "sum(3) med utskrift"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Glömmer du basfallet, eller blir problemet aldrig mindre, tar stacken slut: stack overflow. På en mikrokontroller med några kilobyte stack händer det snabbt."
+    },
+    {
+      "type": "h",
+      "text": "Flera rekursiva anrop"
+    },
+    {
+      "type": "p",
+      "html": "En funktion kan göra mer än ett rekursivt anrop. Den naiva fibonaccin gör två:"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "long long badFib(int n) {          // O(2^n): räknar samma sak om och om igen\n    if (n < 2) return n;\n    return badFib(n - 1) + badFib(n - 2);\n}\n",
+      "caption": "naiv fibonacci"
+    },
+    {
+      "type": "p",
+      "html": "badFib(40) gör hundratals miljoner anrop, eftersom badFib(38) räknas ut två gånger, badFib(37) tre gånger, och så vidare. Bättre är en rekursiv hjälpfunktion som bär med sig två värden, och en <strong>wrapper</strong> som anropas som vanligt:"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "long long fibSub(long long a, long long b, int n) {\n    if (n == 0) return a;\n    return fibSub(b, a + b, n - 1);    // ett anrop per steg: O(n)\n}\n\nlong long goodFib(int n) {\n    return fibSub(0, 1, n);\n}\n",
+      "caption": "bra fibonacci"
+    },
+    {
+      "type": "h",
+      "text": "Tips för att skriva rekursion"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Skriv returtyp och parametrar först.",
+        "Skriv basfallet.",
+        "Tänk på det näst enklaste fallet: hur ger det rätt svar tillsammans med basfallet?"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Rekursion eller iteration?"
+    },
+    {
+      "type": "p",
+      "html": "Oftast är en loop snabbare och tar mindre minne, eftersom varje anrop kostar tid och stackutrymme. Men vissa problem, som träd, grafer och quicksort, blir mycket lättare att skriva rekursivt, och koden blir kort och tydlig."
+    },
+    {
+      "type": "h",
+      "text": "Lite matte"
+    },
+    {
+      "type": "p",
+      "html": "Programmerare behöver ofta modulus (%), exponenter, fakultet (!) och logaritmer. En <strong>logaritm</strong> är exponentens invers: log₁₀ 1000 = 3 eftersom 10³ = 1000. I datavetenskap är basen oftast 2: log₂ 1024 = 10. Det är därför algoritmer som halverar problemet blir O(log n)."
+    },
+    {
+      "type": "exercise",
+      "title": "6³ eller 3⁶?",
+      "html": "<p>Vilket är störst? Räkna utan miniräknare.</p><p><strong>Svar:</strong> 6³ = 216 och 3⁶ = 729, så 3⁶ är störst.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "multi",
+      "q": "Vad måste en fungerande rekursiv funktion ha?",
+      "options": [
+        "Ett basfall",
+        "Ett rekursivt anrop med ett mindre problem",
+        "En for-loop",
+        "En global variabel"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "why": "Utan basfall eller utan att problemet minskar tar det aldrig slut."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket anrop returnerar först?",
+      "options": [
+        "Det första",
+        "Basfallet",
+        "Det i mitten",
+        "Alla samtidigt"
+      ],
+      "answer": 1,
+      "why": "Basfallet anropas sist men returnerar först."
+    },
+    {
+      "type": "mc",
+      "q": "Var sparas anrop som väntar på svar?",
+      "options": [
+        "I heapen",
+        "På stacken",
+        "I en fil",
+        "I registret"
+      ],
+      "answer": 1,
+      "why": "Därför kan för djup rekursion ge stack overflow."
+    },
+    {
+      "type": "text",
+      "q": "Vad returnerar <code>fakultet(4)</code>?",
+      "accept": [
+        "24"
+      ],
+      "placeholder": "tal",
+      "why": "4 · 3 · 2 · 1 = 24."
+    },
+    {
+      "type": "mc",
+      "q": "Varför är <code>badFib(n − 1) + badFib(n − 2)</code> långsam?",
+      "options": [
+        "Den använder för mycket minne per anrop",
+        "Samma delproblem räknas ut många gånger, O(2ⁿ)",
+        "Den har inget basfall",
+        "Additionen är långsam"
+      ],
+      "answer": 1,
+      "why": "Med fibSub(a, b, n) blir det O(n)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en wrapper i det här sammanhanget?",
+      "options": [
+        "En vanlig funktion som anropar den rekursiva hjälpfunktionen med rätt startvärden",
+        "En typ av loop",
+        "En struct",
+        "En pekare"
+      ],
+      "answer": 0,
+      "why": "<code>goodFib(n)</code> anropar <code>fibSub(0, 1, n)</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer om basfallet saknas?",
+      "options": [
+        "Programmet blir snabbare",
+        "Anropen tar aldrig slut och stacken tar slut",
+        "Kompilatorn lägger till ett",
+        "Funktionen returnerar 0"
+      ],
+      "answer": 1,
+      "why": "Stack overflow."
+    },
+    {
+      "type": "text",
+      "q": "Vad är log₂ 1024?",
+      "accept": [
+        "10"
+      ],
+      "placeholder": "tal",
+      "why": "2¹⁰ = 1024."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 3⁶?",
+      "accept": [
+        "729"
+      ],
+      "placeholder": "tal",
+      "why": "3 · 3 · 3 · 3 · 3 · 3 = 729."
+    },
+    {
+      "type": "mc",
+      "q": "När är rekursion ett bra val?",
+      "options": [
+        "Alltid",
+        "När problemet naturligt delar sig i mindre likadana delproblem, som träd",
+        "Aldrig i C",
+        "Bara för att räkna fakultet"
+      ],
+      "answer": 1,
+      "why": "Oftast är iteration snabbare, men träd och grafer blir mycket enklare rekursivt."
+    },
+    {
+      "type": "code",
+      "q": "Skriv en rekursiv <code>sum(n)</code> som räknar ut 0 + 1 + … + n och skriver ut när den anropas och vad den returnerar, precis som i exemplet för sum(3). sum(1) returnerar 1 och sum(0) returnerar 0 direkt.",
+      "task": "02-rekursion-1",
+      "why": "Skriv ut anropet först, räkna ut resultatet, och skriv sedan ut det före return.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Skriv <code>fibSub(a, b, n)</code> rekursivt så att <code>goodFib(n) = fibSub(0, 1, n)</code> ger det n:te fibonaccitalet (fib(0) = 0, fib(1) = 1). n kan vara upp till 90, så använd long long i C och C++.",
+      "task": "02-rekursion-2",
+      "why": "Basfall n == 0 ger a. Annars fibSub(b, a + b, n − 1).",
+      "web": true
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "id": "iot-protokoll",
+  "title": "IoT och kommunikationsprotokoll",
+  "category": "IoT",
+  "minutes": 13,
+  "lead": "Vad som gör något till en IoT-enhet, var IoT används, och protokollen som kopplar ihop allt, från UART på kretskortet till MQTT mot molnet.",
+  "sources": [
+    "Lektion 4 – IoT-intro"
+  ],
+  "goals": [
+    "Förklara vad IoT är och vad en IoT-enhet gör",
+    "Ge exempel på användningsområden",
+    "Jämföra UART, I2C, SPI och CAN",
+    "Jämföra LoRaWAN, Bluetooth, Zigbee, Z-Wave och Wi-Fi",
+    "Känna till internetprotokollen HTTP, TCP, UDP, WebSockets, MQTT och CoAP"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är IoT?"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Internet of Things</strong> är ett nätverk av saker som <strong>samlar in</strong> data, <strong>bearbetar</strong> den, <strong>delar</strong> den och <strong>agerar</strong> på den. Sakerna är oftast inbyggda system med sensorer och aktuatorer."
+    },
+    {
+      "type": "p",
+      "html": "En IoT-enhet är alltså en fysisk enhet som kan samla in data, bearbeta den och kommunicera via ett nätverk. En vanlig termometer är inte IoT. En termometer som skickar värdet till en app är det."
+    },
+    {
+      "type": "h",
+      "text": "Arkitektur"
+    },
+    {
+      "type": "p",
+      "html": "Ett IoT-system brukar beskrivas i lager: <strong>enheter</strong> (sensorer och aktuatorer), <strong>nätverk eller gateway</strong> som för datan vidare, <strong>moln eller server</strong> som lagrar och analyserar, och <strong>applikation</strong> där användaren ser och styr."
+    },
+    {
+      "type": "h",
+      "text": "Användningsområden"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Område",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Hemautomation",
+          "Smarta lampor, termostater, dörrlås, röststyrning"
+        ],
+        [
+          "Hälsa och träning",
+          "Aktivitetsarmband, smarta vågar, pulsmätare"
+        ],
+        [
+          "Sjukvård",
+          "Fjärrövervakning av patienter, insulinpumpar"
+        ],
+        [
+          "Transport och logistik",
+          "GPS-spårning, smarta trafikljus, lagerövervakning"
+        ],
+        [
+          "Miljö och energi",
+          "Smarta elmätare, solpanelsövervakning, luftkvalitet"
+        ],
+        [
+          "Industri",
+          "Prediktivt underhåll, robotstyrning, sensorer i produktionslinjer"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Protokoll"
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>kommunikationsprotokoll</strong> är formatet och reglerna för hur enheter pratar med varandra. Båda sidor måste prata samma språk. Vi delar upp dem i <strong>interna</strong> (mellan delar inuti enheten) och <strong>externa</strong> (ut från enheten)."
+    },
+    {
+      "type": "h",
+      "text": "Interna protokoll"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Protokoll",
+        "Ledningar",
+        "Egenskaper",
+        "Typiskt"
+      ],
+      "rows": [
+        [
+          "UART",
+          "2: TX och RX",
+          "Asynkront, enhet till enhet. Båda måste ha samma baudrate. Enkelt men begränsad hastighet.",
+          "Serial Monitor, GPS-moduler"
+        ],
+        [
+          "I2C",
+          "2: SDA (data) och SCL (klocka)",
+          "Buss med master och slavar som har adresser. Många enheter, korta kablar.",
+          "Sensorer, små displayer"
+        ],
+        [
+          "SPI",
+          "4: MISO, MOSI, SCLK, CS",
+          "Master och slavar, snabbt och stabilt, en CS-ledning per enhet.",
+          "SD-kort, snabba displayer"
+        ],
+        [
+          "CAN",
+          "2 (differentiellt par)",
+          "Robust buss för många noder. Kräver en CAN-transceiver.",
+          "Bilar, industri"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "UART skickar varje tecken som en startbit, databitar och en stoppbit. 115200 baud betyder ungefär 115200 bitar per sekund. Är baudraten fel i Serial Monitor ser du bara skräptecken."
+    },
+    {
+      "type": "h",
+      "text": "Externa anslutningar"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Teknik",
+        "Räckvidd",
+        "Energi",
+        "Övrigt"
+      ],
+      "rows": [
+        [
+          "LoRaWAN",
+          "Lång (km)",
+          "Mycket låg",
+          "Låg datahastighet. Bra för sensorer på landet."
+        ],
+        [
+          "Bluetooth (BLE)",
+          "Kort",
+          "Låg",
+          "Punkt till punkt eller mesh. Mobil till enhet."
+        ],
+        [
+          "Zigbee",
+          "Kort per nod",
+          "Låg",
+          "Mesh på 2,4 GHz, kräver en Zigbee-hubb."
+        ],
+        [
+          "Z-Wave",
+          "Kort per nod",
+          "Låg",
+          "Mesh på 868 MHz i EU. Proprietärt, kräver licens."
+        ],
+        [
+          "Wi-Fi",
+          "Medel",
+          "Hög",
+          "Direkt mot internet, hög datahastighet."
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Internetprotokoll"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>HTTP:</strong> fråga och svar, som när en webbläsare hämtar en sida. Enkelt men pratigt.",
+        "<strong>TCP:</strong> pålitlig förbindelse där allt kommer fram i rätt ordning.",
+        "<strong>UDP:</strong> snabbt utan garantier. Bra när ett tappat paket inte gör något.",
+        "<strong>WebSockets:</strong> en öppen förbindelse där båda sidor kan skicka när som helst.",
+        "<strong>MQTT:</strong> publish/subscribe via en broker. Enheter publicerar på ämnen (topics) som <code>hus/kok/temp</code>, och den som prenumererar får värdena. Lätt och mycket vanligt i IoT.",
+        "<strong>CoAP:</strong> som en lättviktig HTTP över UDP, för mycket små enheter."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Inlämningsuppgift och Arduino IoT Cloud"
+    },
+    {
+      "type": "p",
+      "html": "Inlämningsuppgiften görs i par, men alla lämnar in egen dokumentation och presenterar projektet själva. I labben skapar du ett konto på <strong>Arduino IoT Cloud</strong> (cloud.arduino.cc) och kopplar ditt ESP32-C6-kort, så att ett sensorvärde syns i en dashboard."
+    },
+    {
+      "type": "exercise",
+      "title": "Designa ett enkelt IoT-system",
+      "html": "<p>Välj en smart IoT-lösning, till exempel en smart elmätare eller en jordfuktighetssensor i en växthusodling. Ta reda på var den används och beskriv: vilka sensorer och aktuatorer finns, vilka interna och externa protokoll används, var datan lagras och vem som ser den.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad gör en enhet till en IoT-enhet?",
+      "options": [
+        "Den har en skärm",
+        "Den samlar in data, bearbetar den och kommunicerar via ett nätverk",
+        "Den är batteridriven",
+        "Den använder C++"
+      ],
+      "answer": 1,
+      "why": "Uppkopplingen är det centrala."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många ledningar använder I2C?",
+      "options": [
+        "1",
+        "2",
+        "4",
+        "8"
+      ],
+      "answer": 1,
+      "why": "SDA för data och SCL för klocka."
+    },
+    {
+      "type": "mc",
+      "q": "Vad måste båda sidor vara överens om i UART?",
+      "options": [
+        "Adressen",
+        "Baudraten",
+        "IP-adressen",
+        "Antalet slavar"
+      ],
+      "answer": 1,
+      "why": "UART är asynkront, så hastigheten måste bestämmas i förväg."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är SPI:s ledningar?",
+      "options": [
+        "MISO",
+        "MOSI",
+        "SCLK",
+        "CS",
+        "SDA"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "SDA hör till I2C."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket protokoll används mycket i bilar för att många styrenheter ska prata robust?",
+      "options": [
+        "UART",
+        "SPI",
+        "CAN",
+        "HTTP"
+      ],
+      "answer": 2,
+      "why": "Controller Area Network."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken teknik passar en batteridriven sensor flera kilometer från närmaste gateway?",
+      "options": [
+        "Bluetooth",
+        "Wi-Fi",
+        "LoRaWAN",
+        "SPI"
+      ],
+      "answer": 2,
+      "why": "Lång räckvidd och mycket låg energiförbrukning, men låg datahastighet."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka bygger mesh-nätverk?",
+      "options": [
+        "Zigbee",
+        "Z-Wave",
+        "UART",
+        "Bluetooth mesh"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "UART är en enkel förbindelse mellan två enheter."
+    },
+    {
+      "type": "mc",
+      "q": "Hur fungerar MQTT?",
+      "options": [
+        "Fråga och svar som HTTP",
+        "Publish/subscribe via en broker",
+        "Direkt mellan två pinnar",
+        "Bara över Bluetooth"
+      ],
+      "answer": 1,
+      "why": "Enheter publicerar på topics, och prenumeranter får värdena via brokern."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan TCP och UDP?",
+      "options": [
+        "TCP är pålitligt och ordnat, UDP är snabbt utan garantier",
+        "UDP är krypterat",
+        "TCP används bara lokalt",
+        "Det finns ingen skillnad"
+      ],
+      "answer": 0,
+      "why": "TCP skickar om tappade paket. UDP gör det inte."
+    },
+    {
+      "type": "text",
+      "q": "Vilket internt protokoll använder ledningarna TX och RX?",
+      "accept": [
+        "UART"
+      ],
+      "placeholder": "protokoll",
+      "why": "Universal Asynchronous Receiver/Transmitter."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket protokoll är en lättviktig motsvarighet till HTTP för små enheter, över UDP?",
+      "options": [
+        "CoAP",
+        "CAN",
+        "SPI",
+        "Zigbee"
+      ],
+      "answer": 0,
+      "why": "Constrained Application Protocol."
+    }
+  ]
+}

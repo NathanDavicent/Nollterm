@@ -32,8 +32,15 @@ const std::set<std::string>& keywords(const std::string& lang) {
         "return", "True", "try", "while", "with", "yield", "match", "case", "self", "print", "input", "int", "float",
         "str", "len", "range"};
     static const std::set<std::string> bash = {"git", "g++", "gcc", "cd", "npm", "node", "python"};
+    static const std::set<std::string> sql = {
+        "SELECT", "FROM", "WHERE", "DISTINCT", "ORDER", "BY", "ASC", "DESC", "LIMIT", "AND", "OR", "NOT", "LIKE", "IS",
+        "NULL", "INSERT", "INTO", "VALUES", "UPDATE", "SET", "DELETE", "CREATE", "TABLE", "DROP", "ALTER", "PRIMARY",
+        "FOREIGN", "KEY", "REFERENCES", "INTEGER", "TEXT", "REAL", "COUNT", "GROUP", "HAVING", "JOIN", "ON", "AS", "IN"};
+    static const std::set<std::string> none;
     if (lang == "py") return py;
     if (lang == "bash") return bash;
+    if (lang == "sql") return sql;
+    if (lang == "text") return none;
     return cpp;
 }
 
@@ -42,6 +49,7 @@ std::vector<Token> tokenize(const std::string& line, const std::string& lang, bo
     const Palette& p = pal();
     std::vector<Token> out;
     const bool hashComment = lang == "py" || lang == "bash";
+    if (lang == "text") return {{line, p.codeFg}};   // ingen färgning, t.ex. sanningstabeller
     size_t i = 0;
     auto push = [&](size_t from, size_t to, ImU32 c) { if (to > from) out.push_back({line.substr(from, to - from), c}); };
 
@@ -55,6 +63,7 @@ std::vector<Token> tokenize(const std::string& line, const std::string& lang, bo
             continue;
         }
         char c = line[i];
+        if (lang == "sql" && line.compare(i, 2, "--") == 0) { push(i, line.size(), p.hlComment); break; }
         if (!hashComment && line.compare(i, 2, "//") == 0) { push(i, line.size(), p.hlComment); break; }
         if (!hashComment && line.compare(i, 2, "/*") == 0) { inBlockComment = true; continue; }
         if (hashComment && c == '#') { push(i, line.size(), p.hlComment); break; }
@@ -122,7 +131,7 @@ void codeBlock(const std::string& id, const std::string& code, const std::string
     dl->AddLine(ImVec2(top.x, top.y + barH), ImVec2(top.x + width, top.y + barH), p.codeLine);
 
     // Rubrikraden
-    const std::string label = !caption.empty() ? caption : lang == "c" ? "C" : lang == "py" ? "Python" : lang == "bash" ? "terminal" : "C++";
+    const std::string label = !caption.empty() ? caption : lang == "c" ? "C" : lang == "py" ? "Python" : lang == "bash" ? "terminal" : lang == "sql" ? "SQL" : lang == "text" ? "" : "C++";
     dl->AddText(fonts().small, fonts().small->FontSize, ImVec2(top.x + px(12), top.y + (barH - fonts().small->FontSize) / 2), p.hlComment, label.c_str());
     ImGui::SetCursorScreenPos(ImVec2(top.x + width - px(86), top.y + px(4)));
     ImGui::PushID(id.c_str());

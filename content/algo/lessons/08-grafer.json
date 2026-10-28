@@ -1,0 +1,310 @@
+{
+  "id": "grafer",
+  "title": "Grafer",
+  "category": "Datastrukturer",
+  "minutes": 15,
+  "lead": "Noder och bågar: riktade, viktade, hur grafer sparas, BFS och DFS, och kända grafproblem som kortaste väg och minsta uppspännande träd.",
+  "sources": [
+    "Grafer",
+    "Övningar 7 – Grafer"
+  ],
+  "goals": [
+    "Förklara riktad/oriktad och viktad/oviktad graf, grad och angränsande",
+    "Spara en graf som grannlista och som grannmatris och jämföra dem",
+    "Köra BFS och DFS för hand och i kod, med visited",
+    "Känna till Prim, Dijkstra, A*, Floyd-Warshall, kappsäcksproblemet och handelsresandeproblemet"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är en graf?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>graf</strong> är en samling <strong>noder</strong> (vertex) och <strong>bågar</strong> (edge) mellan dem. Den liknar ett träd, men har ingen speciell startpunkt och får ha cykler. Grafer modellerar vägnät, flygrutter, nätverk, beroenden mellan uppgifter och drag i brädspel."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Oriktad:</strong> bågarna går åt båda hållen, som \"vi är vänner\".",
+        "<strong>Riktad:</strong> bågarna har en riktning, som \"följer\" på sociala medier.",
+        "<strong>Viktad:</strong> bågarna har ett värde, som restid eller avstånd.",
+        "<strong>Multigraf:</strong> flera bågar mellan samma par av noder."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Två noder är <strong>angränsande</strong> om det finns en båge mellan dem. I riktade grafer kallas grannen för <strong>successor</strong>. En nods <strong>grad</strong> är antalet bågar den har. I riktade grafer skiljer man på in-grad och ut-grad."
+    },
+    {
+      "type": "h",
+      "text": "Representation"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Grannlista (adjacency list)",
+        "Grannmatris (adjacency matrix)"
+      ],
+      "rows": [
+        [
+          "Hur",
+          "En lista per nod med grannarnas id",
+          "En V × V-tabell där M[i][j] = 1 om det finns en båge i → j"
+        ],
+        [
+          "Minne",
+          "O(V + E)",
+          "O(V²)"
+        ],
+        [
+          "Finns båge i → j?",
+          "O(grad), gå igenom listan",
+          "O(1), titta i M[i][j]"
+        ],
+        [
+          "Passar",
+          "Glesa grafer: vägnät, sociala nätverk",
+          "Täta grafer, eller små grafer där man ofta frågar om bågar"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Med 10 000 noder blir matrisen 100 miljoner celler, även om varje nod bara har ett fåtal grannar. Då är grannlistan självklar."
+    },
+    {
+      "type": "h",
+      "text": "Traversering och visited"
+    },
+    {
+      "type": "p",
+      "html": "När man traverserar vill man oftast besöka alla noder en gång. Eftersom grafer kan ha cykler måste man <strong>markera besökta noder</strong> (visited). Annars kan man gå runt i en cykel för alltid: 0 → 1 → 2 → 0 → 1 …"
+    },
+    {
+      "type": "h",
+      "text": "BFS och DFS"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Bredden först (BFS):</strong> besök noden, lägg alla obesökta grannar i en <strong>kö</strong>, ta nästa från kön. Går nivå för nivå, som levelorder i ett träd. Hittar kortaste vägen i antal bågar.",
+        "<strong>Djupet först (DFS):</strong> besök noden och gå direkt vidare till en obesökt granne, så djupt det går, innan nästa granne. Använder en <strong>stack</strong>, oftast anropsstacken via rekursion. Liknar preorder."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Bågar: 0-1, 0-2, 1-3, 1-4, 2-5, 4-5, 5-6\n\nGrannlista:\n0: 1, 2        4: 1, 5\n1: 0, 3, 4     5: 2, 4, 6\n2: 0, 5        6: 5\n3: 1\n\nBFS från 0:  0 1 2 3 4 5 6\nDFS från 0:  0 1 3 4 5 2 6\n",
+      "caption": "exempelgrafen"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void bfs(int start) {\n    int visited[N] = {0};\n    Queue q;\n    queue_init(&q);\n    visited[start] = 1;          // markera när noden läggs i kön\n    queue_push(&q, start);\n    while (!queue_is_empty(&q)) {\n        int v = queue_pop(&q);\n        printf(\"%d \", v);\n        for (int i = 0; i < deg[v]; i++) {\n            int u = neighbors[v][i];\n            if (!visited[u]) {\n                visited[u] = 1;\n                queue_push(&q, u);\n            }\n        }\n    }\n}\n",
+      "caption": "BFS i C"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Markera visited när noden läggs i kön, inte när den tas ut. Annars kan samma nod läggas i kön flera gånger av olika grannar."
+    },
+    {
+      "type": "h",
+      "text": "Begrepp och kända problem"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Cykel:</strong> en väg som börjar och slutar i samma nod.",
+        "<strong>Hamiltonsk graf:</strong> det finns en cykel som besöker varje nod exakt en gång.",
+        "<strong>Eulergraf:</strong> det finns en väg som går längs varje båge exakt en gång.",
+        "<strong>Homeomorfa grafer:</strong> kan sträckas ut till samma form. Svårt att avgöra.",
+        "<strong>Minsta uppspännande träd (MST):</strong> ett träd med alla noder där summan av bågvikterna är minsta möjliga. <strong>Prims algoritm</strong> börjar i valfri nod och lägger hela tiden till den billigaste bågen till en nod som inte är med än.",
+        "<strong>Dijkstra:</strong> kortaste vägen från a till b, söker i alla riktningar.",
+        "<strong>A*:</strong> som Dijkstra men styr sökningen mot målet med en uppskattning, och blir oftast snabbare.",
+        "<strong>Floyd-Warshall:</strong> kortaste vägen mellan alla par av noder i en körning, O(n³).",
+        "<strong>Kappsäcksproblemet:</strong> välj föremål med vikt och värde så att värdet blir störst utan att maxvikten överskrids. Kan lösas med DFS/BFS i ett binärt beslutsträd: vänster tar med nästa föremål, höger tar inte med det.",
+        "<strong>Handelsresandeproblemet:</strong> kortaste cykeln genom alla noder. Ingen känd snabb lösning. I praktiken nöjer man sig med bra uppskattningar."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Variadiska funktioner"
+    },
+    {
+      "type": "p",
+      "html": "Inte grafrelaterat, men användbart: en <strong>variadisk funktion</strong> tar ett okänt antal argument, som <code>printf</code>. I C används <code>&lt;stdarg.h&gt;</code> med <code>va_list</code>, <code>va_start</code>, <code>va_arg</code> och <code>va_end</code>."
+    },
+    {
+      "type": "exercise",
+      "title": "Grad i en riktad graf",
+      "html": "<p>Noder A, B, C, D med bågarna A→B, A→C, B→C, C→A, D→C. Ange in- och ut-grad för varje nod.</p><p><strong>Svar:</strong> A: in 1, ut 2. B: in 1, ut 1. C: in 3, ut 1. D: in 0, ut 1. C har flest inkommande och verkar mest central.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Matris till lista och DFS",
+      "html": "<p>Den riktade grafen har M[0][1], M[0][4], M[1][2], M[2][3], M[3][1] och M[4][3] lika med 1. Bygg grannlistan, kör DFS från 0 och leta efter en cykel.</p><p><strong>Svar:</strong> 0: 1, 4. 1: 2. 2: 3. 3: 1. 4: 3. DFS från 0 ger 0 1 2 3 4. Cykeln är 1 → 2 → 3 → 1.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "multi",
+      "q": "Vilka grafer är riktade?",
+      "options": [
+        "\"Följer\" på sociala medier",
+        "Vänskap",
+        "Beroenden: A måste vara klar före B",
+        "Vägnät med enkelriktade gator"
+      ],
+      "answers": [
+        0,
+        2,
+        3
+      ],
+      "why": "Vänskap gäller åt båda hållen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en viktad graf?",
+      "options": [
+        "En graf med många noder",
+        "En graf där bågarna har ett värde, som avstånd",
+        "En graf utan cykler",
+        "En graf med riktade bågar"
+      ],
+      "answer": 1,
+      "why": "Vikterna kan vara restid, kostnad eller avstånd."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken representation tar O(V²) minne?",
+      "options": [
+        "Grannlista",
+        "Grannmatris",
+        "Båda",
+        "Ingen"
+      ],
+      "answer": 1,
+      "why": "En cell för varje par av noder."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken representation svarar snabbast på \"finns båge i → j?\"",
+      "options": [
+        "Grannlista",
+        "Grannmatris",
+        "Lika snabbt",
+        "Ingen av dem"
+      ],
+      "answer": 1,
+      "why": "O(1): titta i M[i][j]."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken datastruktur använder BFS?",
+      "options": [
+        "Stack",
+        "Kö",
+        "Mängd",
+        "Hashtabell"
+      ],
+      "answer": 1,
+      "why": "Först in, först ut ger nivå för nivå."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken datastruktur använder DFS?",
+      "options": [
+        "Kö",
+        "Stack (eller rekursion)",
+        "Hashtabell",
+        "Prioritetskö"
+      ],
+      "answer": 1,
+      "why": "Rekursionen använder anropsstacken."
+    },
+    {
+      "type": "mc",
+      "q": "Varför behövs visited?",
+      "options": [
+        "För att spara minne",
+        "Utan den kan traverseringen fastna i en cykel",
+        "För att sortera noderna",
+        "Det behövs bara i träd"
+      ],
+      "answer": 1,
+      "why": "Grafer kan ha cykler, till skillnad från träd."
+    },
+    {
+      "type": "text",
+      "q": "Exempelgrafen (0-1, 0-2, 1-3, 1-4, 2-5, 4-5, 5-6). Vad blir DFS från 0 med grannar i stigande ordning?",
+      "accept": [
+        "0 1 3 4 5 2 6"
+      ],
+      "placeholder": "noder",
+      "why": "0 → 1 → 3, tillbaka, 4 → 5 → 2, tillbaka, 6."
+    },
+    {
+      "type": "mc",
+      "q": "Vad hittar Prims algoritm?",
+      "options": [
+        "Kortaste vägen mellan två noder",
+        "Ett minsta uppspännande träd",
+        "Alla cykler",
+        "En Eulerväg"
+      ],
+      "answer": 1,
+      "why": "Den lägger hela tiden till den billigaste bågen ut från trädet."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken algoritm hittar kortaste vägen mellan alla par av noder i en körning?",
+      "options": [
+        "Dijkstra",
+        "A*",
+        "Floyd-Warshall",
+        "Prim"
+      ],
+      "answer": 2,
+      "why": "O(n³)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en Eulergraf?",
+      "options": [
+        "Det finns en väg som går längs varje båge exakt en gång",
+        "Det finns en cykel genom varje nod exakt en gång",
+        "Grafen saknar cykler",
+        "Alla noder har samma grad"
+      ],
+      "answer": 0,
+      "why": "Den andra beskrivningen är en hamiltonsk graf."
+    },
+    {
+      "type": "text",
+      "q": "Riktad graf: A→B, A→C, B→C, C→A, D→C. Vad är in-graden för C?",
+      "accept": [
+        "3"
+      ],
+      "placeholder": "tal",
+      "why": "A→C, B→C och D→C."
+    },
+    {
+      "type": "code",
+      "q": "BFS. Läs in <code>n m</code>, m oriktade bågar <code>u v</code> och en startnod. Skriv ut besöksordningen med BFS, där grannar gås igenom i stigande ordning. Noder som inte kan nås skrivs inte ut.",
+      "task": "08-grafer-1",
+      "why": "Markera visited när noden läggs i kön.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "DFS. Samma indata som BFS-uppgiften. Skriv ut besöksordningen med rekursiv DFS, grannar i stigande ordning.",
+      "task": "08-grafer-2",
+      "why": "Markera noden när du går in i den, och anropa dfs på varje obesökt granne i tur och ordning.",
+      "web": true
+    }
+  ]
+}

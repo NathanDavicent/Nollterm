@@ -1,0 +1,342 @@
+{
+  "id": "designmonster",
+  "title": "Design patterns",
+  "category": "Design",
+  "minutes": 12,
+  "lead": "Beprövade lösningsmallar för vanliga designproblem: de tre familjerna, Builder, Singleton, Template Method och Strategy, och en översikt över resten.",
+  "sources": [
+    "Design Patterns",
+    "Design Patterns översikt"
+  ],
+  "goals": [
+    "Förklara vad ett design pattern är och de tre familjerna",
+    "Implementera Builder, Singleton och Template Method",
+    "Använda Strategy-light med funktionspekare för att välja algoritm",
+    "Känna igen de vanligaste mönstren och när de passar"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är ett design pattern?"
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>design pattern</strong> är en återkommande lösningsidé för ett vanligt designproblem, inte färdig kod. Det har inget med algoritmer eller datastrukturer att göra, utan handlar om hur man strukturerar program, främst inom OOP. Målet är att du ska känna igen en situation (\"det här är ett Strategy-problem\") och välja en beprövad struktur, och att utvecklare får ett gemensamt språk."
+    },
+    {
+      "type": "p",
+      "html": "De flesta mönstren kommer från boken <em>Design Patterns</em> av författargruppen <strong>Gang of Four (GoF)</strong>, som beskriver drygt 20 mönster i tre familjer:"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Familj",
+        "Handlar om",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Creational",
+          "Hur objekt skapas",
+          "Singleton, Factory Method, Abstract Factory, Builder, Prototype"
+        ],
+        [
+          "Structural",
+          "Hur klasser och objekt kopplas ihop",
+          "Adapter, Facade, Decorator, Composite, Proxy, Bridge, Flyweight"
+        ],
+        [
+          "Behavioral",
+          "Kommunikation och ansvar mellan objekt",
+          "Template Method, Observer, Command, State, Iterator, Strategy, Memento"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Builder"
+    },
+    {
+      "type": "p",
+      "html": "En klass med en stor konstruktor och många parametrar, där vissa är valfria, blir svår att använda. En <strong>Builder</strong> bygger objektet steg för steg. Varje set-metod returnerar builder-objektet, så anropen kan kedjas."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Car {\npublic:\n    Car(string brand, string model, string color)\n        : brand(brand), model(model), color(color) {}\nprivate:\n    string brand, model, color;\n};\n\nclass CarBuilder {\npublic:\n    CarBuilder& setBrand(string b) { brand = b; return *this; }\n    CarBuilder& setModel(string m) { model = m; return *this; }\n    CarBuilder& setColor(string c) { color = c; return *this; }\n    Car build() const { return Car(brand, model, color); }\nprivate:\n    string brand, model, color;\n};\n\nCar car = CarBuilder().setBrand(\"Volvo\").setColor(\"svart\").build();\n",
+      "caption": "Builder"
+    },
+    {
+      "type": "h",
+      "text": "Singleton"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Singleton</strong> garanterar att det bara finns en instans av en klass, med kontrollerad åtkomst. \"Ett land har bara en regering.\" Bra för en global manager, men det är globalt tillstånd, vilket gör testning svårare, och den naiva varianten är inte trådsäker."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Gör alla konstruktorer privata.",
+        "Ta bort kopieringskonstruktorn.",
+        "En privat statisk pekare till den enda instansen.",
+        "En publik statisk metod som skapar instansen första gången och returnerar den."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class MySingleton {\npublic:\n    MySingleton(const MySingleton&) = delete;\n    static MySingleton* getInstance() {\n        if (instance == nullptr)\n            instance = new MySingleton();\n        return instance;\n    }\nprivate:\n    MySingleton() {}\n    static MySingleton* instance;\n};\n\nMySingleton* MySingleton::instance = nullptr;\n",
+      "caption": "Singleton (naiv)"
+    },
+    {
+      "type": "h",
+      "text": "Template Method"
+    },
+    {
+      "type": "p",
+      "html": "Olika objekt vill göra samma serie av steg, men stegen själva skiljer sig. Basklassen definierar receptet i en icke-virtuell metod, och subklasserna överskuggar de steg de vill ändra. Det har inget med C++-templates att göra."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class BaseAlgorithm {\npublic:\n    void doAlgorithm() {          // receptet: inte virtuellt\n        stepOne();\n        stepTwo();\n        stepThree();\n    }\n    virtual ~BaseAlgorithm() = default;\nprotected:\n    virtual void stepOne() {}\n    virtual void stepTwo() = 0;   // måste implementeras\n    virtual void stepThree() {}\n};\n",
+      "caption": "Template Method"
+    },
+    {
+      "type": "h",
+      "text": "Strategy och Strategy-light"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Strategy</strong>: kapsla in det som varierar. En utbytbar algoritm ligger bakom ett gemensamt gränssnitt, så att du kan byta den utan att ändra resten av programmet. Rätt när du har flera sätt att göra samma sak, vill välja vid körning och vill slippa if/else-kedjor överallt."
+    },
+    {
+      "type": "p",
+      "html": "I inlämningen skriver användaren <code>sort insertion</code> eller <code>sort selection</code>. <strong>Strategy-light</strong> löser det med funktionspekare i C, eller <code>std::function</code> i C++, i stället för en hel klasshierarki:"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "typedef void (*SortFn)(EventLog* log);\n\nSortFn sortfn_from_name(const char* name) {\n    if (strcmp(name, \"insertion\") == 0) return sort_insertion;\n    if (strcmp(name, \"selection\") == 0) return sort_selection;\n    return NULL;\n}\n\nSortFn fn = sortfn_from_name(arg);\nif (!fn) printf(\"Unknown sort\\n\");\nelse fn(log);\n",
+      "caption": "Strategy-light i C"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Alla strategier måste ha exakt samma signatur för att kunna pluggas in. Ny sortering? Skriv en ny funktion och lägg till en rad i sortfn_from_name, inget annat ändras."
+    },
+    {
+      "type": "h",
+      "text": "Fler mönster i korthet"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Mönster",
+        "Idé",
+        "Bra för"
+      ],
+      "rows": [
+        [
+          "Factory Method",
+          "Basklassen säger \"skapa X\", subklassen bestämmer vilket X",
+          "Skapande som beror på variant eller konfiguration"
+        ],
+        [
+          "Adapter",
+          "En wrapper som översätter ett interface till ett annat",
+          "Återanvända gammal kod med fel interface"
+        ],
+        [
+          "Facade",
+          "Ett enkelt API framför ett komplext delsystem",
+          "En EventSystem-front med tick, print, sort och find"
+        ],
+        [
+          "Decorator",
+          "Lägg på funktionalitet i lager",
+          "Kombinerbara funktioner utan arvsexplosion"
+        ],
+        [
+          "Flyweight",
+          "Dela gemensam data mellan många objekt",
+          "Hundratusentals böcker som delar författare"
+        ],
+        [
+          "Observer",
+          "Publish/subscribe: observatörer meddelas vid ändring",
+          "Händelsestyrda system, Logger och AlarmManager"
+        ],
+        [
+          "Command",
+          "Ett kommando som objekt",
+          "Menykommandon, kö, ångra"
+        ],
+        [
+          "State",
+          "Som Strategy, men tillståndet byts internt",
+          "Tydliga tillståndsmaskiner"
+        ],
+        [
+          "Memento",
+          "Spara och återställ en ögonblicksbild",
+          "Ångra"
+        ],
+        [
+          "Iterator",
+          "Gå igenom en samling utan att visa dess insida",
+          "Containrar"
+        ]
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är ett design pattern?",
+      "options": [
+        "Färdig kod att kopiera",
+        "En återkommande lösningsidé för ett vanligt designproblem",
+        "En algoritm för sortering",
+        "En datastruktur"
+      ],
+      "answer": 1,
+      "why": "Mallar som visar vägen, inte färdig kod."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken familj handlar om hur objekt skapas?",
+      "options": [
+        "Creational",
+        "Structural",
+        "Behavioral",
+        "Functional"
+      ],
+      "answer": 0,
+      "why": "Singleton, Builder och Factory Method."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken familj hör Adapter till?",
+      "options": [
+        "Creational",
+        "Structural",
+        "Behavioral",
+        "Ingen"
+      ],
+      "answer": 1,
+      "why": "Adapter kopplar ihop interface."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken familj hör Observer till?",
+      "options": [
+        "Creational",
+        "Structural",
+        "Behavioral",
+        "Ingen"
+      ],
+      "answer": 2,
+      "why": "Den handlar om kommunikation mellan objekt."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket problem löser Builder?",
+      "options": [
+        "Att det bara ska finnas en instans",
+        "Stora konstruktorer med många, ibland valfria, parametrar",
+        "Att byta algoritm vid körning",
+        "Att översätta ett interface"
+      ],
+      "answer": 1,
+      "why": "Bygg objektet steg för steg."
+    },
+    {
+      "type": "multi",
+      "q": "Vad behövs för en Singleton?",
+      "options": [
+        "Privat konstruktor",
+        "Borttagen kopieringskonstruktor",
+        "Privat statisk pekare till instansen",
+        "Publik konstruktor"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Plus en publik statisk getInstance()."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en nackdel med Singleton?",
+      "options": [
+        "Det blir för många instanser",
+        "Globalt tillstånd som gör testning svårare",
+        "Den kan inte ha metoder",
+        "Den kräver arv"
+      ],
+      "answer": 1,
+      "why": "Och den naiva varianten är inte trådsäker."
+    },
+    {
+      "type": "mc",
+      "q": "Vad kännetecknar Template Method?",
+      "options": [
+        "En fast serie steg i basklassen där subklasser byter ut enskilda steg",
+        "C++-templates",
+        "En global instans",
+        "Kloning av objekt"
+      ],
+      "answer": 0,
+      "why": "doAlgorithm() är inte virtuell, men stegen är det."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket mönster passar när användaren skriver <code>sort insertion</code> och programmet ska välja rätt funktion?",
+      "options": [
+        "Singleton",
+        "Strategy",
+        "Builder",
+        "Flyweight"
+      ],
+      "answer": 1,
+      "why": "Utbytbara algoritmer bakom samma signatur."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter författargruppen bakom den klassiska boken om design patterns? (förkortning)",
+      "accept": [
+        "GoF",
+        "Gang of Four"
+      ],
+      "placeholder": "förkortning",
+      "why": "Gang of Four."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket mönster ger ett enkelt API framför ett komplext delsystem?",
+      "options": [
+        "Facade",
+        "Proxy",
+        "Decorator",
+        "State"
+      ],
+      "answer": 0,
+      "why": "En enkel front mot många moduler."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket mönster passar för ångra-funktionen genom att spara ögonblicksbilder?",
+      "options": [
+        "Memento",
+        "Adapter",
+        "Builder",
+        "Iterator"
+      ],
+      "answer": 0,
+      "why": "Spara och återställ ett objekts tillstånd."
+    }
+  ]
+}

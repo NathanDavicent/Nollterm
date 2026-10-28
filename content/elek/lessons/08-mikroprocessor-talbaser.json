@@ -1,0 +1,351 @@
+{
+  "id": "mikroprocessor-talbaser",
+  "title": "Mikroprocessorer och talbaser",
+  "category": "Digitalteknik",
+  "minutes": 13,
+  "lead": "Delarna i en processor, skillnaden mot en mikrokontroller, och hur binära och hexadecimala tal fungerar och räknas om.",
+  "sources": [
+    "Lektion 8 – Mikroprocessorer och matematik"
+  ],
+  "goals": [
+    "Beskriva register, ALU, kontrollenhet och bussar",
+    "Förklara skillnaden mellan mikroprocessor och MCU",
+    "Räkna om mellan decimalt, binärt och hexadecimalt",
+    "Förklara varför hex används för adresser och register"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är en mikroprocessor?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>mikroprocessor</strong> är en CPU på ett chip. Den utför beräkningar och styr instruktionerna i ett system. Den består av:"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Del",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "Register",
+          "Små och snabba lagringsplatser i CPU:n: allmänna, status och kontroll, I/O och avbrott"
+        ],
+        [
+          "ALU (Arithmetic Logic Unit)",
+          "Räknar (addition, subtraktion) och gör logiska operationer (AND, OR, NOT). Tar data från register och lämnar resultatet tillbaka."
+        ],
+        [
+          "Kontrollenhet",
+          "Tolkar instruktionerna och styr dataflödet mellan ALU, register och minne med styrsignaler"
+        ],
+        [
+          "Bussar",
+          "Ledningarna som kopplar ihop allt"
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Adressbuss:</strong> anger var data ska hämtas eller skrivas",
+        "<strong>Databuss:</strong> transporterar själva datan",
+        "<strong>Kontrollbuss:</strong> styrsignaler som läs eller skriv"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Mikroprocessor eller MCU?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>mikroprocessor</strong> behöver externa komponenter: RAM, lagring och I/O-kretsar. Det är vad som sitter i en dator eller en Raspberry Pi. En <strong>MCU</strong> har minne och kringutrustning inbyggt på samma chip. Den är billigare och snålare men svagare."
+    },
+    {
+      "type": "h",
+      "text": "Talbaser"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>talbas</strong> anger hur många olika siffror som används. Varje position är värd basen upphöjt till positionen, räknat från höger med start på 0. I bas 10: 345 = 3 · 10² + 4 · 10¹ + 5 · 10⁰."
+    },
+    {
+      "type": "h",
+      "text": "Binärt (bas 2)"
+    },
+    {
+      "type": "p",
+      "html": "Binärt använder bara 0 och 1. All hårdvara arbetar binärt: en bit är en ledning som är hög eller låg. I C och C++ skriver man binära tal med prefixet <code>0b</code>."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "0b101101 = 1·2^5 + 0·2^4 + 1·2^3 + 1·2^2 + 0·2^1 + 1·2^0\n         = 32 + 0 + 8 + 4 + 0 + 1\n         = 45\n",
+      "caption": "binärt till decimalt"
+    },
+    {
+      "type": "p",
+      "html": "Åt andra hållet delar du med 2 tills du når 0. Resterna, lästa nerifrån och upp, är bitarna."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "45 / 2 = 22 rest 1\n22 / 2 = 11 rest 0\n11 / 2 =  5 rest 1\n 5 / 2 =  2 rest 1\n 2 / 2 =  1 rest 0\n 1 / 2 =  0 rest 1      ->  läs nerifrån: 101101\n",
+      "caption": "decimalt till binärt"
+    },
+    {
+      "type": "h",
+      "text": "Hexadecimalt (bas 16)"
+    },
+    {
+      "type": "p",
+      "html": "Hex använder 0–9 och A–F, där A = 10 och F = 15. Prefixet är <code>0x</code>. En hexsiffra är exakt fyra bitar, så en byte (8 bitar) är två hexsiffror. Därför skrivs minnesadresser, registervärden och färger i hex: det är mycket lättare att läsa än långa rader ettor och nollor."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "0xFF = 15·16 + 15 = 255 = 0b1111 1111\n0x3F = 0b0011 1111      (3 = 0011, F = 1111)\n0xA5 = 0b1010 0101      (A = 1010, 5 = 0101)\n",
+      "caption": "hex och binärt"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Hex",
+        "Binärt",
+        "Dec",
+        "Hex",
+        "Binärt",
+        "Dec"
+      ],
+      "rows": [
+        [
+          "0",
+          "0000",
+          "0",
+          "8",
+          "1000",
+          "8"
+        ],
+        [
+          "1",
+          "0001",
+          "1",
+          "9",
+          "1001",
+          "9"
+        ],
+        [
+          "2",
+          "0010",
+          "2",
+          "A",
+          "1010",
+          "10"
+        ],
+        [
+          "3",
+          "0011",
+          "3",
+          "B",
+          "1011",
+          "11"
+        ],
+        [
+          "4",
+          "0100",
+          "4",
+          "C",
+          "1100",
+          "12"
+        ],
+        [
+          "5",
+          "0101",
+          "5",
+          "D",
+          "1101",
+          "13"
+        ],
+        [
+          "6",
+          "0110",
+          "6",
+          "E",
+          "1110",
+          "14"
+        ],
+        [
+          "7",
+          "0111",
+          "7",
+          "F",
+          "1111",
+          "15"
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Binärt till decimalt",
+      "html": "<p>Räkna om: 0b101101, 0b11111111, 0b100110, 0b11001010, 0b10101101.</p><p><strong>Svar:</strong> 45, 255, 38, 202, 173.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Decimalt till binärt",
+      "html": "<p>Räkna om: 45, 128, 255, 73, 512.</p><p><strong>Svar:</strong> 101101, 10000000, 11111111, 1001001, 1000000000.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Hex till binärt",
+      "html": "<p>Räkna om: 0x3F, 0xA5, 0xFF, 0x7C, 0x1A.</p><p><strong>Svar:</strong> 0011 1111, 1010 0101, 1111 1111, 0111 1100, 0001 1010.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Decimalt till hex",
+      "html": "<p>Räkna om: 255, 4096, 73, 1023, 512.</p><p><strong>Svar:</strong> 0xFF, 0x1000, 0x49, 0x3FF, 0x200.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad gör ALU:n?",
+      "options": [
+        "Lagrar programmet",
+        "Utför matematiska och logiska operationer",
+        "Tolkar instruktioner",
+        "Kopplar ihop delarna"
+      ],
+      "answer": 1,
+      "why": "Arithmetic Logic Unit."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken buss anger var data ska hämtas eller skrivas?",
+      "options": [
+        "Databussen",
+        "Adressbussen",
+        "Kontrollbussen",
+        "USB"
+      ],
+      "answer": 1,
+      "why": "Adressbussen pekar ut platsen, databussen bär datan."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan en mikroprocessor och en MCU?",
+      "options": [
+        "MCU:n har minne och kringutrustning på samma chip",
+        "Mikroprocessorn är alltid långsammare",
+        "MCU:n saknar CPU",
+        "Det finns ingen skillnad"
+      ],
+      "answer": 0,
+      "why": "En mikroprocessor behöver externt RAM och I/O."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 0b101101 i decimalt?",
+      "accept": [
+        "45"
+      ],
+      "placeholder": "tal",
+      "why": "32 + 8 + 4 + 1 = 45."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 0b11111111 i decimalt?",
+      "accept": [
+        "255"
+      ],
+      "placeholder": "tal",
+      "why": "Åtta ettor är 2⁸ − 1 = 255."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 73 binärt?",
+      "accept": [
+        "1001001",
+        "0b1001001"
+      ],
+      "placeholder": "binärt",
+      "why": "64 + 8 + 1 = 73."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 0xFF i decimalt?",
+      "accept": [
+        "255"
+      ],
+      "placeholder": "tal",
+      "why": "15 · 16 + 15 = 255."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 4096 i hex?",
+      "accept": [
+        "0x1000",
+        "1000"
+      ],
+      "placeholder": "hex",
+      "why": "4096 = 16³, så det blir 0x1000."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 0xA5 binärt (8 bitar)?",
+      "accept": [
+        "10100101",
+        "1010 0101",
+        "0b10100101"
+      ],
+      "placeholder": "binärt",
+      "why": "A = 1010 och 5 = 0101."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många bitar motsvarar en hexsiffra?",
+      "options": [
+        "2",
+        "4",
+        "8",
+        "16"
+      ],
+      "answer": 1,
+      "why": "16 = 2⁴, så en hexsiffra är exakt fyra bitar."
+    },
+    {
+      "type": "mc",
+      "q": "Varför skrivs minnesadresser ofta i hex?",
+      "options": [
+        "Det är snabbare för datorn",
+        "Det är kompakt och lätt att översätta till bitar",
+        "Det är krav i C",
+        "Hex har fler värden än binärt"
+      ],
+      "answer": 1,
+      "why": "Varje hexsiffra är fyra bitar, så det blir kort och läsbart."
+    },
+    {
+      "type": "code",
+      "q": "Läs in ett heltal och skriv ut det binärt utan inledande nollor. 0 skrivs som <code>0</code>. Gör omvandlingen själv.",
+      "task": "08-mikroprocessor-talbaser-1",
+      "why": "Dela med 2 och samla resterna baklänges.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in ett heltal och skriv ut det hexadecimalt med versaler och prefixet 0x, till exempel <code>0xFF</code>. Gör omvandlingen själv.",
+      "task": "08-mikroprocessor-talbaser-2",
+      "why": "Dela med 16. Rest 10–15 blir A–F.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in ett binärt tal som en sträng (till exempel <code>101101</code>) och skriv ut det decimala värdet.",
+      "task": "08-mikroprocessor-talbaser-3",
+      "why": "För varje bit från vänster: värde = värde · 2 + bit.",
+      "web": true
+    }
+  ]
+}

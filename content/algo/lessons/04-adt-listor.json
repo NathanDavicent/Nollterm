@@ -1,0 +1,294 @@
+{
+  "id": "adt-listor",
+  "title": "ADT och länkade listor",
+  "category": "Datastrukturer",
+  "minutes": 14,
+  "lead": "Abstrakta datatyper skiljer på vad en struktur gör och hur den görs. Den länkade listan är den första vi bygger, med dubbelpekare, pre- och postconditions.",
+  "sources": [
+    "F3 – ADT, Listor",
+    "Övning 3 – ADT, linked list"
+  ],
+  "goals": [
+    "Förklara vad en ADT och ett interface är",
+    "Jämföra arrayer och länkade listor",
+    "Implementera addFirst, addLast, removeFirst, removeLast och sökning",
+    "Förklara varför funktioner som ändrar listan tar en dubbelpekare",
+    "Använda pre- och postconditions med assert"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Abstrakt datatyp"
+    },
+    {
+      "type": "p",
+      "html": "En datatyp är <strong>abstrakt</strong> när vi vet vad den kan göra, men inte hur den sparar eller hanterar datan. Vi använder den genom dess <strong>interface</strong>: i C en uppsättning funktioner i en .h-fil, i C++ det som är public i klassen."
+    },
+    {
+      "type": "p",
+      "html": "<code>std::vector</code> är ett bra exempel: du vet att <code>push_back()</code> lägger till sist och att storleken växer, men inte hur minnet hanteras bakom kulisserna. Det behöver du inte heller."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Koden blir lättare att läsa: <code>addFirst(&amp;list, 5)</code> i stället för pekarlogik.",
+        "Du tänker på hur strukturen <em>används</em> för att lösa problemet, inte på detaljer.",
+        "Implementationen kan bytas utan att koden som använder den ändras."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Arrayens nackdelar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sätta in i mitten: alla element till höger måste flyttas.",
+        "Öka storleken: nytt minne måste allokeras och allt kopieras.",
+        "Man allokerar ofta mer än man behöver för säkerhets skull."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Länkad lista"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>länkad lista</strong> är en kedja av noder. Varje nod har data och en pekare till resten av listan. Den sista noden pekar på NULL, och en tom lista är bara NULL."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "typedef struct node {\n    int d;\n    struct node* rest;    // en pekare till samma struct går bra, men inte structen själv\n} node;\ntypedef node* List;\n",
+      "caption": "C"
+    },
+    {
+      "type": "p",
+      "html": "Definitionen är rekursiv: varje lista innehåller en lista, som innehåller en lista. Därför passar listor bra för rekursiva funktioner."
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Array",
+        "Länkad lista"
+      ],
+      "rows": [
+        [
+          "Hämta element i",
+          "O(1) med pekararitmetik",
+          "O(n), måste gå nod för nod"
+        ],
+        [
+          "Lägga till först",
+          "O(n), flytta allt",
+          "O(1)"
+        ],
+        [
+          "Lägga till sist",
+          "O(1) om det finns plats",
+          "O(n) utan sista-pekare"
+        ],
+        [
+          "Minne",
+          "Ett sammanhängande block",
+          "Noderna kan ligga var som helst"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Dubbelpekare"
+    },
+    {
+      "type": "p",
+      "html": "En pekares värde är en adress. En <strong>dubbelpekare</strong> är adressen till en pekare. Om en funktion ska kunna ändra vart listans huvudpekare pekar, måste den få adressen till pekaren, alltså en <code>List*</code>."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int x = 5, y = 10;\nint* p = &x;\nint** pp = &p;\n*pp = &y;          // nu pekar p på y\n",
+      "caption": "C"
+    },
+    {
+      "type": "p",
+      "html": "Funktioner som <strong>ändrar</strong> listans struktur (lägga till, ta bort) tar en dubbelpekare. Funktioner som bara <strong>tittar</strong> (söka, räkna, skriva ut) tar en vanlig pekare."
+    },
+    {
+      "type": "h",
+      "text": "Lägga till och ta bort först"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int addFirst(List* l, int d) {\n    node* n = createListNode(d);\n    if (n == NULL) return 0;\n    n->rest = *l;          // nya noden pekar på det gamla huvudet\n    *l = n;                // huvudet pekar på nya noden\n    return 1;\n}\n\nvoid removeFirst(List* l) {\n    assert(!isEmpty(*l));  // precondition\n    node* toRemove = *l;\n    *l = (*l)->rest;\n    free(toRemove);\n}\n",
+      "caption": "C"
+    },
+    {
+      "type": "p",
+      "html": "Samma kod fungerar var som helst i listan, så länge du har en dubbelpekare till rätt plats. Därför blir till exempel <code>addLast</code> enkel rekursivt: är listan tom, lägg till först, annars lägg till sist i resten."
+    },
+    {
+      "type": "h",
+      "text": "Pre- och postconditions"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Precondition:</strong> ska vara sant när funktionen anropas. <code>removeFirst</code> kräver att listan inte är tom. Det är anroparens ansvar.",
+        "<strong>Postcondition:</strong> ska vara sant när funktionen är klar. Efter <code>clearList</code> är listan tom."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<code>assert(villkor)</code> från <code>&lt;assert.h&gt;</code> kraschar programmet med ett meddelande om villkoret är falskt. Det är till för felsökning och ersätter inte if-satser. Med <code>#define NDEBUG</code> stängs alla asserts av utan att du behöver ta bort dem."
+    },
+    {
+      "type": "exercise",
+      "title": "Länkad lista med meny",
+      "html": "<p>Implementera <code>list.c</code> mot det givna <code>list.h</code>: <code>createListNode</code>, <code>isEmpty</code>, <code>addFirst</code>, <code>addLast</code>, <code>removeFirst</code>, <code>removeLast</code>, <code>removeElement</code>, <code>isInList</code>, <code>lengthOfList</code>, <code>printList</code> (som <code>[1, 4, 7]</code>), <code>getFirstElement</code>, <code>getLastElement</code> och <code>clearList</code>. Varje nod ska frigöras exakt en gång. Extra: <code>countOccurrences</code> och <code>reverseList</code> in-place.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en abstrakt datatyp?",
+      "options": [
+        "En typ utan värden",
+        "En typ där vi känner till funktionaliteten men inte implementationen",
+        "En struct utan fält",
+        "En abstrakt klass i C++"
+      ],
+      "answer": 1,
+      "why": "Vi använder den via dess interface."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är interfacet till en ADT i C?",
+      "options": [
+        "Structens fält",
+        "Funktionerna, oftast deklarerade i en .h-fil",
+        "main()",
+        "Makron"
+      ],
+      "answer": 1,
+      "why": "I C++ är det klassens public-del."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är tidskomplexiteten för att hämta element nummer i i en länkad lista?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "answer": 2,
+      "why": "Man måste gå nod för nod från början."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är tidskomplexiteten för addFirst i en länkad lista?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "answer": 0,
+      "why": "Bara två pekare ändras."
+    },
+    {
+      "type": "mc",
+      "q": "Varför tar addFirst en <code>List*</code> (dubbelpekare)?",
+      "options": [
+        "För att det är snabbare",
+        "För att funktionen måste kunna ändra vart huvudpekaren pekar",
+        "För att listan är en array",
+        "För att C kräver det"
+      ],
+      "answer": 1,
+      "why": "Med en vanlig pekare ändras bara en kopia av huvudpekaren."
+    },
+    {
+      "type": "mc",
+      "q": "Vad pekar den sista noden i en länkad lista på?",
+      "options": [
+        "Första noden",
+        "NULL",
+        "Sig själv",
+        "En tom nod"
+      ],
+      "answer": 1,
+      "why": "NULL markerar slutet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en precondition för removeFirst?",
+      "options": [
+        "Listan är sorterad",
+        "Listan är inte tom",
+        "Listan har exakt ett element",
+        "Listan är NULL"
+      ],
+      "answer": 1,
+      "why": "Man kan inte ta bort från en tom lista."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer med asserts när du definierar <code>NDEBUG</code>?",
+      "options": [
+        "De blir if-satser",
+        "De stängs av",
+        "De kastar exceptions",
+        "De loggas till fil"
+      ],
+      "answer": 1,
+      "why": "De ligger kvar i koden men kostar ingenting."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka funktioner behöver ta en dubbelpekare (List*)?",
+      "options": [
+        "addFirst",
+        "removeLast",
+        "lengthOfList",
+        "clearList"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "lengthOfList ändrar inget och klarar sig med List."
+    },
+    {
+      "type": "text",
+      "q": "Hur skrivs en tom lista ut enligt övningen?",
+      "accept": [
+        "[]"
+      ],
+      "placeholder": "utskrift",
+      "why": "Tom lista ska printas som []. Ingen avslutande komma i andra listor heller."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken är en nackdel med arrayer jämfört med länkade listor?",
+      "options": [
+        "Att hämta element i är långsamt",
+        "Att sätta in i mitten kräver att många element flyttas",
+        "De tar alltid mer minne per element",
+        "De kan inte sorteras"
+      ],
+      "answer": 1,
+      "why": "Länkade listor behöver bara koppla om några pekare."
+    },
+    {
+      "type": "code",
+      "q": "Länkad lista. Implementera listan (utan Pythons inbyggda list eller std::list) och kör kommandona: <code>addFirst x</code>, <code>addLast x</code>, <code>removeFirst</code>, <code>removeLast</code>, <code>remove x</code> (skriv 1 eller 0), <code>contains x</code> (1 eller 0), <code>length</code> och <code>print</code> (som <code>[1, 2, 3]</code>).",
+      "task": "04-adt-listor-1",
+      "why": "remove tar bort den första förekomsten. Testa att ta bort första, sista och ett element som inte finns.",
+      "web": true
+    }
+  ]
+}

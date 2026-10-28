@@ -1,0 +1,379 @@
+{
+  "id": "internet-sakerhet-minne",
+  "title": "Internet, säkerhet och minne",
+  "category": "IoT",
+  "minutes": 12,
+  "lead": "Hur sensordata tar sig från enheten till molnet, hur en IoT-enhet kan attackeras och skyddas, och vilka sorters minne och lagring som finns.",
+  "sources": [
+    "Lektion 5 – Internet, säkerhet och minne"
+  ],
+  "goals": [
+    "Förklara vad router, switch, DNS, IP-adress och MAC-adress gör",
+    "Beskriva OSI-modellens lager ur ett IoT-perspektiv",
+    "Ge exempel på attacker mot IoT-enheter och skydd mot dem",
+    "Skilja på flyktigt och icke-flyktigt minne och ge exempel"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Internets byggstenar"
+    },
+    {
+      "type": "p",
+      "html": "Internet är ett globalt nätverk av sammankopplade nätverk."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Del",
+        "Gör",
+        "Använder"
+      ],
+      "rows": [
+        [
+          "Router",
+          "Leder trafik mellan nätverk och hittar vägen",
+          "IP-adresser"
+        ],
+        [
+          "Switch",
+          "Kopplar ihop enheter i ett lokalt nätverk (LAN)",
+          "MAC-adresser"
+        ],
+        [
+          "DNS",
+          "Översätter namn som www.exempel.se till IP-adresser",
+          "–"
+        ],
+        [
+          "IP-adress",
+          "Identifierar en enhet i nätverket, till exempel 192.168.1.42",
+          "–"
+        ],
+        [
+          "MAC-adress",
+          "Unik hårdvaruadress för varje nätverkskort",
+          "–"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "OSI-modellen"
+    },
+    {
+      "type": "p",
+      "html": "<strong>OSI-modellen</strong> delar nätverkskommunikation i sju lager. Varje lager löser en sak och använder lagret under. Den hjälper oss förstå hur ett sensorvärde färdas från enheten till molnet."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Lager",
+        "Namn",
+        "I IoT"
+      ],
+      "rows": [
+        [
+          "7",
+          "Applikation",
+          "MQTT, CoAP, HTTP"
+        ],
+        [
+          "6",
+          "Presentation",
+          "Format och kryptering (JSON, TLS)"
+        ],
+        [
+          "5",
+          "Session",
+          "Håller förbindelsen"
+        ],
+        [
+          "4",
+          "Transport",
+          "TCP (pålitligt) eller UDP (snabbt)"
+        ],
+        [
+          "3",
+          "Nätverk",
+          "IP-adresser"
+        ],
+        [
+          "2",
+          "Datalänk",
+          "MAC-adresser, felkontroll. Zigbee och BLE arbetar här."
+        ],
+        [
+          "1",
+          "Fysiskt",
+          "Radiosignalerna: Wi-Fi, Zigbee, Bluetooth"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "IoT-säkerhet"
+    },
+    {
+      "type": "p",
+      "html": "IoT-enheter sitter ofta på platser där vem som helst kommer åt dem, har lite resurser för kryptering och uppdateras sällan. Det gör dem till lätta mål."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Attack",
+        "Vad händer",
+        "Skydd"
+      ],
+      "rows": [
+        [
+          "Fysisk manipulation",
+          "Enheten byts ut eller sensorn luras",
+          "Plombering, larm vid öppning, rimlighetskontroll av värden"
+        ],
+        [
+          "Ändrad firmware",
+          "Någon flashar egen kod",
+          "Secure boot, signerad firmware"
+        ],
+        [
+          "Stulna nycklar",
+          "Nycklar läses ut ur flash",
+          "Krypterad flash, unika nycklar per enhet"
+        ],
+        [
+          "Man in the middle",
+          "Någon avlyssnar eller ändrar trafiken",
+          "TLS och certifikat"
+        ],
+        [
+          "DDoS",
+          "Enheten överbelastas, eller kapas för att attackera andra",
+          "Byta standardlösenord, brandvägg, uppdateringar"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Botnätet Mirai tog 2016 över hundratusentals kameror och routrar som fortfarande hade fabrikens standardlösenord. Ett unikt lösenord per enhet hade räckt för att stoppa det."
+    },
+    {
+      "type": "h",
+      "text": "Minne och lagring"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Flyktigt</strong> minne förlorar innehållet när strömmen går. <strong>Icke-flyktigt</strong> behåller det. Oftast kallar man det flyktiga för minne och det icke-flyktiga för lagring."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Typ",
+        "Flyktigt?",
+        "Snabbhet",
+        "Används till"
+      ],
+      "rows": [
+        [
+          "Register",
+          "Ja",
+          "Snabbast",
+          "Värden CPU:n räknar med just nu"
+        ],
+        [
+          "Cache / SRAM",
+          "Ja",
+          "Mycket snabbt",
+          "Variabler, stack, buffertar"
+        ],
+        [
+          "DRAM",
+          "Ja",
+          "Snabbt",
+          "Arbetsminne i datorer, extern PSRAM"
+        ],
+        [
+          "Flash (NOR/NAND)",
+          "Nej",
+          "Läsning snabb, skrivning långsam",
+          "Programmet, filsystem, firmware"
+        ],
+        [
+          "EEPROM",
+          "Nej",
+          "Långsam",
+          "Små inställningar som ändras ibland"
+        ],
+        [
+          "SD-kort",
+          "Nej",
+          "Långsam",
+          "Loggar, bilder, video"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Flash tål ett begränsat antal skrivningar per block. Skriv inte ett sensorvärde till flash varje sekund i flera år. Buffra i RAM och skriv mer sällan."
+    },
+    {
+      "type": "p",
+      "html": "<strong>ESP32-C6</strong> har ungefär 512 KB SRAM för program och data, 16 KB lågenergi-SRAM som klarar djup sömn, 320 KB ROM med startkod och ett externt flashminne (på DevKitC-1 oftast 8 MB). Kontrollera i databladet för just ditt kort."
+    },
+    {
+      "type": "exercise",
+      "title": "Vilket minne behövs?",
+      "html": "<p>En kamera spelar in 3 sekunders videor med tidsstämpel när den ser rörelse. Vilka minnes- och lagringstyper behövs, och till vad?</p><p><strong>Förslag:</strong> RAM som buffert för bilderna medan de spelas in och komprimeras, flash för programmet och inställningar, ett SD-kort eller extern lagring för videofilerna, och en klocka (RTC) med eget lilla minne för tiden.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad gör DNS?",
+      "options": [
+        "Leder trafik mellan nätverk",
+        "Översätter domännamn till IP-adresser",
+        "Krypterar trafiken",
+        "Delar ut MAC-adresser"
+      ],
+      "answer": 1,
+      "why": "Domain Name System."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken adress använder en switch för att skicka data till rätt enhet i ett LAN?",
+      "options": [
+        "IP-adress",
+        "MAC-adress",
+        "Domännamn",
+        "Portnummer"
+      ],
+      "answer": 1,
+      "why": "Switchen arbetar på datalänklagret med MAC-adresser."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en router?",
+      "options": [
+        "Kopplar ihop enheter med MAC-adresser i samma LAN",
+        "Leder trafik mellan nätverk med IP-adresser",
+        "Översätter namn",
+        "Lagrar filer"
+      ],
+      "answer": 1,
+      "why": "Routern hittar vägen mellan nätverk."
+    },
+    {
+      "type": "text",
+      "q": "Hur många lager har OSI-modellen?",
+      "accept": [
+        "7",
+        "sju"
+      ],
+      "placeholder": "antal",
+      "why": "Fysiskt, datalänk, nätverk, transport, session, presentation och applikation."
+    },
+    {
+      "type": "mc",
+      "q": "I vilket OSI-lager hör MQTT hemma?",
+      "options": [
+        "Fysiskt",
+        "Nätverk",
+        "Transport",
+        "Applikation"
+      ],
+      "answer": 3,
+      "why": "MQTT, CoAP och HTTP är applikationsprotokoll."
+    },
+    {
+      "type": "mc",
+      "q": "I vilket lager finns TCP och UDP?",
+      "options": [
+        "Datalänk",
+        "Nätverk",
+        "Transport",
+        "Session"
+      ],
+      "answer": 2,
+      "why": "Transportlagret, lager 4."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket skydd hjälper mot man-in-the-middle?",
+      "options": [
+        "Längre kablar",
+        "TLS-kryptering med certifikat",
+        "Fler sensorer",
+        "Lägre baudrate"
+      ],
+      "answer": 1,
+      "why": "Krypterad och autentiserad förbindelse."
+    },
+    {
+      "type": "mc",
+      "q": "Vad var huvudorsaken till att botnätet Mirai kunde ta över så många enheter?",
+      "options": [
+        "Fabrikens standardlösenord",
+        "Dålig Wi-Fi-räckvidd",
+        "För lite RAM",
+        "Fel baudrate"
+      ],
+      "answer": 0,
+      "why": "Ändra alltid standardlösenord och ge varje enhet ett unikt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder att ett minne är flyktigt?",
+      "options": [
+        "Det är snabbt",
+        "Det förlorar innehållet utan ström",
+        "Det kan bara läsas",
+        "Det sitter externt"
+      ],
+      "answer": 1,
+      "why": "RAM och register är flyktiga."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är icke-flyktiga?",
+      "options": [
+        "Flash",
+        "EEPROM",
+        "SRAM",
+        "SD-kort"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "SRAM töms när strömmen går."
+    },
+    {
+      "type": "mc",
+      "q": "Var ligger programmet i en ESP32 när den är avstängd?",
+      "options": [
+        "I SRAM",
+        "I flashminnet",
+        "I registren",
+        "I cachen"
+      ],
+      "answer": 1,
+      "why": "Flash är icke-flyktigt."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska man undvika att skriva till flash väldigt ofta?",
+      "options": [
+        "Det är olagligt",
+        "Flash tål ett begränsat antal skrivningar",
+        "Det använder för lite ström",
+        "Flash kan inte läsas efteråt"
+      ],
+      "answer": 1,
+      "why": "Buffra i RAM och skriv mer sällan."
+    }
+  ]
+}

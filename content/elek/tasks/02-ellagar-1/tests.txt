@@ -1,0 +1,24 @@
+--- in
+3
+100 220 330
+--- out
+Serie: 650.00 ohm
+Parallell: 56.90 ohm
+--- in
+2
+1000 1000
+--- out
+Serie: 2000.00 ohm
+Parallell: 500.00 ohm
+--- in
+1
+47
+--- out
+Serie: 47.00 ohm
+Parallell: 47.00 ohm
+--- in
+4
+4 4 4 4
+--- out
+Serie: 16.00 ohm
+Parallell: 1.00 ohm

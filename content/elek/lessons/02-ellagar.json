@@ -1,0 +1,320 @@
+{
+  "id": "ellagar",
+  "title": "Ohms lag och kretsberäkningar",
+  "category": "Elektronik",
+  "minutes": 14,
+  "lead": "Räkna på kretsar: Ohms lag, serie och parallell, spänningsdelning, Kirchhoffs lagar och effekt.",
+  "sources": [
+    "Lektion 1 – Grunderna i elektronik (El-lag och labbuppgifter)"
+  ],
+  "goals": [
+    "Använda Ohms lag U = R · I",
+    "Räkna ut ersättningsresistans för serie- och parallellkopplingar",
+    "Använda spänningsdelning och strömdelning",
+    "Förklara Kirchhoffs ström- och spänningslag",
+    "Skilja på effekt (W) och energi (Wh)"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Ohms lag"
+    },
+    {
+      "type": "p",
+      "html": "Ohms lag kopplar ihop de tre storheterna: <strong>U = R · I</strong>. Känner du två av dem kan du räkna ut den tredje."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Söker",
+        "Formel",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Spänning",
+          "U = R · I",
+          "220 Ω och 20 mA ger 4,4 V"
+        ],
+        [
+          "Ström",
+          "I = U / R",
+          "5 V över 220 Ω ger ca 23 mA"
+        ],
+        [
+          "Resistans",
+          "R = U / I",
+          "3,3 V och 10 mA kräver 330 Ω"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Räkna alltid i grundenheter: volt, ampere och ohm. 20 mA är 0,020 A och 4,7 kΩ är 4700 Ω. De flesta fel i labben kommer från glömda prefix."
+    },
+    {
+      "type": "h",
+      "text": "Serie och parallell"
+    },
+    {
+      "type": "p",
+      "html": "I <strong>serie</strong> går samma ström genom alla resistorer, och resistanserna adderas: <strong>R = R1 + R2 + … + Rn</strong>."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Parallellt</strong> ligger samma spänning över alla, och strömmen delar upp sig. Då adderas inverserna: <strong>1/R = 1/R1 + 1/R2 + … + 1/Rn</strong>. För exakt två resistorer finns en genväg: <strong>R = R1 · R2 / (R1 + R2)</strong>, ofta skrivet R1 // R2."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Serie:      100 + 220 + 330          = 650 Ω\nParallell:  1 / (1/100 + 1/220 + 1/330) ≈ 56,9 Ω\nTvå lika:   1000 // 1000 = 1000·1000 / 2000 = 500 Ω\n",
+      "caption": "räkneexempel"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Parallellresistansen är alltid mindre än den minsta resistorn. Två lika stora parallellt ger halva värdet. Det är en bra rimlighetskontroll."
+    },
+    {
+      "type": "h",
+      "text": "Spänningsdelning och strömdelning"
+    },
+    {
+      "type": "p",
+      "html": "Två resistorer i serie delar på spänningen i proportion till sina resistanser. Spänningen över R2 blir <strong>Uut = Uin · R2 / (R1 + R2)</strong>. Det är så du gör om 5 V till en nivå som en 3,3 V-mikrokontroller tål, och så en potentiometer fungerar."
+    },
+    {
+      "type": "p",
+      "html": "På samma sätt delar två parallella grenar på strömmen, men omvänt: mest ström går genom den <em>minsta</em> resistansen. Strömmen genom R1 blir <strong>I1 = I · R2 / (R1 + R2)</strong>."
+    },
+    {
+      "type": "h",
+      "text": "Kirchhoffs lagar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Strömlagen:</strong> summan av strömmarna in i en nod är lika med summan av strömmarna ut. Laddning försvinner inte.",
+        "<strong>Spänningslagen:</strong> summan av alla spänningar runt en sluten slinga är noll. Det som källan ger, förbrukas i komponenterna."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Effekt och energi"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Effekt</strong> är hur mycket energi som omvandlas per sekund: <strong>P = U · I = I² · R</strong>, i watt (W). <strong>Energi</strong> är effekt gånger tid och mäts ofta i kilowattimmar (kWh). En 10 W-lampa som lyser i 100 timmar använder 1 kWh."
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Resistorer har en högsta effekt de tål, ofta 0,25 W. 12 V över 100 Ω ger 1,44 W och en mycket varm resistor."
+    },
+    {
+      "type": "h",
+      "text": "Labbuppgifter"
+    },
+    {
+      "type": "p",
+      "html": "I labben räknar du först ut svaret och bygger sedan kretsen för att jämföra med det uppmätta värdet."
+    },
+    {
+      "type": "exercise",
+      "title": "Bestäm Rab",
+      "html": "<p>Mellan a och b sitter 4 Ω parallellt med en gren där 1 Ω och 2 Ω sitter i serie. Bestäm Rab.</p><p><strong>Svar:</strong> grenen blir 3 Ω, och 4 // 3 = 12/7 ≈ 1,71 Ω.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Serie före parallell",
+      "html": "<p>5 Ω i serie med en parallellkoppling av 3 Ω och 6 Ω. Bestäm Rab.</p><p><strong>Svar:</strong> 3 // 6 = 2 Ω, plus 5 Ω blir 7 Ω.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Bestäm R",
+      "html": "<p>8 Ω sitter i serie med 6 Ω parallellt med en okänd resistor R. Vad måste R vara för att totalen ska bli 10 Ω?</p><p><strong>Svar:</strong> parallelldelen måste bli 2 Ω. 6 · R / (6 + R) = 2 ger R = 3 Ω.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Strömdelning",
+      "html": "<p>3 A går in i tre parallella resistorer: 1 Ω, 2 Ω och 3 Ω. Hur stor ström går genom 2 Ω-resistorn?</p><p><strong>Svar:</strong> Rtot = 1 / (1 + 1/2 + 1/3) = 6/11 Ω. Spänningen blir 3 · 6/11 ≈ 1,64 V, och I = 1,64 / 2 ≈ 0,82 A.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Stegnät",
+      "html": "<p>Räkna bakifrån. R1 = 1 Ω sitter direkt mellan ingångsklämmorna. Sedan kommer R2 = 4 Ω i serie, R3 = 6 Ω tvärs över, R4 = 1 Ω i serie och sist R5 = 2 Ω tvärs över. Vad blir Rtot?</p><p><strong>Svar:</strong> R4 + R5 = 3 Ω. 6 // 3 = 2 Ω. Plus R2 blir 6 Ω. Till sist 1 // 6 = 6/7 ≈ 0,86 Ω.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "En LED-krets har 5 V över en 220 Ω-resistor. Ungefär hur stor är strömmen?",
+      "options": [
+        "2,3 mA",
+        "23 mA",
+        "230 mA",
+        "1,1 A"
+      ],
+      "answer": 1,
+      "why": "I = U / R = 5 / 220 ≈ 0,023 A = 23 mA."
+    },
+    {
+      "type": "text",
+      "q": "Två resistorer på 100 Ω och 220 Ω sitter i serie. Vad blir den totala resistansen i ohm?",
+      "accept": [
+        "320",
+        "320 ohm",
+        "320Ω",
+        "320 Ω"
+      ],
+      "placeholder": "ohm",
+      "why": "I serie adderas resistanserna: 100 + 220 = 320 Ω."
+    },
+    {
+      "type": "text",
+      "q": "Två resistorer på 1000 Ω sitter parallellt. Vad blir den totala resistansen i ohm?",
+      "accept": [
+        "500",
+        "500 ohm",
+        "500Ω",
+        "500 Ω"
+      ],
+      "placeholder": "ohm",
+      "why": "Två lika stora parallellt ger halva värdet: 1000 · 1000 / 2000 = 500 Ω."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gäller alltid för parallellresistansen?",
+      "options": [
+        "Den är större än den största resistorn",
+        "Den är mindre än den minsta resistorn",
+        "Den är medelvärdet",
+        "Den är summan"
+      ],
+      "answer": 1,
+      "why": "Varje ny parallell gren ger strömmen en väg till, så totalen blir mindre än den minsta."
+    },
+    {
+      "type": "mc",
+      "q": "En spänningsdelare har Uin = 5 V, R1 = 1 kΩ och R2 = 1 kΩ. Vad blir spänningen över R2?",
+      "options": [
+        "1,25 V",
+        "2,5 V",
+        "5 V",
+        "10 V"
+      ],
+      "answer": 1,
+      "why": "Uut = 5 · 1000 / 2000 = 2,5 V."
+    },
+    {
+      "type": "mc",
+      "q": "Vad säger Kirchhoffs strömlag?",
+      "options": [
+        "Spänningen runt en slinga är noll",
+        "Strömmen in i en nod är lika med strömmen ut",
+        "U = R · I",
+        "Effekten är konstant"
+      ],
+      "answer": 1,
+      "why": "Laddning försvinner inte, så det som går in i en nod måste gå ut."
+    },
+    {
+      "type": "mc",
+      "q": "Vad säger Kirchhoffs spänningslag?",
+      "options": [
+        "Summan av spänningarna runt en sluten slinga är noll",
+        "Strömmen är lika överallt",
+        "Parallella grenar har olika spänning",
+        "Spänningen är alltid 5 V"
+      ],
+      "answer": 0,
+      "why": "Det källan ger förbrukas i komponenterna runt slingan."
+    },
+    {
+      "type": "mc",
+      "q": "Hur stor effekt utvecklas i en 100 Ω-resistor med 12 V över sig?",
+      "options": [
+        "0,12 W",
+        "1,2 W",
+        "1,44 W",
+        "12 W"
+      ],
+      "answer": 2,
+      "why": "P = U² / R = 144 / 100 = 1,44 W. För mycket för en vanlig 0,25 W-resistor."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka formler ger effekt?",
+      "options": [
+        "P = U · I",
+        "P = I² · R",
+        "P = U / I",
+        "P = U² / R"
+      ],
+      "answers": [
+        0,
+        1,
+        3
+      ],
+      "why": "U / I är resistans, inte effekt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan effekt och energi?",
+      "options": [
+        "Ingen skillnad",
+        "Effekt är energi per tidsenhet, energi är effekt gånger tid",
+        "Energi mäts i watt",
+        "Effekt mäts i kWh"
+      ],
+      "answer": 1,
+      "why": "Effekt i W, energi i Wh eller kWh."
+    },
+    {
+      "type": "mc",
+      "q": "Bestäm Rab: 5 Ω i serie med (3 Ω parallellt med 6 Ω).",
+      "options": [
+        "2 Ω",
+        "7 Ω",
+        "14 Ω",
+        "4,5 Ω"
+      ],
+      "answer": 1,
+      "why": "3 // 6 = 2 Ω, plus 5 Ω blir 7 Ω."
+    },
+    {
+      "type": "mc",
+      "q": "I två parallella grenar med 1 Ω och 3 Ω, var går mest ström?",
+      "options": [
+        "Genom 1 Ω",
+        "Genom 3 Ω",
+        "Lika mycket",
+        "Det går inte att avgöra"
+      ],
+      "answer": 0,
+      "why": "Samma spänning över båda, så minst resistans ger mest ström."
+    },
+    {
+      "type": "code",
+      "q": "Läs in antalet resistorer <code>n</code> och sedan <code>n</code> resistanser. Skriv ut ersättningsresistansen i serie och parallellt med två decimaler, i formatet <code>Serie: 650.00 ohm</code> och <code>Parallell: 56.90 ohm</code>.",
+      "task": "02-ellagar-1",
+      "why": "Serie: summera. Parallellt: summera 1/R och ta inversen av summan.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in <code>Uin R1 R2</code> och skriv ut spänningen över R2 i en spänningsdelare, till exempel <code>Uut = 2.50 V</code>.",
+      "task": "02-ellagar-2",
+      "why": "Uut = Uin · R2 / (R1 + R2).",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in spänning <code>U</code> och resistans <code>R</code>. Skriv ut strömmen med tre decimaler och effekten med två, som <code>I = 0.023 A</code> och <code>P = 0.11 W</code>.",
+      "task": "02-ellagar-3",
+      "why": "I = U / R och P = U · I.",
+      "web": true
+    }
+  ]
+}

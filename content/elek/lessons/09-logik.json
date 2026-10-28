@@ -1,0 +1,309 @@
+{
+  "id": "logik",
+  "title": "Logiska grindar och minne",
+  "category": "Digitalteknik",
+  "minutes": 13,
+  "lead": "AND, OR, NOT och deras släktingar, sanningstabeller, och hur man med grindar bygger en adderare, en låskrets och till slut ett RAM-minne.",
+  "sources": [
+    "Lektion 9 – Logik"
+  ],
+  "goals": [
+    "Rita och använda AND, OR, NOT, XOR, NAND och NOR",
+    "Fylla i sanningstabeller för kopplingar av grindar",
+    "Förklara hur en heladderare fungerar",
+    "Beskriva SR-latch, D-vippa, register och hur RAM byggs av grindar"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Logiska operationer"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>logisk grind</strong> tar en eller flera bitar in och ger en bit ut. Det finns sex grundgrindar:"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Grind",
+        "Q är 1 när",
+        "Notation",
+        "I C"
+      ],
+      "rows": [
+        [
+          "AND",
+          "båda ingångarna är 1",
+          "A ∧ B, A · B",
+          "a &amp; b"
+        ],
+        [
+          "OR",
+          "minst en ingång är 1",
+          "A ∨ B, A + B",
+          "a | b"
+        ],
+        [
+          "NOT",
+          "ingången är 0",
+          "¬A, ~A, !A",
+          "!a"
+        ],
+        [
+          "XOR",
+          "exakt en ingång är 1",
+          "A ⊕ B",
+          "a ^ b"
+        ],
+        [
+          "NAND",
+          "inte båda är 1 (NOT AND)",
+          "A ↑ B, A ⊼ B",
+          "!(a &amp; b)"
+        ],
+        [
+          "NOR",
+          "ingen ingång är 1 (NOT OR)",
+          "A ↓ B, A ⊽ B",
+          "!(a | b)"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "A B | AND OR XOR NAND NOR\n0 0 |  0   0   0   1    1\n0 1 |  0   1   1   1    0\n1 0 |  0   1   1   1    0\n1 1 |  1   1   0   0    0\n",
+      "caption": "sanningstabell för alla grindar"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "NAND och NOR är <em>universella</em>: alla andra grindar går att bygga av bara NAND (eller bara NOR). Därför är NAND vanligt i verkliga chip och i flashminnen."
+    },
+    {
+      "type": "h",
+      "text": "Sanningstabeller för kopplingar"
+    },
+    {
+      "type": "p",
+      "html": "När grindar kopplas ihop ger du varje mellanledning ett namn och fyller i tabellen kolumn för kolumn. Exempel: D = A AND B, E = A AND C och Z = D OR E."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "A B C | D E | Z\n0 0 0 | 0 0 | 0\n0 0 1 | 0 0 | 0\n0 1 0 | 0 0 | 0\n0 1 1 | 0 0 | 0\n1 0 0 | 0 0 | 0\n1 0 1 | 0 1 | 1\n1 1 0 | 1 0 | 1\n1 1 1 | 1 1 | 1\n",
+      "caption": "Z = (A AND B) OR (A AND C)"
+    },
+    {
+      "type": "h",
+      "text": "Heladderaren"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>heladderare</strong> adderar tre bitar: A, B och carry in (minnessiffran från förra positionen). Den ger en summabit och en carry out. Kopplar man åtta heladderare i rad, med carry out till nästa carry in, kan man addera två bytes. Det är kärnan i ALU:n."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Sum  = A XOR B XOR Cin\nCout = (A AND B) OR (Cin AND (A XOR B))\n\nCin A B | Sum Cout\n 0  0 0 |  0   0\n 0  0 1 |  1   0\n 0  1 0 |  1   0\n 0  1 1 |  0   1\n 1  0 0 |  1   0\n 1  0 1 |  0   1\n 1  1 0 |  0   1\n 1  1 1 |  1   1\n",
+      "caption": "heladderare"
+    },
+    {
+      "type": "h",
+      "text": "Minne av grindar"
+    },
+    {
+      "type": "p",
+      "html": "Om man kopplar tillbaka en grinds utgång till en ingång kan kretsen <strong>minnas</strong> ett värde."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>SR-latch:</strong> två korskopplade NOR-grindar. S (set) gör Q = 1, R (reset) gör Q = 0, och när båda är 0 behåller den värdet. S = R = 1 är förbjudet.",
+        "<strong>D-vippa (D flip-flop):</strong> sparar värdet på D när klockan slår om. Annars ändras ingenting. Grunden för synkrona kretsar.",
+        "<strong>8-bitars register:</strong> åtta D-vippor med gemensam klocka, som sparar en hel byte samtidigt.",
+        "<strong>SRAM:</strong> många sådana celler i ett rutnät. En adressavkodare väljer vilket ord (rad) som läses eller skrivs. Ett 4×3-minne har fyra ord med tre bitar vardera."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Det är därför SRAM är flyktigt: värdet hålls bara kvar så länge grindarna har ström."
+    },
+    {
+      "type": "exercise",
+      "title": "Övning 1",
+      "html": "<p>C = A OR B och Q = NOT C. Fyll i tabellen.</p>",
+      "solution": "A B | C Q\n0 0 | 0 1\n0 1 | 1 0\n1 0 | 1 0\n1 1 | 1 0          (Q är samma sak som A NOR B)\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Övning 2",
+      "html": "<p>C = A OR B, och Q = C AND B. Fyll i tabellen.</p>",
+      "solution": "A B | C Q\n0 0 | 0 0\n0 1 | 1 1\n1 0 | 1 0\n1 1 | 1 1          (Q blir alltid samma som B)\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Övning 3",
+      "html": "<p>C = A OR B, D = NOT B och Q = C XOR D. Fyll i tabellen.</p>",
+      "solution": "A B | C D | Q\n0 0 | 0 1 | 1\n0 1 | 1 0 | 1\n1 0 | 1 1 | 0\n1 1 | 1 0 | 1\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "När ger en AND-grind 1?",
+      "options": [
+        "När minst en ingång är 1",
+        "När båda ingångarna är 1",
+        "När ingångarna är olika",
+        "Aldrig"
+      ],
+      "answer": 1,
+      "why": "AND kräver att alla ingångar är 1."
+    },
+    {
+      "type": "mc",
+      "q": "När ger en XOR-grind 1?",
+      "options": [
+        "När båda är 1",
+        "När exakt en ingång är 1",
+        "När båda är 0",
+        "Alltid"
+      ],
+      "answer": 1,
+      "why": "Exclusive OR: den ena eller den andra, men inte båda."
+    },
+    {
+      "type": "text",
+      "q": "Vad ger NAND med ingångarna A = 1 och B = 1?",
+      "accept": [
+        "0"
+      ],
+      "placeholder": "0 eller 1",
+      "why": "AND ger 1, och NOT gör det till 0."
+    },
+    {
+      "type": "text",
+      "q": "Vad ger NOR med ingångarna A = 0 och B = 0?",
+      "accept": [
+        "1"
+      ],
+      "placeholder": "0 eller 1",
+      "why": "OR ger 0, och NOT gör det till 1."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken C-operator motsvarar XOR mellan två bitar?",
+      "options": [
+        "&amp;",
+        "|",
+        "^",
+        "~"
+      ],
+      "answer": 2,
+      "why": "<code>a ^ b</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Varför kallas NAND universell?",
+      "options": [
+        "Den är snabbast",
+        "Alla andra grindar kan byggas av bara NAND",
+        "Den finns i alla datorer",
+        "Den har tre ingångar"
+      ],
+      "answer": 1,
+      "why": "Till exempel är NOT A = A NAND A."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en heladderare?",
+      "options": [
+        "Adderar två bytes",
+        "Adderar tre bitar och ger summa och carry out",
+        "Sparar en bit",
+        "Jämför två tal"
+      ],
+      "answer": 1,
+      "why": "A, B och carry in blir sum och carry out."
+    },
+    {
+      "type": "text",
+      "q": "Heladderare med A = 1, B = 1, Cin = 1. Vad blir Sum?",
+      "accept": [
+        "1"
+      ],
+      "placeholder": "0 eller 1",
+      "why": "1 + 1 + 1 = 3 = 0b11, så Sum = 1 och Cout = 1."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en D-vippa?",
+      "options": [
+        "Sparar värdet på D när klockan slår om",
+        "Adderar två bitar",
+        "Inverterar en signal",
+        "Förstärker strömmen"
+      ],
+      "answer": 0,
+      "why": "Den håller sedan värdet till nästa klockflank."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken kombination är förbjuden i en SR-latch av NOR-grindar?",
+      "options": [
+        "S = 0, R = 0",
+        "S = 1, R = 0",
+        "S = 0, R = 1",
+        "S = 1, R = 1"
+      ],
+      "answer": 3,
+      "why": "Båda utgångarna tvingas till 0, och vad som händer när de släpps är oförutsägbart."
+    },
+    {
+      "type": "mc",
+      "q": "Hur får man ett 8-bitars register?",
+      "options": [
+        "Åtta heladderare",
+        "Åtta D-vippor med gemensam klocka",
+        "En NAND-grind",
+        "Ett SD-kort"
+      ],
+      "answer": 1,
+      "why": "Varje vippa sparar en bit."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka uttryck ger samma sak som A NOR B?",
+      "options": [
+        "NOT (A OR B)",
+        "(NOT A) AND (NOT B)",
+        "A XOR B",
+        "NOT (A AND B)"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "why": "De Morgans lag: NOT (A OR B) = NOT A AND NOT B."
+    },
+    {
+      "type": "code",
+      "q": "Läs in tre bitar <code>A B Cin</code> och skriv ut heladderarens resultat i formatet <code>Sum=1 Cout=0</code>. Använd bitoperatorerna ^, &amp; och |.",
+      "task": "09-logik-1",
+      "why": "Sum = A ^ B ^ Cin och Cout = (A &amp; B) | (Cin &amp; (A ^ B)).",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs in namnet på en grind (AND, OR, XOR, NAND eller NOR) och skriv ut dess sanningstabell: först raden <code>A B Q</code> och sedan en rad per kombination, som <code>0 1 1</code>.",
+      "task": "09-logik-2",
+      "why": "Två nästlade loopar över a och b, och en funktion som räknar ut Q för grinden.",
+      "web": true
+    }
+  ]
+}

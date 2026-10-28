@@ -1,0 +1,318 @@
+{
+  "id": "grunder-el",
+  "title": "Grunderna i elektronik",
+  "category": "Elektronik",
+  "minutes": 12,
+  "lead": "Ström, spänning och resistans, och komponenterna du kommer att stöta på: resistorer, kondensatorer, spolar, dioder och transistorer.",
+  "sources": [
+    "Lektion 1 – Grunderna i elektronik"
+  ],
+  "goals": [
+    "Förklara ström, spänning och resistans och deras enheter",
+    "Skilja på likström (DC) och växelström (AC)",
+    "Känna igen de vanligaste komponenterna och vad de används till",
+    "Veta vad en multimeter och ett oscilloskop mäter"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Tre storheter som allt bygger på"
+    },
+    {
+      "type": "p",
+      "html": "Nästan allt i den här kursen går att förklara med tre storheter. Tänk på en vattenledning: <strong>spänningen</strong> är trycket, <strong>strömmen</strong> är hur mycket vatten som flödar, och <strong>resistansen</strong> är hur trångt röret är."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Storhet",
+        "Symbol",
+        "Enhet",
+        "Vad det är"
+      ],
+      "rows": [
+        [
+          "Ström",
+          "I",
+          "ampere (A)",
+          "Hur mycket laddning som passerar en punkt per sekund"
+        ],
+        [
+          "Spänning",
+          "U eller V",
+          "volt (V)",
+          "Skillnaden i elektrisk potential mellan två punkter"
+        ],
+        [
+          "Resistans",
+          "R",
+          "ohm (Ω)",
+          "Motståndet mot strömmen"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Spänning mäts alltid <em>mellan</em> två punkter, till exempel mellan en pinne och jord (GND). Ström mäts <em>genom</em> en ledare. Därför kopplas en voltmeter parallellt och en amperemeter i serie."
+    },
+    {
+      "type": "h",
+      "text": "Spänningskällor, AC och DC"
+    },
+    {
+      "type": "p",
+      "html": "Ett batteri ger <strong>likström (DC)</strong>: spänningen har samma riktning hela tiden. Vägguttaget ger <strong>växelström (AC)</strong>: spänningen byter riktning, i Sverige 50 gånger per sekund (50 Hz). Elektronik som mikrokontroller vill nästan alltid ha DC, ofta 3,3 V eller 5 V, så en nätadapter omvandlar AC till DC."
+    },
+    {
+      "type": "p",
+      "html": "Det finns också <strong>konstantströmkällor</strong>, som håller strömmen fast i stället för spänningen. De används till exempel för att driva LED-lampor jämnt."
+    },
+    {
+      "type": "h",
+      "text": "En krets"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>krets</strong> är en sluten slinga där ström kan gå från källans ena pol, genom komponenterna och tillbaka. Bryts slingan någonstans slutar strömmen gå. Komponenter kan sitta i <strong>serie</strong> (efter varandra, samma ström genom alla) eller <strong>parallellt</strong> (bredvid varandra, samma spänning över alla). Hur man räknar på det kommer i nästa lektion."
+    },
+    {
+      "type": "h",
+      "text": "Passiva komponenter"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Komponent",
+        "Enhet",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "Resistor",
+          "ohm (Ω)",
+          "Begränsar strömmen och delar spänning. Färgringar anger värdet."
+        ],
+        [
+          "Kondensator",
+          "farad (F)",
+          "Lagrar laddning en kort stund. Jämnar ut spänning och filtrerar bort störningar."
+        ],
+        [
+          "Spole (induktor)",
+          "henry (H)",
+          "Lagrar energi i ett magnetfält och motverkar snabba strömändringar."
+        ],
+        [
+          "Transformator",
+          "–",
+          "Två spolar på en kärna. Ändrar storleken på en växelspänning."
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Halvledare: dioder och transistorer"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>halvledare</strong> leder ström bättre än en isolator men sämre än en metall, och dess ledningsförmåga går att styra. Det är grunden för dioder och transistorer."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Diod:</strong> släpper igenom ström åt ett håll och spärrar åt det andra. En lysdiod (LED) är en diod som lyser.",
+        "<strong>Likriktarbrygga (full bridge rectifier):</strong> fyra dioder som gör om AC till pulserande DC. Finns i nästan varje nätadapter.",
+        "<strong>Transistor:</strong> en elektroniskt styrd strömbrytare eller förstärkare."
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "BJT (bipolär)",
+        "MOSFET"
+      ],
+      "rows": [
+        [
+          "Styrs av",
+          "Ström genom basen",
+          "Spänning på gate"
+        ],
+        [
+          "Ingångsimpedans",
+          "Låg",
+          "Hög"
+        ],
+        [
+          "Bra för",
+          "Analog förstärkning, enkla switchar",
+          "Höga strömmar, switchar, kraftstyrning"
+        ],
+        [
+          "Ben",
+          "Bas, kollektor, emitter",
+          "Gate, drain, source"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "En GPIO-pinne på en mikrokontroller klarar bara några tiotal milliampere. Vill du styra en motor eller en lång LED-slinga låter du pinnen styra en transistor, som i sin tur släpper på den stora strömmen."
+    },
+    {
+      "type": "h",
+      "text": "Verktyg"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Multimeter:</strong> mäter spänning, ström och resistans. Det första verktyget du tar fram.",
+        "<strong>Oscilloskop:</strong> ritar hur en spänning ändras över tid. Bra för att se en PWM-signal eller störningar.",
+        "<strong>Funktionsgenerator:</strong> skapar exakta vågformer för att testa kretsar.",
+        "<strong>Logikanalysator:</strong> spelar in digitala signaler och kan avkoda protokoll som I2C och UART.",
+        "<strong>LCR-mätare:</strong> mäter induktans (L), kapacitans (C) och resistans (R)."
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Mät med multimetern",
+      "html": "<p>Koppla ett 9 V-batteri över två resistorer i serie (till exempel 1 kΩ och 2,2 kΩ). Mät spänningen över varje resistor och över båda. Stämmer det att delspänningarna blir summan? Mät sedan strömmen genom att koppla multimetern i serie.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken enhet har spänning?",
+      "options": [
+        "Ampere",
+        "Volt",
+        "Ohm",
+        "Watt"
+      ],
+      "answer": 1,
+      "why": "Spänning mäts i volt (V), ström i ampere och resistans i ohm."
+    },
+    {
+      "type": "mc",
+      "q": "Hur kopplas en multimeter för att mäta ström?",
+      "options": [
+        "Parallellt med komponenten",
+        "I serie med komponenten",
+        "Mellan pinne och jord",
+        "Det spelar ingen roll"
+      ],
+      "answer": 1,
+      "why": "Strömmen ska gå <em>genom</em> mätaren, alltså i serie."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en diod?",
+      "options": [
+        "Lagrar laddning",
+        "Släpper igenom ström åt bara ett håll",
+        "Ändrar växelspänningens storlek",
+        "Mäter ström"
+      ],
+      "answer": 1,
+      "why": "En diod spärrar i backriktningen. Kondensatorn lagrar laddning och transformatorn ändrar AC-spänning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad styr strömmen i en MOSFET?",
+      "options": [
+        "Ström genom basen",
+        "Spänningen på gate",
+        "Temperaturen",
+        "Kollektorns spänning"
+      ],
+      "answer": 1,
+      "why": "MOSFET styrs av spänning på gate och har hög ingångsimpedans. BJT styrs av basström."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är passiva komponenter?",
+      "options": [
+        "Resistor",
+        "Kondensator",
+        "Spole",
+        "Transistor"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Transistorn är en aktiv halvledarkomponent som kan förstärka."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan AC och DC?",
+      "options": [
+        "AC har högre spänning",
+        "Vid AC byter strömmen riktning, vid DC går den åt samma håll",
+        "DC används bara i batterier",
+        "Det finns ingen skillnad"
+      ],
+      "answer": 1,
+      "why": "Växelström byter riktning, i Sverige 50 gånger per sekund."
+    },
+    {
+      "type": "text",
+      "q": "Vilken enhet har kapacitans?",
+      "accept": [
+        "farad",
+        "F"
+      ],
+      "placeholder": "enhet",
+      "why": "Kapacitans mäts i farad (F). Vanliga kondensatorer är ofta i µF eller nF."
+    },
+    {
+      "type": "text",
+      "q": "Vilken enhet har induktans?",
+      "accept": [
+        "henry",
+        "H"
+      ],
+      "placeholder": "enhet",
+      "why": "Induktans mäts i henry (H)."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg visar hur en signal ändras över tid?",
+      "options": [
+        "Multimeter",
+        "Oscilloskop",
+        "LCR-mätare",
+        "Lödkolv"
+      ],
+      "answer": 1,
+      "why": "Oscilloskopet ritar spänning som funktion av tid."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en likriktarbrygga?",
+      "options": [
+        "Gör om DC till AC",
+        "Gör om AC till (pulserande) DC",
+        "Höjer spänningen",
+        "Mäter frekvens"
+      ],
+      "answer": 1,
+      "why": "Fyra dioder leder strömmen åt samma håll genom lasten, oavsett vilket håll AC-strömmen går."
+    },
+    {
+      "type": "mc",
+      "q": "Varför låter man ofta en GPIO-pinne styra en transistor i stället för en motor direkt?",
+      "options": [
+        "Pinnen kan bara ge lite ström",
+        "Motorer kräver AC",
+        "Transistorn gör koden snabbare",
+        "Pinnen kan inte vara hög"
+      ],
+      "answer": 0,
+      "why": "GPIO-pinnar klarar bara några tiotal mA. Transistorn släpper igenom den stora strömmen."
+    }
+  ]
+}

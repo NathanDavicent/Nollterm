@@ -1,0 +1,20 @@
+--- in
+50
+--- out
+analogWrite: 128
+--- in
+0
+--- out
+analogWrite: 0
+--- in
+100
+--- out
+analogWrite: 255
+--- in
+25
+--- out
+analogWrite: 64
+--- in
+10
+--- out
+analogWrite: 26

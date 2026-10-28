@@ -1,0 +1,319 @@
+{
+  "id": "sortering",
+  "title": "Sortering",
+  "category": "Algoritmer",
+  "minutes": 14,
+  "lead": "Bubblesort, selection sort, insertion sort, quicksort och mergesort: hur de fungerar, vad de kostar och vad stabil och in-place betyder.",
+  "sources": [
+    "F2 – Sortering",
+    "Övningsuppgifter 2 – Sortering"
+  ],
+  "goals": [
+    "Beskriva och implementera bubble, selection och insertion sort",
+    "Förklara idén bakom quicksort (partition) och mergesort (dela och slå ihop)",
+    "Ange tidskomplexiteten i best, average och worst case",
+    "Förklara vad stabil och in-place betyder"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför sortering?"
+    },
+    {
+      "type": "p",
+      "html": "Att sortera en array av heltal i storleksordning är ett perfekt exempel på olika algoritmer som löser samma uppgift. De skiljer sig i tid, minne och hur de beter sig på olika sorters indata."
+    },
+    {
+      "type": "h",
+      "text": "Två egenskaper"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>In-place:</strong> inget extra minne behöver allokeras, sorteringen sker i själva arrayen.",
+        "<strong>Stabil:</strong> lika element behåller sin inbördes ordning. Viktigt när man sorterar på en nyckel i taget, till exempel först på namn och sedan på klass."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Bubblesort"
+    },
+    {
+      "type": "p",
+      "html": "Gå igenom arrayen och byt plats på närliggande par där det högra är mindre. Efter första varvet ligger det största elementet sist. Upprepa. Optimering: om ett helt varv inte gör några byten är arrayen sorterad och vi kan sluta."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void bubbleSort(int* arr, int size) {\n    for (int i = 0; i < size; i++) {\n        int swapped = 0;\n        for (int j = 0; j < size - 1 - i; j++) {\n            if (arr[j] > arr[j + 1]) {\n                swap(&arr[j], &arr[j + 1]);\n                swapped = 1;\n            }\n        }\n        if (!swapped) break;    // redan sorterad: O(n) i best case\n    }\n}\n",
+      "caption": "C"
+    },
+    {
+      "type": "h",
+      "text": "Selection sort"
+    },
+    {
+      "type": "p",
+      "html": "Dela arrayen i en sorterad och en osorterad del. Hitta det minsta elementet i den osorterade delen och byt in det sist i den sorterade. Gör alltid lika många jämförelser, även om arrayen redan är sorterad."
+    },
+    {
+      "type": "h",
+      "text": "Insertion sort"
+    },
+    {
+      "type": "p",
+      "html": "Ta nästa element från den osorterade delen och flytta det bakåt tills det sitter på rätt plats i den sorterade delen, som när man sorterar kort på handen. Mycket bra på nästan sorterad data, eftersom varje element bara behöver flyttas lite."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "start:   5 2 4 6 1 3\ni = 1:   2 5 4 6 1 3\ni = 2:   2 4 5 6 1 3\ni = 3:   2 4 5 6 1 3\ni = 4:   1 2 4 5 6 3\ni = 5:   1 2 3 4 5 6\n",
+      "caption": "insertion sort steg för steg"
+    },
+    {
+      "type": "h",
+      "text": "Quicksort"
+    },
+    {
+      "type": "p",
+      "html": "Välj ett <strong>pivotvärde</strong>. Flytta alla mindre element till vänster om pivoten och alla större till höger (<strong>partition</strong>). Nu sitter pivoten på rätt plats. Quicksorta sedan vänster och höger del rekursivt. I medel O(n log n), men med en dålig pivot (till exempel alltid första elementet på redan sorterad data) blir det O(n²)."
+    },
+    {
+      "type": "h",
+      "text": "Mergesort"
+    },
+    {
+      "type": "p",
+      "html": "Dela arrayen i halvor rekursivt tills varje del är ett enda element. Slå sedan ihop två sorterade delar genom att hela tiden ta det minsta av de två första elementen. Alltid O(n log n), stabil, men behöver extra minne för sammanslagningen."
+    },
+    {
+      "type": "h",
+      "text": "Bogosort"
+    },
+    {
+      "type": "p",
+      "html": "Blanda arrayen slumpmässigt. Är den inte sorterad, blanda igen. Värdelös men rolig: i medel O(n · n!), och i värsta fall tar den aldrig slut."
+    },
+    {
+      "type": "h",
+      "text": "Jämförelse"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Algoritm",
+        "Best",
+        "Average",
+        "Worst",
+        "In-place",
+        "Stabil"
+      ],
+      "rows": [
+        [
+          "Bubblesort",
+          "O(n)",
+          "O(n²)",
+          "O(n²)",
+          "Ja",
+          "Ja"
+        ],
+        [
+          "Selection sort",
+          "O(n²)",
+          "O(n²)",
+          "O(n²)",
+          "Ja",
+          "Nej"
+        ],
+        [
+          "Insertion sort",
+          "O(n)",
+          "O(n²)",
+          "O(n²)",
+          "Ja",
+          "Ja"
+        ],
+        [
+          "Quicksort",
+          "O(n log n)",
+          "O(n log n)",
+          "O(n²)",
+          "Ja",
+          "Nej"
+        ],
+        [
+          "Mergesort",
+          "O(n log n)",
+          "O(n log n)",
+          "O(n log n)",
+          "Nej",
+          "Ja"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "I övningen räknar du jämförelser, byten och tilldelningar för storlekarna 10, 20 och 40, på sorterad, slumpad och baklänges sorterad data. Insertion sort gör nästan inget på sorterad data, men på baklänges sorterad data blir den lika dyr som bubblesort."
+    },
+    {
+      "type": "exercise",
+      "title": "Sorteringsverktygslåda",
+      "html": "<p>Skriv <code>isSorted</code>, <code>printArr</code> och <code>swap</code>, sedan <code>createSorted</code>, <code>createBackSorted</code> och <code>createRand</code> som skapar dynamiskt allokerade arrayer med talen 0..size−1. Implementera bubble, selection och insertion sort, och sist quicksort med en <code>quickSub</code> som partitionerar och returnerar pivotens index. Testa med size 0 och 1.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Mät med statistik",
+      "html": "<p>Skapa <code>struct Statistics { int assigns, swaps, comparisons; }</code>. Låt alla byten, tilldelningar och jämförelser gå via funktioner som räknar upp structen, och skriv ut en tabell per algoritm för storlekarna 10, 20 och 40 på sorterad, slumpad och baklänges sorterad data.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad betyder att en sortering är stabil?",
+      "options": [
+        "Den kraschar aldrig",
+        "Lika element behåller sin inbördes ordning",
+        "Den använder inget extra minne",
+        "Den är alltid O(n log n)"
+      ],
+      "answer": 1,
+      "why": "Stabilitet handlar om ordningen mellan lika nycklar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder in-place?",
+      "options": [
+        "Sorteringen behöver inget extra minne",
+        "Den är stabil",
+        "Den är rekursiv",
+        "Den sorterar baklänges"
+      ],
+      "answer": 0,
+      "why": "Allt sker i den ursprungliga arrayen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken sortering är bäst på nästan sorterad data?",
+      "options": [
+        "Selection sort",
+        "Insertion sort",
+        "Bogosort",
+        "Quicksort med första elementet som pivot"
+      ],
+      "answer": 1,
+      "why": "Varje element behöver bara flyttas lite, nära O(n)."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken komplexitet har mergesort i worst case?",
+      "options": [
+        "O(n)",
+        "O(n log n)",
+        "O(n²)",
+        "O(2ⁿ)"
+      ],
+      "answer": 1,
+      "why": "Mergesort är alltid O(n log n)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är quicksorts worst case, och när händer det?",
+      "options": [
+        "O(n log n), alltid",
+        "O(n²), när pivoten hela tiden blir minsta eller största elementet",
+        "O(n), på sorterad data",
+        "O(1)"
+      ],
+      "answer": 1,
+      "why": "Då blir ena delen tom och den andra bara ett mindre."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken optimering gör att bubblesort blir O(n) på sorterad data?",
+      "options": [
+        "Sluta om ett varv inte gör några byten",
+        "Börja bakifrån",
+        "Använda rekursion",
+        "Använda en pivot"
+      ],
+      "answer": 0,
+      "why": "Ett varv utan byten betyder att allt redan är i ordning."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är stabila?",
+      "options": [
+        "Bubblesort",
+        "Insertion sort",
+        "Mergesort",
+        "Selection sort"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Selection sort kan byta bort ett element förbi ett lika element."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör partition-steget i quicksort?",
+      "options": [
+        "Delar arrayen i två lika stora halvor",
+        "Lägger mindre element till vänster och större till höger om pivoten",
+        "Slår ihop två sorterade arrayer",
+        "Blandar arrayen"
+      ],
+      "answer": 1,
+      "why": "Efter partition sitter pivoten på sin slutliga plats."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken algoritm behöver extra minne i storleksordningen n?",
+      "options": [
+        "Bubblesort",
+        "Insertion sort",
+        "Mergesort",
+        "Selection sort"
+      ],
+      "answer": 2,
+      "why": "Sammanslagningen behöver en hjälparray."
+    },
+    {
+      "type": "text",
+      "q": "Hur många byten gör bubblesort på arrayen 3 2 1?",
+      "accept": [
+        "3"
+      ],
+      "placeholder": "antal",
+      "why": "3 2 1 → 2 3 1 → 2 1 3 → 1 2 3: tre byten. Antalet byten är antalet par i fel ordning."
+    },
+    {
+      "type": "mc",
+      "q": "Hur ser 5 2 4 6 1 3 ut efter första varvet (i = 1) i insertion sort?",
+      "options": [
+        "2 5 4 6 1 3",
+        "1 2 4 6 5 3",
+        "2 4 5 6 1 3",
+        "5 2 4 6 1 3"
+      ],
+      "answer": 0,
+      "why": "2 flyttas framför 5."
+    },
+    {
+      "type": "code",
+      "q": "Bubblesort. Läs in n och n heltal, sortera dem med bubblesort och skriv ut den sorterade arrayen på en rad. Skriv sedan <code>Byten: k</code> där k är hur många byten som gjordes.",
+      "task": "03-sortering-1",
+      "why": "Byt bara när arr[j] &gt; arr[j + 1]. Lika element byts inte.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Insertion sort. Läs in n och n heltal. Sortera med insertion sort och skriv ut hela arrayen efter varje varv i = 1 .. n − 1, en rad per varv.",
+      "task": "03-sortering-2",
+      "why": "Spara arr[i] som key, flytta större element ett steg åt höger och lägg key på den lediga platsen.",
+      "web": true
+    }
+  ]
+}
