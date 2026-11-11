@@ -1,0 +1,257 @@
+{
+  "id": "inbyggda-system",
+  "title": "Inbyggda system och verktygskedjan",
+  "category": "Grunder",
+  "minutes": 12,
+  "date": "2026-02-03",
+  "lead": "Vad ett inbyggt system är, vilka delar det består av, och hur C-kod blir en hex-fil som körs i Wokwi eller på en riktig Arduino.",
+  "sources": [
+    "Kursintroduktion",
+    "Embedded systems – Key Principles",
+    "Inför lektionen (installation av avr-gcc)",
+    "Dagens laboration 2026-02-03"
+  ],
+  "goals": [
+    "Förklara vad ett inbyggt system är och ge exempel",
+    "Räkna upp delarna i ett inbyggt system",
+    "Skilja på mikrokontroller, mikroprocessor och utvecklingskort",
+    "Beskriva vägen från C-kod via avr-gcc och make till en hex-fil som körs"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad menas med inbyggda system?"
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>inbyggt system</strong> (embedded system) är ett datorbaserat system som är inbyggt i en annan produkt: ett fordon, en hushållsapparat, en medicinteknisk enhet, ett flygplan eller ett smart hem. Det styr saker, övervakar och samlar in data från sensorer, med processorer, minnen och elektronik som är optimerade för just den uppgiften."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Exempel",
+        "Vad det inbyggda systemet gör"
+      ],
+      "rows": [
+        [
+          "ABS-bromsar",
+          "Mäter hjulens hastighet och reglerar bromsarna så att hjulen inte låser sig"
+        ],
+        [
+          "Smart termostat",
+          "Lär sig användarens beteende och sparar energi"
+        ],
+        [
+          "Pacemaker, blodsockermätare",
+          "Övervakar och styr medicinsk utrustning"
+        ],
+        [
+          "Industristyrning",
+          "Produktionslinjer, robotar, övervakning"
+        ],
+        [
+          "Flygplan",
+          "Övervakar motorer, styrsystem, bränsle och navigering"
+        ],
+        [
+          "Digitalkamera",
+          "Bildbehandling, fokus och bildstabilisering"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Delarna i ett inbyggt system"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Mikrokontroller (MCU)</strong> eller mikroprocessor (MPU). (MPU kan också betyda Memory Protection Unit, så se upp med förkortningen.)",
+        "<strong>Minne:</strong> ROM/flash för programmet och RAM för variabler",
+        "<strong>Periferienheter:</strong> sensorer, knappar, skärmar och ställdon (actuators, som gör en signal till fysisk rörelse)",
+        "<strong>Programvara</strong>",
+        "<strong>Kommunikation:</strong> UART, SPI, I2C, och ibland Bluetooth, Ethernet, Wi-Fi eller Zigbee",
+        "<strong>Strömförsörjning:</strong> batteri, nätadapter eller solceller"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Mikrokontroller och utvecklingskort"
+    },
+    {
+      "type": "p",
+      "html": "Det finns många MCU-familjer: Atmels <strong>AVR</strong> (ATmega328P i Arduino Uno, ATtiny85), STM32, Espressifs ESP32, Nordics nRF52, Microchips PIC, TI:s MSP430 och fler. Ett <strong>utvecklingskort</strong> (development board) är ett färdigt kretskort med en MCU och lite hårdvara runt omkring, som USB, spänningsregulator och ibland nätverk. Arduino, Raspberry Pi, STM32 Discovery och ESP32-kort gör att man slipper bygga allt på breadboard."
+    },
+    {
+      "type": "p",
+      "html": "Den färdiga produkten börjar som ett <strong>schema</strong> (schematic), blir ett mönsterkort (PCB) hos en tillverkare, och får sina komponenter monterade. Innan dess prototypar man på en <strong>breadboard</strong>, där komponenterna kopplas ihop utan lödning."
+    },
+    {
+      "type": "h",
+      "text": "Verktygskedjan i kursen"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>VS Code</strong> för att skriva koden",
+        "<strong>avr-gcc</strong>, en kompilator som gör maskinkod för AVR-processorer",
+        "<strong>make</strong> och en <code>Makefile</code> som kör kompilatorn med rätt flaggor",
+        "<strong>Wokwi</strong> som simulerar Arduinon, så att hex-filen kan provas utan hårdvara"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "make                       # kompilerar main.c till en .hex-fil enligt Makefile\navr-gcc --version          # kontrollera att kompilatorn hittas i PATH\n",
+      "caption": "terminal (Git Bash på Windows)"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "I Wokwi: klicka i kodrutan, tryck F1, sök på <em>upload</em>, välj <em>Upload Firmware and Start Simulation</em> och välj din hex-fil."
+    },
+    {
+      "type": "h",
+      "text": "Hello World i embedded: blinka en LED"
+    },
+    {
+      "type": "p",
+      "html": "Utan Arduinos bibliotek skriver vi direkt till hårdvarans register. Det är snabbare, kräver mindre minne och är det som används i industrin."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#define F_CPU 16000000UL      // klockfrekvensen, behövs av _delay_ms\n#include <avr/io.h>\n#include <util/delay.h>\n\n#define LED_PIN 5             // digital pin 13 = PB5\n\nint main(void) {\n    DDRB |= (1 << LED_PIN);   // pinnen som utgång\n    while (1) {\n        PORTB ^= (1 << LED_PIN);   // flippa LED:en\n        _delay_ms(500);\n    }\n    return 0;\n}\n",
+      "caption": "main.c för ATmega328P"
+    },
+    {
+      "type": "exercise",
+      "title": "Installera verktygen",
+      "html": "<p>Windows: ladda ner <code>avr-gcc-15.2.0-x64-windows.zip</code> från ZakKemble/avr-gcc-build, packa upp under till exempel <code>C:\\</code>, och lägg till <code>bin</code>-mappen i Path. Installera Git Bash, starta om VS Code och kör <code>make</code> i mappen med Makefile. Linux: <code>sudo apt install gcc-avr binutils-avr avr-libc gdb-avr avrdude</code>.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är ett inbyggt system?",
+      "options": [
+        "En vanlig PC",
+        "Ett datorbaserat system inbyggt i en annan produkt för en specifik uppgift",
+        "Ett operativsystem",
+        "Ett moln"
+      ],
+      "answer": 1,
+      "why": "ABS-bromsar, termostater och pacemakers är exempel."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är delar i ett inbyggt system?",
+      "options": [
+        "Mikrokontroller",
+        "Minne",
+        "Periferienheter",
+        "Strömförsörjning"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Plus programvara och kommunikation."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ett ställdon (actuator)?",
+      "options": [
+        "En sensor",
+        "Något som gör en signal till fysisk rörelse",
+        "En typ av minne",
+        "Ett protokoll"
+      ],
+      "answer": 1,
+      "why": "Motorer, servon och ventiler."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken MCU sitter på en Arduino Uno?",
+      "options": [
+        "ESP32",
+        "ATmega328P",
+        "STM32F4",
+        "nRF52840"
+      ],
+      "answer": 1,
+      "why": "En 8-bitars AVR från Atmel (numera Microchip)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ett utvecklingskort?",
+      "options": [
+        "Ett schema",
+        "Ett färdigt kretskort med en MCU och lite hårdvara runt",
+        "En kompilator",
+        "En simulator"
+      ],
+      "answer": 1,
+      "why": "Arduino, ESP32-kort och STM32 Discovery."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör avr-gcc?",
+      "options": [
+        "Simulerar en Arduino",
+        "Kompilerar C till maskinkod för AVR",
+        "Flashar via Wi-Fi",
+        "Ritar scheman"
+      ],
+      "answer": 1,
+      "why": "Resultatet blir en hex-fil."
+    },
+    {
+      "type": "text",
+      "q": "Vilket kommando kör kompileringen enligt en Makefile?",
+      "accept": [
+        "make"
+      ],
+      "placeholder": "kommando",
+      "why": "<code>make</code> i mappen där Makefile ligger."
+    },
+    {
+      "type": "mc",
+      "q": "Varför behöver avr-gcc ligga i Path på Windows?",
+      "options": [
+        "Annars går det långsammare",
+        "För att terminalen och make ska hitta programmet",
+        "Det krävs av Wokwi",
+        "Det behövs inte"
+      ],
+      "answer": 1,
+      "why": "Starta om VS Code efteråt, eftersom program bara läser Path när de startar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en breadboard till för?",
+      "options": [
+        "Att löda ihop komponenter permanent",
+        "Att prototypa utan lödning",
+        "Att simulera kod",
+        "Att mäta spänning"
+      ],
+      "answer": 1,
+      "why": "Komponenterna kan återanvändas."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken fil laddar man upp i Wokwi för att köra sin AVR-kod?",
+      "options": [
+        ".c-filen",
+        "Makefile",
+        "hex-filen",
+        ".h-filen"
+      ],
+      "answer": 2,
+      "why": "<em>Upload Firmware and Start Simulation</em>."
+    }
+  ]
+}

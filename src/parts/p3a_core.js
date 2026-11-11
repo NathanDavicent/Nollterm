@@ -33,6 +33,13 @@ const HERO_CARDS = {
         <div class="mem">${cells}</div>
         <div class="foot">Mitten först: 12, sedan 23. Två steg i stället för sex.<br>Halvera varje gång: O(log n).</div></div>`;
   },
+  inbyggda: () => {
+    const cells = [..."00100000"].map((ch, i) => `<div><span class="cell ${ch === "1" ? "z" : ""}" style="animation-delay:${i * 90}ms">${ch}</span><span class="ad">PB${7 - i}</span></div>`).join("");
+    return `<div class="memcard" aria-label="Exempel: tänd pin 13 med ett portregister">
+        <div class="decl">PORTB |= (<span class="s">1</span> &lt;&lt; PB5);</div>
+        <div class="mem">${cells}</div>
+        <div class="foot">En bit i ett register, en pinne på kortet.<br>Pin 13 lyser, de andra rörs inte.</div></div>`;
+  },
 };
 const COURSES = CONTENT.map(c => Object.assign(c, {
   card: HERO_CARDS[c.id] || (() => `<div class="memcard"><div class="decl">${esc(c.badge)}</div><div class="foot">${c.lessons.length} lektioner.</div></div>`),

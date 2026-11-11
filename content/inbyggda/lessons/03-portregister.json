@@ -1,0 +1,321 @@
+{
+  "id": "portregister",
+  "title": "ATmega328P, minne och portregister",
+  "category": "C för hårdvara",
+  "minutes": 13,
+  "date": "2026-02-10",
+  "lead": "Vad som finns på en Arduino Uno, hur minnet är uppdelat, och hur DDR-, PORT- och PIN-registren styr pinnarna direkt.",
+  "sources": [
+    "Atmega328.pdf",
+    "Portregister.pdf",
+    "Analoga och digitala signaler.pdf",
+    "Dagens genomgång 2026-02-10"
+  ],
+  "goals": [
+    "Beskriva ATmega328P:s minnen och vad som hamnar i flash, SRAM och EEPROM",
+    "Förklara text, data, bss, stack och heap",
+    "Använda DDRx, PORTx och PINx för portarna B, C och D",
+    "Översätta en Arduino-pinne till rätt port och bit",
+    "Skilja på analoga och digitala signaler"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Arduino Uno"
+    },
+    {
+      "type": "p",
+      "html": "Arduino Uno är ett utvecklingskort med mikrokontrollern <strong>ATmega328P</strong>, med programmeringsgränssnitt, debugmöjligheter och väldigt bra verktyg och exempel."
+    },
+    {
+      "type": "list",
+      "items": [
+        "14 digitala in- och utgångar, varav 6 klarar PWM",
+        "6 analoga ingångar som läses med en ADC (0–1023, 10 bitar)",
+        "En 16 MHz-resonator som ger klockan",
+        "USB för ström, programmering och seriell kommunikation",
+        "Strömuttag, ICSP-header för programmering och en reset-knapp"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Minnet"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Minne",
+        "Storlek",
+        "Flyktigt?",
+        "Används till"
+      ],
+      "rows": [
+        [
+          "Flash",
+          "32 KB (bootloadern tar ca 0,5–2 KB)",
+          "Nej",
+          "Programmet. Skrivs främst vid uppladdning."
+        ],
+        [
+          "SRAM",
+          "2 KB",
+          "Ja",
+          "Variabler, stack och heap. Den vanligaste källan till problem."
+        ],
+        [
+          "EEPROM",
+          "1 KB",
+          "Nej",
+          "Inställningar som ska finnas kvar efter omstart. Tål ca 100 000 skrivningar per byte."
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Ett program delas upp i områden:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>text:</strong> programinstruktionerna (ligger i flash)",
+        "<strong>data:</strong> globala variabler med startvärde",
+        "<strong>bss:</strong> globala variabler som är oinitierade eller noll",
+        "<strong>heap:</strong> minne som allokeras under körning (malloc)",
+        "<strong>stack:</strong> lokala variabler, funktionsanrop och interrupts"
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Med bara 2 KB SRAM kan heap och stack växa in i varandra. Programmet beter sig då konstigt eller kraschar, helt utan felmeddelande."
+    },
+    {
+      "type": "h",
+      "text": "Analoga och digitala signaler"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>digital</strong> signal har två lägen: hög spänning (1) och låg (0), som en tryckknapp eller en ljussensor som bara säger ljust eller mörkt. En <strong>analog</strong> signal kan ha vilket värde som helst och varierar kontinuerligt, som en mikrofon eller en temperatursensor. MCU:n läser analoga signaler med en ADC."
+    },
+    {
+      "type": "h",
+      "text": "Portregister"
+    },
+    {
+      "type": "p",
+      "html": "Arduinons pinnar är grupperade i tre <strong>portar</strong> om 8 bitar. Varje port styrs av tre register från <code>&lt;avr/io.h&gt;</code>:"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Register",
+        "Gör",
+        "Läs/skriv"
+      ],
+      "rows": [
+        [
+          "DDRx (Data Direction)",
+          "1 = utgång, 0 = ingång",
+          "Läs och skriv"
+        ],
+        [
+          "PORTx (Data)",
+          "Utgång: hög eller låg. Ingång: 1 slår på intern pull-up.",
+          "Läs och skriv"
+        ],
+        [
+          "PINx (Input)",
+          "Läser vad som ligger på pinnarna",
+          "Bara läs"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Port",
+        "Arduino-pinnar",
+        "Bitar"
+      ],
+      "rows": [
+        [
+          "D",
+          "Digital 0–7",
+          "PD0–PD7 (0 och 1 är RX och TX)"
+        ],
+        [
+          "B",
+          "Digital 8–13",
+          "PB0–PB5 (bit 6 och 7 går till kristallen)"
+        ],
+        [
+          "C",
+          "Analog A0–A5",
+          "PC0–PC5"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "DDRB  |=  (1 << PB5);          // pin 13 som utgång\nPORTB |=  (1 << PB5);          // pin 13 hög: LED:en lyser\nDDRD  &= ~(1 << PD2);          // pin 2 som ingång\nPORTD |=  (1 << PD2);          // ... med intern pull-up\nif (!(PIND & (1 << PD2))) {    // knappen mot GND är intryckt när biten är 0\n    /* ... */\n}\n",
+      "caption": "C för ATmega328P"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Med ett pinout-diagram ser du direkt vilken port och bit en pinne har, och vilka extra funktioner den har (PWM, ADC, PCINT, SPI och så vidare)."
+    },
+    {
+      "type": "exercise",
+      "title": "Trafikljus med register",
+      "html": "<p>Bygg trafikljuset från förra labben med tre LED:er på port D. Sätt alla tre som utgångar med en enda tilldelning till DDRD, och byt ljus genom att skriva till PORTD.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "multi",
+      "q": "Vilka minnen har ATmega328P?",
+      "options": [
+        "32 KB flash",
+        "2 KB SRAM",
+        "1 KB EEPROM",
+        "1 GB RAM"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Väldigt lite RAM, så varje byte räknas."
+    },
+    {
+      "type": "mc",
+      "q": "Var ligger programmet?",
+      "options": [
+        "SRAM",
+        "Flash",
+        "EEPROM",
+        "Registren"
+      ],
+      "answer": 1,
+      "why": "Flash är icke-flyktigt och skrivs vid uppladdning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad passar EEPROM till?",
+      "options": [
+        "Variabler som ändras varje millisekund",
+        "Inställningar som ska finnas kvar efter omstart",
+        "Programkoden",
+        "Stacken"
+      ],
+      "answer": 1,
+      "why": "Begränsat antal skrivningar, så inte för ofta."
+    },
+    {
+      "type": "mc",
+      "q": "I vilket område hamnar en global variabel med startvärde?",
+      "options": [
+        "text",
+        "data",
+        "bss",
+        "stack"
+      ],
+      "answer": 1,
+      "why": "Oinitierade eller nollställda globala variabler hamnar i bss."
+    },
+    {
+      "type": "mc",
+      "q": "Var hamnar lokala variabler?",
+      "options": [
+        "heap",
+        "stack",
+        "data",
+        "flash"
+      ],
+      "answer": 1,
+      "why": "Och funktionsanrop och interrupts."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör DDRB |= (1 &lt;&lt; PB5)?",
+      "options": [
+        "Gör pin 13 hög",
+        "Gör pin 13 till utgång",
+        "Läser pin 13",
+        "Slår på pull-up"
+      ],
+      "answer": 1,
+      "why": "DDR styr riktningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket register läser du för att se om en knapp på port D är intryckt?",
+      "options": [
+        "DDRD",
+        "PORTD",
+        "PIND",
+        "PINB"
+      ],
+      "answer": 2,
+      "why": "PIN-registren är bara för läsning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer om du skriver 1 till PORTx för en pinne som är ingång?",
+      "options": [
+        "Den blir utgång",
+        "Den interna pull-up-resistorn slås på",
+        "Ingenting",
+        "Pinnen går sönder"
+      ],
+      "answer": 1,
+      "why": "Praktiskt för knappar mot GND."
+    },
+    {
+      "type": "text",
+      "q": "Vilken port och bit har Arduinons digitala pin 13? (till exempel PB5)",
+      "accept": [
+        "PB5"
+      ],
+      "placeholder": "port och bit",
+      "why": "Pin 8–13 är PB0–PB5."
+    },
+    {
+      "type": "text",
+      "q": "Vilken port och bit har A0?",
+      "accept": [
+        "PC0"
+      ],
+      "placeholder": "port och bit",
+      "why": "De analoga pinnarna är port C."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken signal är analog?",
+      "options": [
+        "En tryckknapp",
+        "Spänningen från en mikrofon",
+        "En LED som är av eller på",
+        "En PIR-sensors utgång"
+      ],
+      "answer": 1,
+      "why": "Den varierar kontinuerligt."
+    },
+    {
+      "type": "code",
+      "q": "Läs in pinnar som ska bli utgångar (<code>13</code>, <code>7</code>, <code>A0</code> och så vidare). Skriv ut porten och biten för varje, som <code>13 -&gt; PB5</code>, och sedan DDRB, DDRC och DDRD binärt, som <code>DDRB = 0b00100000</code>.",
+      "task": "03-portregister-1",
+      "why": "0–7 är port D, 8–13 port B med bit = pin − 8, och A0–A5 port C.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Trafikljuset: röd 5 s, gul 2 s, grön 5 s, gul 2 s, och om igen. Skriv för varje tidpunkt (i sekunder) vilket ljus som lyser, som <code>t=6: GUL</code>.",
+      "task": "03-portregister-2",
+      "why": "Ta tiden modulo 14 och jämför med gränserna 5, 7 och 12.",
+      "web": true
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "id": "testning",
+  "title": "Testning och unit-tester",
+  "category": "Kodkvalitet",
+  "minutes": 13,
+  "date": "2026-03-19",
+  "lead": "Varför man testar, white box och black box, testtyper, och hur unit-tester med GoogleTest skrivs enligt AAA, med mockad hårdvara.",
+  "sources": [
+    "Testing Intro",
+    "Dagens laboration 2026-03-19 (GoogleTest)"
+  ],
+  "goals": [
+    "Förklara varför mjukvarutestning är viktigt",
+    "Skilja på white box och black box testing",
+    "Ge exempel på funktionella och icke-funktionella testtyper",
+    "Beskriva vad som gör ett bra unit-test",
+    "Skriva ett test enligt Arrange, Act, Assert och förstå mockning"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är testning?"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Programvarutestning</strong> kontrollerar att den faktiska produkten matchar kraven och är så fri från defekter som möjligt. Mjukvaran körs manuellt eller automatiskt för att hitta fel, luckor och saknade krav."
+    },
+    {
+      "type": "p",
+      "html": "Buggar kan vara dyra eller farliga: Nissan återkallade över en miljon bilar på grund av fel i krockkuddarnas sensorer, Therac-25 gav dödliga stråldoser 1985–87, och en China Airlines Airbus A300 kraschade 1994. Ordet <em>bugg</em> blev känt när Grace Hoppers team hittade en nattfjäril i ett relä i Mark II-datorn och tejpade in den i loggboken."
+    },
+    {
+      "type": "h",
+      "text": "White box och black box"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "White box",
+        "Black box"
+      ],
+      "rows": [
+        [
+          "Ser koden?",
+          "Ja",
+          "Nej"
+        ],
+        [
+          "Testar",
+          "Intern struktur, kodvägar och in-utdataflöde",
+          "Funktionalitet utifrån krav och specifikation"
+        ],
+        [
+          "Kallas också",
+          "Strukturell testning",
+          "Beteendetestning"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Testtyper"
+    },
+    {
+      "type": "p",
+      "html": "Det finns över 150 typer. Några exempel:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Funktionella:</strong> unit, integration, smoke, användaracceptans (UAT), lokalisering",
+        "<strong>Icke-funktionella:</strong> prestanda, uthållighet, last, volym, skalbarhet, användbarhet, underhållbarhet",
+        "<strong>Regressionstest:</strong> att det som fungerade fortfarande fungerar efter en ändring"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Unit-tester"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>unit</strong> är den minsta testbara delen: en funktion, metod eller klass. Unit-tester är automatiserade, skrivs av utvecklarna och körs av ett testramverk som <strong>GoogleTest</strong> eller <strong>CppUTest</strong>. De hittar buggar tidigt, gör att man vågar refaktorera (\"refactor without fear\"), fungerar som dokumentation och uppmuntrar små, tydliga funktioner."
+    },
+    {
+      "type": "p",
+      "html": "Ett bra unit-test är automatiserat och repeterbart, lätt att skriva, snabbt, ger alltid samma resultat, är helt isolerat från andra tester, och när det misslyckas syns det tydligt vad som förväntades."
+    },
+    {
+      "type": "h",
+      "text": "Arrange, Act, Assert"
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "#include <gtest/gtest.h>\nextern \"C\" {\n#include \"safe.h\"        // ren C-logik utan <avr/io.h>\n}\n\nTEST(SafeStateMachine, CorrectCodeUnlocksTheSafe) {\n    // Arrange\n    SafeState s = STATE_IDLE;\n    // Act\n    s = nextState(s, '1');\n    s = nextState(s, '2');\n    s = nextState(s, '3');\n    s = nextState(s, '4');\n    // Assert\n    EXPECT_EQ(s, STATE_UNLOCKED);\n}\n\nTEST(SafeStateMachine, WrongDigitGoesBackToIdle) {\n    EXPECT_EQ(nextState(STATE_12, '9'), STATE_IDLE);\n}\n",
+      "caption": "GoogleTest"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Ge testerna långa, beskrivande namn. När ett test misslyckas vill du direkt se vad som gick fel, utan att läsa koden."
+    },
+    {
+      "type": "h",
+      "text": "Mockning och hårdvara"
+    },
+    {
+      "type": "p",
+      "html": "Ofta vill eller kan vi inte testa allt: databaser, inloggningar, och för oss framför allt <strong>indata från och signaler till kringutrustning</strong>. Då <strong>mockar</strong> man (fejkar) den delen. Testramverket hittar dessutom sällan <code>&lt;avr/io.h&gt;</code>. Bryt därför ut allt som rör portar och pinnar i en egen fil, och lägg logiken som ska testas i ren C eller C++."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "/* button_logic.h: ren logik, testbar på PC:n */\nuint8_t button_update(uint8_t raw_level);\n\n/* hal_avr.c: bara på MCU:n */\nuint8_t hal_read_button(void) { return (PIND & (1 << PD2)) ? 0 : 1; }\n\n/* test: en fejkad knapp */\nstatic uint8_t fake_level;\nuint8_t hal_read_button(void) { return fake_level; }\n",
+      "caption": "hårdvaruabstraktion och mock"
+    },
+    {
+      "type": "exercise",
+      "title": "GoogleTest-labb",
+      "html": "<p>Installera GoogleTest (github.com/google/googletest) och utgå från gtest-branchen i <code>weird_snake_cars_combo</code>. Skriv tester för minst tre funktioner, med ett fall som ska lyckas och ett kantfall för varje.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är syftet med mjukvarutestning?",
+      "options": [
+        "Att göra koden snabbare",
+        "Att hitta fel, luckor och saknade krav",
+        "Att skriva dokumentation",
+        "Att kompilera"
+      ],
+      "answer": 1,
+      "why": "Jämfört med de faktiska kraven."
+    },
+    {
+      "type": "mc",
+      "q": "Vad kännetecknar black box testing?",
+      "options": [
+        "Testaren ser koden",
+        "Funktionaliteten testas utan kunskap om koden",
+        "Bara prestandatester",
+        "Det görs av kompilatorn"
+      ],
+      "answer": 1,
+      "why": "Beteendetestning utifrån krav."
+    },
+    {
+      "type": "mc",
+      "q": "Vad kännetecknar white box testing?",
+      "options": [
+        "Koden är synlig och dess struktur testas",
+        "Testaren ser bara gränssnittet",
+        "Inga tester körs",
+        "Bara användare testar"
+      ],
+      "answer": 0,
+      "why": "Strukturell testning."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är funktionella testtyper?",
+      "options": [
+        "Unit",
+        "Integration",
+        "Smoke",
+        "Last (load)"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Last är icke-funktionell."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en unit i unit-testning?",
+      "options": [
+        "Hela systemet",
+        "Den minsta testbara delen, som en funktion",
+        "En MCU",
+        "En branch"
+      ],
+      "answer": 1,
+      "why": "Funktion, metod eller klass."
+    },
+    {
+      "type": "text",
+      "q": "Vad står AAA för? (tre ord med kommatecken)",
+      "accept": [
+        "arrange, act, assert",
+        "arrange,act,assert"
+      ],
+      "placeholder": "tre ord",
+      "why": "Förbered, kör, kontrollera."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör ett bra unit-test?",
+      "options": [
+        "Beror på andra tester",
+        "Är snabbt, isolerat och ger alltid samma resultat",
+        "Kräver hårdvara",
+        "Ändrar resultat varje körning"
+      ],
+      "answer": 1,
+      "why": "Och det ska vara lätt att se vad som gick fel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är mockning?",
+      "options": [
+        "Att håna kollegor",
+        "Att fejka beroenden som hårdvara eller databaser i testerna",
+        "Att ta bort tester",
+        "En typ av kompilering"
+      ],
+      "answer": 1,
+      "why": "Så att logiken kan testas isolerat."
+    },
+    {
+      "type": "mc",
+      "q": "Varför bryter man ut portar och pinnar i en egen fil?",
+      "options": [
+        "För att spara flash",
+        "Så att logiken kan testas på PC:n utan &lt;avr/io.h&gt;",
+        "Det krävs av MISRA",
+        "För att det blir snabbare"
+      ],
+      "answer": 1,
+      "why": "Hårdvaruabstraktion gör koden testbar."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är testramverk för C och C++?",
+      "options": [
+        "GoogleTest",
+        "CppUTest",
+        "cppcheck",
+        "make"
+      ],
+      "answers": [
+        0,
+        1
+      ],
+      "why": "cppcheck gör statisk analys, inte tester."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ett regressionstest?",
+      "options": [
+        "Ett test som körs en gång",
+        "Att kontrollera att det som fungerade fortfarande fungerar efter ändringar",
+        "Ett prestandatest",
+        "Ett användartest"
+      ],
+      "answer": 1,
+      "why": "Automatiserade unit-tester är perfekta för det."
+    }
+  ]
+}

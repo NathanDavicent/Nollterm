@@ -1,0 +1,299 @@
+{
+  "id": "code-review",
+  "title": "Code reviews",
+  "category": "Kodkvalitet",
+  "minutes": 13,
+  "lead": "Hur och varför man granskar varandras kod, vad man letar efter i inbyggd kod, och hur man ger och tar emot feedback. Med kursens två granskningsövningar.",
+  "sources": [
+    "Code Reviews",
+    "övning1_main.c och facit1_main.c",
+    "övning2_main.c, facit2_main.c och facit2_2_main.c"
+  ],
+  "goals": [
+    "Förklara vad en code review är och varför den görs",
+    "Beskriva processen kring en pull request",
+    "Granska kod för funktion, stil, läsbarhet, prestanda, säkerhet och testbarhet",
+    "Hitta inbyggda problem som buffer overflow, race conditions och magic numbers",
+    "Ge konstruktiv feedback"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad och varför?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>code review</strong> är en systematisk granskning av kod, gjord av andra utvecklare. Den kan vara formell (inspektion), informell (peer review) eller automatiserad (linting, CI). Man hittar buggar tidigt, förbättrar kodkvaliteten, delar kunskap och höjer teamets standard."
+    },
+    {
+      "type": "p",
+      "html": "I inbyggda system är det extra viktigt: koden är hårdvarunära (och måste mockas för unit-tester), prestanda- och minneskritisk, säkerhetskritisk (både security och safety), och realtidsbeteende är svårt att testa ordentligt med unit-tester. Tester hittar <em>vad</em> som är fel, reviews <em>varför</em>."
+    },
+    {
+      "type": "h",
+      "text": "Processen"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Skapa ändringen och begär review, oftast med en <strong>pull request</strong> före merge till main",
+        "Granskaren läser och ger feedback",
+        "Ta emot feedbacken och ändra vid behov",
+        "Granskaren godkänner eller begär fler ändringar"
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Små pull requests är lättare att granska, ger snabbare feedback och mindre risk för fel. För stora PR:er är ett av de vanligaste misstagen."
+    },
+    {
+      "type": "h",
+      "text": "Checklista"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fungerar koden?",
+        "Följer den projektets kodstil och konventioner?",
+        "Är den läsbar, med bra namn och kommentarer där det behövs?",
+        "Är prestandan och minnesanvändningen ok?",
+        "Finns uppenbara säkerhetsbrister?",
+        "Finns tester?"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Inbyggt specifikt: avbrott, timing i realtidssystem, hårdvaruregister, portar och pinnar, och concurrency (flera saker samtidigt via trådar och avbrott). Vanliga anti-patterns: copy-paste-kod, magic numbers och spaghettikod."
+    },
+    {
+      "type": "h",
+      "text": "Exempel"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "char buf[10];\ngets(buf);                          // ingen gränskontroll: buffer overflow\nfgets(buf, sizeof(buf), stdin);     // bättre: storleken skickas med\n",
+      "caption": "1. buffer overflow (gets togs bort i C11)"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int flag;                           // saknar volatile\nvoid ISR() { flag = 1; }\nwhile (!flag) {}                    // kan optimeras till en oändlig loop\n",
+      "caption": "2. race condition"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "if (temp > 37.5) { ... }            // magic number\n\n#define MAX_TEMP 37.5\nif (temp > MAX_TEMP) { ... }        // tydligt, och ändras på ett ställe\n",
+      "caption": "3. magic number"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int calc(int a, int b) { return a*b + 42/b; }       // otydligt namn, division med 0\n\nint calculate_scaled(int a, int b) {\n    if (b == 0) return -1;                         // felhantering\n    return (int)(a*b + 42/b);\n}\n",
+      "caption": "4. dålig funktion"
+    },
+    {
+      "type": "h",
+      "text": "Feedback"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Bra",
+        "Dålig"
+      ],
+      "rows": [
+        [
+          "\"Den här funktionen kan förenklas genom att …\" (rakt och tydligt)",
+          "\"Det här är fel.\" (förtydligar inget)"
+        ],
+        [
+          "\"Jag förstår inte varför det här kodstycket finns. Kan du förklara i en kommentar?\" (utgår från dig själv)",
+          "\"Det är inte tydligt varför koden är skriven så här. Skriv mer kommentarer.\""
+        ],
+        [
+          "Fokusera på koden och ge exempel",
+          "\"Du har tänkt helt fel här.\" (personangrepp)"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "När du tar emot feedback: var öppen, ställ frågor och se det som lärande. Bygg en kultur där alla deltar. Parprogrammering ger direkt feedback, code review asynkron, och de passar till olika saker."
+    },
+    {
+      "type": "h",
+      "text": "Övning 1: temperatur och LED"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int temperature;\nint led_state;\nvoid init() { temperature = 0; led_state = 0; }\nint read_temperature() { int temp = rand() % 50; return temp; }\nvoid update_led() { if (temperature > MAX_TEMP) led_state = 1; else led_state = 0; }\nvoid print_status() { printf(\"Temp: %d, LED: %d\\n\", temperature, led_state); }\nint main() {\n    init();\n    while (1) { temperature = read_temperature(); update_led(); print_status(); }\n}\n",
+      "caption": "övning1_main.c (förkortad)"
+    },
+    {
+      "type": "exercise",
+      "title": "Granska övning 1",
+      "html": "<p>Hitta så många problem du kan innan du tittar på förslaget.</p><p><strong>Förslag:</strong> globala variabler utan ägare; tomma parameterlistor (<code>init(void)</code>, MISRA 8.2); ingen validering av sensorvärdet; <code>int</code> där <code>int16_t</code> och <code>bool</code> säger mer; ingen fördröjning, så loopen spammar utskrifter; printf direkt i stället för en UART-funktion; logik och hårdvara blandat. Facit samlar tillståndet i en <code>system_state_t</code>, lägger hårdvaran bakom funktioner som <code>sensor_read_temperature()</code> och <code>led_set()</code>, validerar −40 till 125 grader och använder <code>snprintf</code> med buffertstorlek. Granska facit också: det anropar <code>snprintf</code> utan <code>#include &lt;stdio.h&gt;</code>.</p>"
+    },
+    {
+      "type": "h",
+      "text": "Övning 2: knapp och blinkhastighet"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "int delay = SLOW_DELAY;\nint button_pressed = 0;\nvoid BUTTON_ISR(void) { button_pressed = 1; }\nint main(void) {\n    while (1) {\n        if (button_pressed) {\n            delay = (delay == SLOW_DELAY) ? FAST_DELAY : SLOW_DELAY;\n            button_pressed = 0;\n        }\n        led_toggle();\n        delay_ms(delay);\n    }\n}\n",
+      "caption": "övning2_main.c (förkortad)"
+    },
+    {
+      "type": "exercise",
+      "title": "Granska övning 2",
+      "html": "<p><strong>Förslag:</strong> <code>button_pressed</code> delas med en ISR men är inte <code>volatile</code>; flaggan nollställs utan skydd mot ett nytt avbrott mitt i; <code>delay_ms</code> blockerar så att knappen kan missas; ingen debouncing. Facit 2 gör flaggan <code>volatile</code> och nollställer den med avbrotten avstängda. Facit 2_2 blinkar icke-blockerande med en <code>system_tick</code> från en timer och debouncar i ISR:en. Diskutera: där är <code>button_event</code> inte längre volatile, och en 32-bitars <code>system_tick</code> läses inte atomiskt på en 8-bitars MCU.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "multi",
+      "q": "Varför gör man code reviews?",
+      "options": [
+        "Hitta buggar tidigt",
+        "Förbättra kodkvaliteten",
+        "Dela kunskap",
+        "Slippa skriva tester"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Reviews kompletterar tester, de ersätter dem inte."
+    },
+    {
+      "type": "mc",
+      "q": "När görs code reviews oftast?",
+      "options": [
+        "Efter release",
+        "Vid pull requests, före merge till main",
+        "Bara en gång per år",
+        "Aldrig i inbyggda system"
+      ],
+      "answer": 1,
+      "why": "Kontinuerligt i utvecklingsflödet."
+    },
+    {
+      "type": "mc",
+      "q": "Varför är små pull requests bättre?",
+      "options": [
+        "De är lättare att granska och ger snabbare feedback",
+        "De har färre commits",
+        "GitHub kräver det",
+        "De behöver inga tester"
+      ],
+      "answer": 0,
+      "why": "Stora PR:er är ett vanligt misstag."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är problemet med <code>gets(buf)</code>?",
+      "options": [
+        "Den är långsam",
+        "Ingen gränskontroll, risk för buffer overflow",
+        "Den finns inte i C",
+        "Den läser bara siffror"
+      ],
+      "answer": 1,
+      "why": "Använd fgets med storleken."
+    },
+    {
+      "type": "mc",
+      "q": "Vad saknas på en flagga som sätts i en ISR och läses i huvudloopen?",
+      "options": [
+        "static",
+        "volatile",
+        "const",
+        "extern"
+      ],
+      "answer": 1,
+      "why": "Annars kan kompilatorn optimera bort läsningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken feedback är bäst?",
+      "options": [
+        "\"Det här är fel.\"",
+        "\"Jag förstår inte varför det här kodstycket finns. Kan du förklara i en kommentar?\"",
+        "\"Du har tänkt helt fel.\"",
+        "\"Skriv om allt.\""
+      ],
+      "answer": 1,
+      "why": "Utgå från dig själv och var konkret."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är vanliga anti-patterns?",
+      "options": [
+        "Copy-paste-kod",
+        "Magic numbers",
+        "Spaghettikod",
+        "Namngivna konstanter"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Namngivna konstanter är lösningen på magic numbers."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fel i <code>int calc(int a, int b) { return a*b + 42/b; }</code>?",
+      "options": [
+        "Inget",
+        "Otydligt namn och division med noll om b är 0",
+        "Den returnerar fel typ",
+        "Den saknar static"
+      ],
+      "answer": 1,
+      "why": "Ge den ett beskrivande namn och hantera b == 0."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör facit till övning 2 för att hantera flaggan säkert?",
+      "options": [
+        "Tar bort ISR:en",
+        "Gör den volatile och nollställer den med avbrotten avstängda",
+        "Använder malloc",
+        "Lägger den i EEPROM"
+      ],
+      "answer": 1,
+      "why": "<code>__disable_irq()</code> och <code>__enable_irq()</code> runt nollställningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fel med facit 1:s loggfunktion?",
+      "options": [
+        "Inget",
+        "Den använder snprintf utan att inkludera &lt;stdio.h&gt;",
+        "Bufferten är för stor",
+        "Den saknar return"
+      ],
+      "answer": 1,
+      "why": "Även facit kan granskas."
+    },
+    {
+      "type": "mc",
+      "q": "Vad hittar tester respektive reviews enligt föreläsningen?",
+      "options": [
+        "Tester hittar vad, reviews varför",
+        "Tester hittar varför, reviews vad",
+        "Båda hittar samma sak",
+        "Reviews hittar inga buggar"
+      ],
+      "answer": 0,
+      "why": "De kompletterar varandra."
+    }
+  ]
+}

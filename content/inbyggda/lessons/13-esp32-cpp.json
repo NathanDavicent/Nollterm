@@ -1,0 +1,271 @@
+{
+  "id": "esp32-cpp",
+  "title": "ESP32, C++ och IoT-ekosystemet",
+  "category": "Projekt",
+  "minutes": 13,
+  "date": "2026-03-20",
+  "lead": "Från AVR till ESP32 med ESP-IDF, vad man kan och inte bör använda av C++ i inbyggda system, snake-projektet, och hur IoT-systemen runt enheterna är uppbyggda.",
+  "sources": [
+    "Genomgång och laboration 2026-03-20 (ESP32 och C++)",
+    "Dagens projekt 2026-03-24 (Snake)",
+    "Kurssammanfattning (IoT-ekosystemet)"
+  ],
+  "goals": [
+    "Skapa och bygga ett ESP-IDF-projekt från ett exempel",
+    "Styra en GPIO på ESP32 med ESP-IDF",
+    "Förklara för- och nackdelar med C++ i inbyggda system",
+    "Beskriva lagren i ett IoT-system",
+    "Känna till trender och risker inom IoT"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "ESP32 och ESP-IDF"
+    },
+    {
+      "type": "p",
+      "html": "<strong>ESP32</strong> från Espressif är en 32-bitars MCU med Wi-Fi och Bluetooth inbyggt, mycket kraftfullare än ATmega328P. <strong>ESP-IDF</strong> är Espressifs officiella ramverk. Det bygger på FreeRTOS, så program består av tasks i stället för en enda while-loop."
+    },
+    {
+      "type": "exercise",
+      "title": "Skapa ett ESP-IDF-projekt",
+      "html": "<ol><li>Installera ESP-IDF-tillägget i VS Code och klicka på det.</li><li>Advanced → New Project Wizard och välj ESP-IDF version 6.0.0 (ibland måste man också välja kompilator, \"Select Kit to use\").</li><li>ESP-IDF Examples → get started → blink → Create project using template blink.</li><li>Ändra Project Name och Enter Project directory.</li><li>Klicka Build i menyn längst ner. Filen hamnar i <code>build/&lt;projektnamn&gt;.bin</code>.</li><li>Ladda upp .bin-filen i Wokwi-projektet och kör.</li></ol>"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include \"freertos/FreeRTOS.h\"\n#include \"freertos/task.h\"\n#include \"driver/gpio.h\"\n\n#define LED_GPIO GPIO_NUM_2\n\nvoid app_main(void) {\n    gpio_reset_pin(LED_GPIO);\n    gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT);\n    uint8_t level = 0;\n    while (1) {\n        gpio_set_level(LED_GPIO, level);\n        level = !level;\n        vTaskDelay(pdMS_TO_TICKS(500));   // låter andra tasks köra under tiden\n    }\n}\n",
+      "caption": "blink med ESP-IDF"
+    },
+    {
+      "type": "h",
+      "text": "C++ i inbyggda system"
+    },
+    {
+      "type": "p",
+      "html": "C++ används ofta för <strong>inkapsling</strong>: att lägga funktioner och variabler tillsammans i en klass, där man i C hade haft en struct och lösa funktioner."
+    },
+    {
+      "type": "code",
+      "lang": "cpp",
+      "code": "class Led {\npublic:\n    explicit Led(gpio_num_t pin) : pin_(pin) {\n        gpio_reset_pin(pin_);\n        gpio_set_direction(pin_, GPIO_MODE_OUTPUT);\n    }\n    void on()  { set(true); }\n    void off() { set(false); }\n    void toggle() { set(!on_); }\nprivate:\n    void set(bool on) { on_ = on; gpio_set_level(pin_, on ? 1 : 0); }\n    gpio_num_t pin_;\n    bool on_ = false;\n};\n",
+      "caption": "en LED-klass"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Bra i inbyggd C++",
+        "Undvik eller var försiktig"
+      ],
+      "rows": [
+        [
+          "Klasser och inkapsling, RAII",
+          "Exceptions (stor kod, oförutsägbar tid)"
+        ],
+        [
+          "constexpr och enum class",
+          "RTTI och dynamic_cast"
+        ],
+        [
+          "Templates med måtta",
+          "std::vector, std::string och annat som allokerar på heapen i drift"
+        ],
+        [
+          "Referenser i stället för pekare",
+          "iostream (stor kod och mycket minne)"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "I stället för standardbibliotekets containrar finns bibliotek med fasta storlekar, som <strong>ETL</strong> (Embedded Template Library), uClibc-ng och STL-anpassningar för AVR."
+    },
+    {
+      "type": "exercise",
+      "title": "ESP32-labbar",
+      "html": "<p>1. Gör trafikljuset från lektion 2 på ESP32 med ESP-IDF: röd 5 s, gul 2 s, grön 5 s, gul 2 s. 2. Utgå från <code>http_requests_controlling_led</code>, där en webbserver på ESP32 tar emot <code>/toggle</code>. Lägg till egna requests, till exempel för flera LED:er.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Snake på ESP32",
+      "html": "<p>Bygg snake i Wokwi med en ESP32, en LED-matris (ändra \"segments\" till 2 i diagram.json) och en analog joystick. Biblioteken finns i <code>esp32_cpp_snake</code>. Tänk på: ormen som en ringbuffert med fast storlek i stället för en vector, en tillståndsmaskin för spelet (start, spelar, game over) och icke-blockerande timing.</p>"
+    },
+    {
+      "type": "h",
+      "text": "IoT-ekosystemet"
+    },
+    {
+      "type": "p",
+      "html": "Man brukar prata om 4–6 lager i ett IoT-systems arkitektur:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Enheter och sensorer:</strong> edge-enheter med sensorer, ställdon och lokal bearbetning",
+        "<strong>Nätverk och protokoll:</strong> Wi-Fi, BLE, LoRaWAN, NB-IoT, 5G och MQTT/CoAP för telemetri",
+        "<strong>Edge och gateway:</strong> förbearbetning, filtrering och säkerhet nära enheterna, för lägre latens och bandbredd",
+        "<strong>Moln och plattformar:</strong> lagring, analys, enhetshantering och API:er",
+        "<strong>Dataanalys och AI:</strong> prediktivt underhåll och avvikelsedetektion",
+        "<strong>Applikationer och tjänster:</strong> gränssnitt, integrationer och livscykelhantering"
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Trender",
+        "Utmaningar"
+      ],
+      "rows": [
+        [
+          "AIoT: AI direkt i enheten",
+          "Säkerhet: firmware, autentisering, zero trust och hårdvarukryptering"
+        ],
+        [
+          "Edge computing som norm",
+          "Skala och drift: miljarder enheter och OTA-uppdateringar"
+        ],
+        [
+          "5G: hög bandbredd och låg latens",
+          "Dataintegritet och regelverk"
+        ],
+        [
+          "Digital twins: virtuella kopior av hårdvaran",
+          "Kostnad mot latens: edge eller moln?"
+        ],
+        [
+          "Hållbar IoT: lågeffektschip och solcellsdrivna noder",
+          "Energi, batteritid och miljöpåverkan"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Praktiska råd: kombinera edge och moln, tänk på säkerheten från början (enhetsidentitet, signerad firmware), använd öppna protokoll och versionerade API:er, mät energin per enhet, och börja med en MVP innan allt rullas ut."
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad har ESP32 som ATmega328P saknar?",
+      "options": [
+        "GPIO",
+        "Inbyggt Wi-Fi och Bluetooth",
+        "En ADC",
+        "Flashminne"
+      ],
+      "answer": 1,
+      "why": "Plus mycket mer RAM och en 32-bitars processor."
+    },
+    {
+      "type": "mc",
+      "q": "Vad bygger ESP-IDF på?",
+      "options": [
+        "Linux",
+        "FreeRTOS",
+        "Arduino",
+        "Windows"
+      ],
+      "answer": 1,
+      "why": "Program består av tasks."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter startfunktionen i ett ESP-IDF-program?",
+      "accept": [
+        "app_main",
+        "app_main()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>void app_main(void)</code> i stället för main."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>vTaskDelay(pdMS_TO_TICKS(500))</code>?",
+      "options": [
+        "Busy-waitar i 500 ms",
+        "Pausar tasken i 500 ms och låter andra tasks köra",
+        "Startar om",
+        "Stänger av avbrott"
+      ],
+      "answer": 1,
+      "why": "Skillnaden mot _delay_ms är att processorn kan göra annat."
+    },
+    {
+      "type": "mc",
+      "q": "Vad används C++ ofta till i inbyggda system?",
+      "options": [
+        "Exceptions",
+        "Inkapsling i klasser",
+        "Dynamisk allokering",
+        "iostream"
+      ],
+      "answer": 1,
+      "why": "Att samla data och funktioner som hör ihop."
+    },
+    {
+      "type": "multi",
+      "q": "Vad bör man undvika i inbyggd C++?",
+      "options": [
+        "Exceptions",
+        "Heap-allokerande containrar i drift",
+        "iostream",
+        "enum class"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "enum class är bra: typsäker och kostar inget."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ETL?",
+      "options": [
+        "Ett protokoll",
+        "Embedded Template Library med containrar av fast storlek",
+        "En MCU",
+        "En kompilator"
+      ],
+      "answer": 1,
+      "why": "Ett alternativ till std::vector i inbyggd kod."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör ett edge/gateway-lager i IoT?",
+      "options": [
+        "Lagrar allt för alltid",
+        "Förbearbetar och filtrerar nära enheterna för lägre latens och bandbredd",
+        "Ersätter sensorerna",
+        "Kör användargränssnittet"
+      ],
+      "answer": 1,
+      "why": "Mindre data behöver skickas till molnet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en digital twin?",
+      "options": [
+        "En kopia av koden",
+        "En virtuell kopia av hårdvaran för simulering och prediktion",
+        "Två ESP32 som pratar",
+        "En backup"
+      ],
+      "answer": 1,
+      "why": "En av trenderna inom IoT."
+    },
+    {
+      "type": "mc",
+      "q": "Varför passar en ringbuffert för ormen i snake?",
+      "options": [
+        "Den är rekursiv",
+        "Fast storlek utan heap-allokering, och billigt att lägga till och ta bort",
+        "Den sorterar automatiskt",
+        "Den kräver malloc"
+      ],
+      "answer": 1,
+      "why": "Samma tänk som i övriga kursen."
+    }
+  ]
+}

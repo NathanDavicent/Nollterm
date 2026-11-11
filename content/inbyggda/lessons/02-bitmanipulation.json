@@ -1,0 +1,299 @@
+{
+  "id": "bitmanipulation",
+  "title": "Talsystem och bitmanipulering",
+  "category": "C för hårdvara",
+  "minutes": 14,
+  "date": "2026-02-09",
+  "lead": "Binärt och hex, hur stora heltalstyperna är, och hur &, |, ^, ~ och skift används för att tända, släcka, flippa och läsa enskilda bitar.",
+  "sources": [
+    "Bitmanipulation Repetition",
+    "notes.txt",
+    "Dagens laboration 2026-02-09 (trafikljus)"
+  ],
+  "goals": [
+    "Räkna om mellan decimalt, binärt och hexadecimalt",
+    "Förklara hur många värden en byte, short och int rymmer",
+    "Använda &amp;, |, ^, ~, &lt;&lt; och &gt;&gt; för att sätta, släcka, flippa och läsa bitar",
+    "Skriva makron som BIT_SET och BIT_CLEAR och förstå vad de expanderar till"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Talsystem"
+    },
+    {
+      "type": "p",
+      "html": "Vi räknar decimalt (bas 10), men processorer använder binärt (bas 2), eftersom en transistor pålitligt bara kan hålla två lägen: på och av. Hexadecimalt (bas 16, 0–9 och A–F) är ett kompakt sätt att skriva binärt, en hexsiffra per fyra bitar. Oktalt (bas 8) finns också men används sällan."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "476  decimalt = 4·100 + 7·10 + 6·1\n1001 binärt   = 1·8 + 0·4 + 0·2 + 1·1 = 9\nA2F  hex      = 10·256 + 2·16 + 15·1  = 2607\n",
+      "caption": "positionssystem"
+    },
+    {
+      "type": "h",
+      "text": "Bitar, bytes och heltalstyper"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>bit</strong> (binary digit) är 0 eller 1. Åtta bitar är en <strong>byte</strong>, med 256 värden: 0–255. Det räcker till alla tecken på engelska, och en <code>char</code> är en byte."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Typ",
+        "Storlek",
+        "Värden"
+      ],
+      "rows": [
+        [
+          "uint8_t / unsigned char",
+          "1 byte",
+          "0 till 255"
+        ],
+        [
+          "int8_t",
+          "1 byte",
+          "−128 till 127"
+        ],
+        [
+          "uint16_t",
+          "2 bytes",
+          "0 till 65 535"
+        ],
+        [
+          "int16_t / short",
+          "2 bytes",
+          "−32 768 till 32 767"
+        ],
+        [
+          "int32_t",
+          "4 bytes",
+          "−2 147 483 648 till 2 147 483 647"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<code>int</code> är 4 bytes på en PC, men bara <strong>2 bytes på AVR</strong>. Därför använder man typerna i <code>&lt;stdint.h&gt;</code> (<code>uint8_t</code>, <code>int16_t</code> och så vidare) i inbyggd kod: då vet man exakt hur stor variabeln är."
+    },
+    {
+      "type": "h",
+      "text": "Varför bitar?"
+    },
+    {
+      "type": "p",
+      "html": "Att ha en <code>int</code> per LED slösar minne. En enda byte kan styra 8 LED:er, en bit var. När en variabel används som en samling flaggor kallas det <strong>bit field</strong> eller bit vector, och när man jämför ett register mot en samling bitar kallas den <strong>bit mask</strong>. Arduinos bibliotek är enkla men långsamma (upp till 25 gånger långsammare än bitmanipulering) och har licenser som ofta inte tillåter kommersiellt bruk. Utan Arduinos bibliotek är allt bitmanipulering."
+    },
+    {
+      "type": "h",
+      "text": "Bitoperatorerna"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "          a = 1100 1100  (204)\n          b = 1010 1010  (170)\na & b  =      1000 1000  (136)   AND: släck en bit (AND med 0)\na | b  =      1110 1110  (238)   OR:  tänd en bit (OR med 1)\na ^ b  =      0110 0110  (102)   XOR: flippa en bit (^ med 1)\na >> 1 =      0110 0110  (102)   alla bitar ett steg åt höger\na << 2 =      0011 0000   (48)   två steg åt vänster, de översta försvinner i 8 bitar\n~a     =      0011 0011   (51)   NOT: vänd alla bitar\n",
+      "caption": "AND, OR, XOR, skift och NOT"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<code>||</code> och <code>&amp;&amp;</code> är <em>logiska</em> operatorer som tittar på hela värdet (sant eller falskt). <code>|</code> och <code>&amp;</code> arbetar bit för bit. Att blanda ihop dem är en klassisk bugg."
+    },
+    {
+      "type": "h",
+      "text": "Sätta, släcka, flippa och läsa en bit"
+    },
+    {
+      "type": "p",
+      "html": "<code>1U &lt;&lt; n</code> ger en mask med en enda etta på plats n: <code>1U &lt;&lt; 3</code> är <code>0b00001000</code>. Med masken kan vi ändra just den biten och lämna de andra (x) orörda."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "PORTD |=  (1U << 7);     // sätt bit 7:    xxxxxxxx | 10000000 = 1xxxxxxx\nPORTB &= ~(1U << 3);     // släck bit 3:   xxxxxxxx & 11110111 = xxxx0xxx\nPORTB ^=  (1U << 5);     // flippa bit 5\nif (PINB & (1U << 0)) {  // läs bit 0: skilt från 0 om biten är 1\n    /* ... */\n}\n",
+      "caption": "C"
+    },
+    {
+      "type": "h",
+      "text": "Makron"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#define BIT_SET(a, b)    ((a) |=  (1U << (b)))\n#define BIT_CLEAR(a, b)  ((a) &= ~(1U << (b)))\n#define BIT_FLIP(a, b)   ((a) ^=  (1U << (b)))\n#define BIT_CHECK(a, b)  ((a) &   (1U << (b)))\n\nBIT_CLEAR(PORTB, 3);\n// expanderar till:  PORTB &= ~(1U << 3)\n//                   PORTB &= ~0b00001000\n//                   PORTB &=  0b11110111\n",
+      "caption": "makron"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Inget mellanslag mellan makronamnet och parentesen: <code>#define BIT_SET (a, b) ...</code> definierar ett makro utan parametrar som heter BIT_SET, och då blir allt fel. Sätt parenteser runt parametrarna, så att till exempel <code>BIT_SET(reg, n + 1)</code> blir rätt."
+    },
+    {
+      "type": "exercise",
+      "title": "Bit-labb",
+      "html": "<p>Utgå från blinkexemplet. Flytta LED:en till pin 4, lägg in en <code>printBits</code>-funktion som skriver ut en byte binärt, och prova både med direkta bitoperationer och med BIT_SET-makron. Vilket föredrar du?</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Trafikljus",
+      "html": "<p>Koppla tre LED:er (röd, gul, grön) i Wokwi och skriv kod utan Arduinos bibliotek: röd 5 s, gul 2 s, grön 5 s, gul 2 s, och om igen. Kan det lösas på något annat sätt?</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "text",
+      "q": "Vad är 0b1001 i decimalt?",
+      "accept": [
+        "9"
+      ],
+      "placeholder": "tal",
+      "why": "8 + 1 = 9."
+    },
+    {
+      "type": "text",
+      "q": "Vad är 0xA2F i decimalt?",
+      "accept": [
+        "2607"
+      ],
+      "placeholder": "tal",
+      "why": "10·256 + 2·16 + 15 = 2607."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många värden ryms i en byte?",
+      "options": [
+        "8",
+        "128",
+        "255",
+        "256"
+      ],
+      "answer": 3,
+      "why": "0 till 255, alltså 256 olika värden."
+    },
+    {
+      "type": "mc",
+      "q": "Hur stor är en <code>int</code> på AVR (ATmega328P)?",
+      "options": [
+        "1 byte",
+        "2 bytes",
+        "4 bytes",
+        "8 bytes"
+      ],
+      "answer": 1,
+      "why": "Därför använder man uint8_t, int16_t och så vidare från stdint.h."
+    },
+    {
+      "type": "text",
+      "q": "Vad blir 204 &amp; 170?",
+      "accept": [
+        "136"
+      ],
+      "placeholder": "tal",
+      "why": "1100 1100 AND 1010 1010 = 1000 1000 = 136."
+    },
+    {
+      "type": "text",
+      "q": "Vad blir 204 | 170?",
+      "accept": [
+        "238"
+      ],
+      "placeholder": "tal",
+      "why": "1110 1110 = 238."
+    },
+    {
+      "type": "text",
+      "q": "Vad blir 204 ^ 170?",
+      "accept": [
+        "102"
+      ],
+      "placeholder": "tal",
+      "why": "0110 0110 = 102."
+    },
+    {
+      "type": "text",
+      "q": "Vad blir (uint8_t)(204 &lt;&lt; 2)?",
+      "accept": [
+        "48"
+      ],
+      "placeholder": "tal",
+      "why": "1100 1100 skiftat två steg blir 0011 0000 i 8 bitar, alltså 48."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken rad släcker bit 3 i PORTB utan att ändra de andra?",
+      "options": [
+        "PORTB = 0;",
+        "PORTB &amp;= ~(1 &lt;&lt; 3);",
+        "PORTB |= (1 &lt;&lt; 3);",
+        "PORTB ^= 3;"
+      ],
+      "answer": 1,
+      "why": "AND med en mask som har 0 bara på plats 3."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken operator flippar en bit?",
+      "options": [
+        "&amp;",
+        "|",
+        "^",
+        "~"
+      ],
+      "answer": 2,
+      "why": "XOR med 1 vänder biten."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan <code>a || b</code> och <code>a | b</code>?",
+      "options": [
+        "Ingen",
+        "|| är logiskt på hela värdet, | arbetar bit för bit",
+        "| är snabbare",
+        "|| finns bara i C++"
+      ],
+      "answer": 1,
+      "why": "Blanda inte ihop dem."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fel med <code>#define BIT_SET (a, b) (a |= (1 &lt;&lt; b))</code>?",
+      "options": [
+        "Inget",
+        "Mellanslaget gör att makrot inte får några parametrar",
+        "Det måste heta SET_BIT",
+        "Makron kan inte ha parametrar"
+      ],
+      "answer": 1,
+      "why": "Ingen mellanrum mellan namnet och parentesen."
+    },
+    {
+      "type": "text",
+      "q": "Hur skriver man en mask med en etta på bit 7 med skift?",
+      "accept": [
+        "1<<7",
+        "1u<<7",
+        "(1<<7)",
+        "(1u<<7)"
+      ],
+      "placeholder": "uttryck",
+      "why": "<code>1U &lt;&lt; 7</code> = 0b10000000."
+    },
+    {
+      "type": "code",
+      "q": "Läs ett startvärde (0–255) för ett 8-bitars register och sedan kommandon: <code>set n</code>, <code>clear n</code> och <code>toggle n</code> (skriv registret binärt efteråt, som <code>set 3: 00001000</code>), och <code>check n</code> (skriv <code>check 3: 1</code> eller <code>0</code>).",
+      "task": "02-bitmanipulation-1",
+      "why": "Masken 1 &lt;&lt; n med |=, &amp;= ~ och ^=. I Python: maska med &amp; 0xFF efter ~.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs två bytes a och b. Skriv ut a &amp; b, a | b, a ^ b, ~a, a &lt;&lt; 2 och a &gt;&gt; 1 som 8-bitars värden, binärt och decimalt, som <code>a &amp; b = 10001000 (136)</code>.",
+      "task": "02-bitmanipulation-2",
+      "why": "Allt ska rymmas i 8 bitar: casta till uint8_t i C och C++, maska med &amp; 0xFF i Python.",
+      "web": true
+    }
+  ]
+}

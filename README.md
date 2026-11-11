@@ -27,6 +27,7 @@ Finns i två versioner som läser samma kursfiler i `content/`:
 | Objektorienterad programmering och design | 10 | 104 | 15, i C++ och Python |
 | Digitalteknik och elektronik | 9 | 111 | 10, i C, C++ och Python |
 | Algoritmer, datastrukturer och design patterns | 10 | 129 | 12, i C, C++ och Python |
+| Programmering för inbyggda system | 13 | 144 | 10, i C, C++ och Python |
 
 ## Kom igång första gången
 

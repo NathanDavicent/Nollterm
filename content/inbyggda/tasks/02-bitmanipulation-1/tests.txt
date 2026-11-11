@@ -1,0 +1,46 @@
+--- in
+0
+7
+set 7
+set 3
+check 3
+clear 3
+check 3
+toggle 0
+toggle 0
+--- out
+set 7: 10000000
+set 3: 10001000
+check 3: 1
+clear 3: 10000000
+check 3: 0
+toggle 0: 10000001
+toggle 0: 10000000
+--- in
+255
+5
+clear 0
+clear 7
+toggle 4
+check 4
+check 5
+--- out
+clear 0: 11111110
+clear 7: 01111110
+toggle 4: 01101110
+check 4: 0
+check 5: 1
+--- in
+170
+5
+toggle 1
+set 0
+clear 5
+check 7
+check 6
+--- out
+toggle 1: 10101000
+set 0: 10101001
+clear 5: 10001001
+check 7: 1
+check 6: 0

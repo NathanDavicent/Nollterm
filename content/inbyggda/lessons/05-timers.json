@@ -1,0 +1,253 @@
+{
+  "id": "timers",
+  "title": "Timers och icke-blockerande kod",
+  "category": "Tid och händelser",
+  "minutes": 13,
+  "date": "2026-02-19",
+  "lead": "Varför _delay_ms inte räcker, hur en hårdvarutimer räknar, vad prescalern gör, och hur millis gör att programmet kan göra flera saker samtidigt.",
+  "sources": [
+    "Timers",
+    "Dagens genomgång 2026-02-19 (non-blocking och klocka)"
+  ],
+  "goals": [
+    "Förklara vad timers används till",
+    "Förklara TCNTn, TOVn, TCCRn och OCRn",
+    "Räkna ut ticktid och overflowtid med prescaler",
+    "Skriva icke-blockerande kod med millis i stället för delay",
+    "Skilja på polling och avbrott (interrupts)"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad ska man ha timers till?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Exakt timing:</strong> till exempel att sampla en signal precis var 10:e mikrosekund. <code>_delay_ms</code> och <code>_delay_us</code> är inte svaret, eftersom de låser processorn och bara blir ungefärliga.",
+        "<strong>Räknare:</strong> koppla en timer till en pinne så räknar den hur många gånger signalen går 0 → 1.",
+        "<strong>PWM</strong> kräver exakt timing."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "En timer kan användas på två sätt: <strong>händelsestyrt</strong>, där ett avbrott (interrupt) triggas när timern når ett värde, eller med <strong>polling</strong>, där programmet hela tiden kollar timern."
+    },
+    {
+      "type": "h",
+      "text": "Timers i ATmega328P"
+    },
+    {
+      "type": "p",
+      "html": "ATmega328P har tre timers: <strong>Timer0</strong> (8 bitar), <strong>Timer1</strong> (16 bitar) och <strong>Timer2</strong> (8 bitar)."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Register",
+        "Betyder",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "TCNTn",
+          "Timer/Counter Register",
+          "Själva räknaren. Börjar på 0 och ökar med varje (prescalat) klockpuls."
+        ],
+        [
+          "TOVn",
+          "Timer Overflow Flag",
+          "Sätts när räknaren slår om från max till 0."
+        ],
+        [
+          "TCCRn",
+          "Timer Counter Control Register",
+          "Ställer in läge och prescaler."
+        ],
+        [
+          "OCRn",
+          "Output Compare Register",
+          "Jämförs med TCNTn. När de är lika sätts flaggan OCFn."
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Prescaler"
+    },
+    {
+      "type": "p",
+      "html": "Klockan är 16 MHz, så varje tick är 62,5 ns. En 8-bitars timer slår då över efter bara 16 µs. En <strong>prescaler</strong> låter timern räkna bara var n:te klockpuls (1, 8, 64, 256 eller 1024 för Timer0 och Timer1)."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Klocka 16 MHz, prescaler 1024:\n  ticks per sekund = 16 000 000 / 1024 = 15 625\n  en tick          = 1024 / 16 000 000 s = 64 µs\n  overflow (256)   = 256 · 64 µs = 16,384 ms\n  1 sekund         = 61 overflows + 9 ticks   (61 · 256 + 9 = 15 625)\n",
+      "caption": "räkneexempel"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "TCCR0B |= (1 << CS02) | (1 << CS00);   // Timer0 med prescaler 1024\n",
+      "caption": "C"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Även med största prescalern tar det bara ~16 ms att fylla 8 bitar, alltså för kort för att blinka en LED direkt. Men det passar bra till PWM, sampling och som bas för en millis-räknare."
+    },
+    {
+      "type": "h",
+      "text": "millis och icke-blockerande kod"
+    },
+    {
+      "type": "p",
+      "html": "<code>_delay_ms(1000)</code> låser processorn i en sekund. Under tiden kan den inte läsa knappar eller göra något annat. Lösningen är en <strong>millis</strong>-räknare: ett timeravbrott ökar en variabel varje millisekund, och huvudloopen kollar hur lång tid som gått."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "volatile uint32_t ms_ticks = 0;\n\nISR(TIMER0_COMPA_vect) {        // anropas varje millisekund (CTC-läge)\n    ms_ticks++;\n}\n\nuint32_t millis(void) {\n    uint32_t t;\n    cli();                      // 32 bitar läses i flera steg på en 8-bitars MCU,\n    t = ms_ticks;               // så stäng av avbrott så värdet inte ändras mitt i\n    sei();\n    return t;\n}\n\nint main(void) {\n    /* ... ställ in Timer0 och LED ... */\n    uint32_t last = 0;\n    while (1) {\n        checkButtons();                       // körs hela tiden, blockeras aldrig\n        if (millis() - last >= 500) {         // har det gått 500 ms?\n            last += 500;\n            PORTB ^= (1 << PB5);\n        }\n    }\n}\n",
+      "caption": "icke-blockerande blink"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "<code>millis() - last &gt;= 500</code> fungerar även när räknaren slår om efter ~49 dagar, tack vare hur osignerad subtraktion fungerar. Jämför aldrig <code>millis() &gt;= last + 500</code>."
+    },
+    {
+      "type": "exercise",
+      "title": "Två LED:er i olika takt",
+      "html": "<p>Blinka en LED var 300:e ms och en annan var 700:e ms samtidigt, utan delay. Utgå från repot <code>avrnonblockingdelay</code> och titta på hur <code>millis</code> är implementerad i ZakKemble/millis.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Varför är _delay_ms dåligt i en huvudloop?",
+      "options": [
+        "Den är för exakt",
+        "Den låser processorn så att inget annat kan hända",
+        "Den finns inte på AVR",
+        "Den använder för mycket flash"
+      ],
+      "answer": 1,
+      "why": "Använd millis eller timeravbrott."
+    },
+    {
+      "type": "mc",
+      "q": "Vad innehåller TCNT0?",
+      "options": [
+        "Prescalern",
+        "Timerns aktuella räknarvärde",
+        "Overflowflaggan",
+        "Jämförelsevärdet"
+      ],
+      "answer": 1,
+      "why": "Den ökar med varje tick."
+    },
+    {
+      "type": "mc",
+      "q": "När sätts TOV0?",
+      "options": [
+        "Vid varje tick",
+        "När Timer0 slår om från 255 till 0",
+        "När TCNT0 = OCR0A",
+        "Vid reset"
+      ],
+      "answer": 1,
+      "why": "Timer Overflow."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör OCRn?",
+      "options": [
+        "Väljer prescaler",
+        "Jämförs med TCNTn och sätter en flagga när de är lika",
+        "Räknar overflows",
+        "Styr pull-up"
+      ],
+      "answer": 1,
+      "why": "Output Compare Register."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka timers har ATmega328P?",
+      "options": [
+        "Timer0, 8 bitar",
+        "Timer1, 16 bitar",
+        "Timer2, 8 bitar",
+        "Timer3, 32 bitar"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Tre timers."
+    },
+    {
+      "type": "text",
+      "q": "Hur lång är en tick vid 16 MHz och prescaler 1024, i mikrosekunder?",
+      "accept": [
+        "64",
+        "64 us",
+        "64 µs"
+      ],
+      "placeholder": "µs",
+      "why": "1024 / 16 000 000 s = 64 µs."
+    },
+    {
+      "type": "text",
+      "q": "Hur många ticks blir det per sekund vid 16 MHz och prescaler 1024?",
+      "accept": [
+        "15625"
+      ],
+      "placeholder": "antal",
+      "why": "16 000 000 / 1024."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan polling och avbrott?",
+      "options": [
+        "Ingen",
+        "Polling kollar hela tiden, avbrott låter hårdvaran säga till",
+        "Avbrott är långsammare",
+        "Polling kräver en timer"
+      ],
+      "answer": 1,
+      "why": "Avbrott är händelsestyrda."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket villkor är rätt för att vänta 500 ms med millis?",
+      "options": [
+        "millis() == last + 500",
+        "millis() - last &gt;= 500",
+        "millis() &gt; 500",
+        "last - millis() &gt; 500"
+      ],
+      "answer": 1,
+      "why": "Fungerar även när räknaren slår om."
+    },
+    {
+      "type": "mc",
+      "q": "Varför stänger millis() av avbrott när den läser ms_ticks på AVR?",
+      "options": [
+        "För att spara ström",
+        "En 32-bitars läsning sker i flera steg och kan avbrytas mitt i",
+        "Det krävs av C",
+        "För att nollställa räknaren"
+      ],
+      "answer": 1,
+      "why": "Annars kan man få halva gamla och halva nya värdet."
+    },
+    {
+      "type": "code",
+      "q": "Läs klockfrekvens, prescaler och antal bitar. Skriv ut ticktiden i µs och overflowtiden i ms med tre decimaler, och hur många hela overflows plus extra ticks som blir 1 sekund, som i exemplet.",
+      "task": "05-timers-1",
+      "why": "steg = 2^bitar. ticks per sekund = klocka / prescaler. Overflows = ticks / steg och rest = ticks % steg.",
+      "web": true
+    }
+  ]
+}

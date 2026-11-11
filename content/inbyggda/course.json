@@ -1,0 +1,472 @@
+{
+  "id": "inbyggda",
+  "badge": "AVR",
+  "title": "Programmering för inbyggda system",
+  "short": "Inbyggda system",
+  "tag": "IoT · C · AVR",
+  "description": "C direkt mot hårdvaran: bitmanipulering, portregister, timers, avbrott, debouncing, Git, MISRA, testning, code reviews och ESP32.",
+  "headline": "Närmare <em>hårdvaran</em>.",
+  "lessons": [
+    "01-inbyggda-system.json",
+    "02-bitmanipulation.json",
+    "03-portregister.json",
+    "04-hardvara.json",
+    "05-timers.json",
+    "06-knappar-debouncing.json",
+    "07-interrupts.json",
+    "08-git.json",
+    "09-tillstandsmaskin.json",
+    "10-clean-code.json",
+    "11-testning.json",
+    "12-code-review.json",
+    "13-esp32-cpp.json"
+  ],
+  "timeline": [
+    {
+      "date": "Tis 3/2",
+      "title": "Kursintroduktion och grunder i mikrokontroller · blinka en LED",
+      "lessons": [
+        "inbyggda-system"
+      ]
+    },
+    {
+      "date": "Mån 9/2",
+      "title": "Bithantering och pins · trafikljus",
+      "lessons": [
+        "bitmanipulation"
+      ]
+    },
+    {
+      "date": "Tis 10/2",
+      "title": "Utvecklingsprocessen på AVR/ATmega",
+      "lessons": [
+        "portregister"
+      ]
+    },
+    {
+      "date": "Tors 12/2",
+      "title": "Hårdvarudelar: LCD-skärm",
+      "lessons": [
+        "hardvara"
+      ]
+    },
+    {
+      "date": "Tis 17/2",
+      "title": "Hårdvaruhjälpmedel: breadboard och Tinkercad",
+      "lessons": [
+        "hardvara"
+      ]
+    },
+    {
+      "date": "Tors 19/2",
+      "title": "Mer programmering: non-blocking och klocka",
+      "lessons": [
+        "timers"
+      ]
+    },
+    {
+      "date": "Tis 24/2",
+      "title": "Hårdvarudelar: knappar och versionshantering",
+      "lessons": [
+        "knappar-debouncing",
+        "git"
+      ]
+    },
+    {
+      "date": "Tors 26/2",
+      "title": "Sensorer med analog input och mer versionshantering",
+      "lessons": [
+        "git",
+        "hardvara"
+      ]
+    },
+    {
+      "date": "Fre 27/2",
+      "title": "Interrupts och mer versionshantering (distans)",
+      "lessons": [
+        "interrupts",
+        "git"
+      ]
+    },
+    {
+      "date": "Tis 3/3",
+      "title": "LED-matris och grundläggande ellära",
+      "lessons": [
+        "hardvara"
+      ]
+    },
+    {
+      "date": "Tors 5/3",
+      "title": "Servon och att bygga kretsar",
+      "lessons": [
+        "hardvara"
+      ]
+    },
+    {
+      "date": "Tis 10/3",
+      "title": "Projekt i C: bygga kassaskåp",
+      "lessons": [
+        "tillstandsmaskin"
+      ]
+    },
+    {
+      "date": "Mars",
+      "title": "Bra kod, statisk analys och code reviews",
+      "lessons": [
+        "clean-code",
+        "code-review"
+      ]
+    },
+    {
+      "date": "Tors 19/3",
+      "title": "Testning och verifiering av kod · GoogleTest",
+      "lessons": [
+        "testning"
+      ]
+    },
+    {
+      "date": "Fre 20/3",
+      "title": "ESP32 och C++ inom embedded (distans)",
+      "lessons": [
+        "esp32-cpp"
+      ]
+    },
+    {
+      "date": "Tis 24/3",
+      "title": "Projekt i C++: snake på ESP32 med LED-matris",
+      "lessons": [
+        "esp32-cpp"
+      ]
+    },
+    {
+      "date": "Ons 1/4",
+      "title": "Tentamen 09.00–12.00 (teoretiska målen)",
+      "lessons": [
+        "bitmanipulation",
+        "portregister",
+        "timers",
+        "interrupts",
+        "git",
+        "clean-code",
+        "testning",
+        "code-review"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "inlamning",
+      "kind": "Inlämningsuppgift",
+      "title": "Inlämningsuppgift (praktiska momenten)",
+      "intro": "Inlämningsuppgiften examinerar kursplanens praktiska moment. Deadline är torsdag 2 april 23.59. Det finns en mjuk deadline fredag 27 mars 23.59: inte obligatorisk, men ett mål så att de sista dagarna kan gå till tentaplugg. Tidigare inlämning uppmuntras, men rättas först efter den riktiga deadlinen, så du kan ändra fram till dess. Själva uppgiftsbeskrivningen fanns inte i materialet.",
+      "groups": [
+        {
+          "h": "Datum",
+          "items": [
+            "Mjuk deadline: fredag 27 mars 23.59",
+            "Deadline: torsdag 2 april 23.59",
+            "Tentamen: onsdag 1 april 09.00–12.00"
+          ]
+        },
+        {
+          "h": "Kursplanens praktiska mål",
+          "items": [
+            "Skriva, läsa, strukturera, analysera, dokumentera och kommentera källkod i C enligt etablerade standarder och praxis",
+            "Designa, planera och genomföra utveckling av mjukvara för inbyggda system och IoT, med hänsyn till resurser och krav",
+            "Identifiera, felsöka och åtgärda syntaxfel, körfel och logiska fel för robusta system",
+            "Söka, utvärdera och använda information på svenska och engelska"
+          ]
+        },
+        {
+          "h": "Bra att ha med",
+          "items": [
+            "Git med tydliga commits och branches",
+            "Kod som klarar cppcheck och MISRA-kontrollen, eller motiverade undantag",
+            "Unit-tester för logiken, med hårdvaran bakom en abstraktion",
+            "Icke-blockerande kod och korta ISR:er"
+          ]
+        }
+      ],
+      "topics": [
+        "bitmanipulation",
+        "portregister",
+        "timers",
+        "interrupts",
+        "git",
+        "clean-code",
+        "testning"
+      ],
+      "hint": "Använd den mjuka deadlinen. Då blir de sista dagarna före tentan lediga för plugg."
+    },
+    {
+      "id": "labbar",
+      "kind": "Laborationer",
+      "title": "Kursens labbar",
+      "intro": "Labbarna som görs under lektionerna, i ungefär den ordning de kommer.",
+      "groups": [
+        {
+          "h": "AVR och bitar",
+          "items": [
+            "Blinka en LED med avr-gcc, make och Wokwi",
+            "Bit-labb: LED på pin 4, printBits och BIT_SET-makron",
+            "Trafikljus med tre LED:er"
+          ]
+        },
+        {
+          "h": "Hårdvara",
+          "items": [
+            "LCD med HD44780 (avr_lcd)",
+            "Breadboard i Tinkercad: LED, seriekopplade LED:er, knapp och ultraljudssensor",
+            "Button click blink och Many button click"
+          ]
+        },
+        {
+          "h": "Projekt",
+          "items": [
+            "Kassaskåp med tillståndsmaskin",
+            "Statisk analys med cppcheck och MISRA",
+            "GoogleTest-labb",
+            "Trafikljus och HTTP-styrd LED på ESP32",
+            "Snake på ESP32 med LED-matris och joystick"
+          ]
+        }
+      ],
+      "topics": [
+        "inbyggda-system",
+        "bitmanipulation",
+        "hardvara",
+        "knappar-debouncing",
+        "tillstandsmaskin",
+        "esp32-cpp"
+      ],
+      "hint": "Wokwi låter dig göra nästan alla labbar utan hårdvara."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "Intro",
+      "title": "Kursintroduktion",
+      "description": "Examinerande moment: tentamen 1 april och inlämningsuppgift 2 april.",
+      "lessons": [
+        "inbyggda-system"
+      ]
+    },
+    {
+      "kind": "F1",
+      "title": "Embedded systems – Key Principles",
+      "description": "Vad inbyggda system är, delarna, MCU-familjer, PCB, breadboard och utvecklingskort.",
+      "lessons": [
+        "inbyggda-system"
+      ]
+    },
+    {
+      "kind": "Setup",
+      "title": "Inför lektionen",
+      "description": "Installation av avr-gcc, Path och Git Bash.",
+      "lessons": [
+        "inbyggda-system"
+      ]
+    },
+    {
+      "kind": "F2",
+      "title": "Bitmanipulation Repetition",
+      "description": "Talsystem, heltalstyper, bitoperatorer, makron och bit-labb.",
+      "lessons": [
+        "bitmanipulation"
+      ]
+    },
+    {
+      "kind": "Notes",
+      "title": "notes.txt",
+      "description": "Hur PORTD |= (1 &lt;&lt; 7) och BIT_CLEAR expanderar, steg för steg.",
+      "lessons": [
+        "bitmanipulation"
+      ]
+    },
+    {
+      "kind": "PDF",
+      "title": "Atmega328.pdf",
+      "description": "Arduino Uno, PWM, ADC, klocka, minnen och SRAM:s områden.",
+      "lessons": [
+        "portregister"
+      ]
+    },
+    {
+      "kind": "PDF",
+      "title": "Portregister.pdf",
+      "description": "DDR-, PORT- och PIN-registren för port B, C och D.",
+      "lessons": [
+        "portregister"
+      ]
+    },
+    {
+      "kind": "PDF",
+      "title": "Analoga och digitala signaler",
+      "description": "Skillnaden och exempel på båda.",
+      "lessons": [
+        "portregister"
+      ]
+    },
+    {
+      "kind": "F3",
+      "title": "Hårdvarukomponenter",
+      "description": "Motstånd, kondensator, dioder, knappar, potentiometer, PIR, ultraljud, temperatur och ställdon.",
+      "lessons": [
+        "hardvara"
+      ]
+    },
+    {
+      "kind": "PDF",
+      "title": "HD44780 datablad",
+      "description": "LCD-styrkretsen: instruktioner, 4-bitarsläge och busy flag.",
+      "lessons": [
+        "hardvara"
+      ]
+    },
+    {
+      "kind": "F4",
+      "title": "Timers",
+      "description": "TCNT, TOV, TCCR, OCR, prescaler och ett exempel med overflows.",
+      "lessons": [
+        "timers"
+      ]
+    },
+    {
+      "kind": "F5",
+      "title": "Knappar och debouncing",
+      "description": "Rippel, debouncing i mjukvara och RC-krets.",
+      "lessons": [
+        "knappar-debouncing"
+      ]
+    },
+    {
+      "kind": "F6",
+      "title": "Versionshantering",
+      "description": "Git, GitHub, local och remote, arbetsflöde och bra commits.",
+      "lessons": [
+        "git"
+      ]
+    },
+    {
+      "kind": "F7",
+      "title": "Branching",
+      "description": "Branches, kommandon, stash, feature branches och merge.",
+      "lessons": [
+        "git"
+      ]
+    },
+    {
+      "kind": "F8",
+      "title": "Embedded Code best practices",
+      "description": "Clean code, inbyggda regler, policies och statisk analys.",
+      "lessons": [
+        "clean-code"
+      ]
+    },
+    {
+      "kind": "Labb",
+      "title": "LAB Static Code Analyzer",
+      "description": "cppcheck och MISRA-tips.",
+      "lessons": [
+        "clean-code"
+      ]
+    },
+    {
+      "kind": "F9",
+      "title": "Testing Intro",
+      "description": "Testning, white och black box, typer, unit-tester, GoogleTest och AAA.",
+      "lessons": [
+        "testning"
+      ]
+    },
+    {
+      "kind": "F10",
+      "title": "Code Reviews",
+      "description": "Process, checklista, feedback och fyra exempel.",
+      "lessons": [
+        "code-review"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "övning1/2_main.c med facit",
+      "description": "Två program att granska, med facit i tre varianter.",
+      "lessons": [
+        "code-review"
+      ]
+    },
+    {
+      "kind": "Sum",
+      "title": "Kurssammanfattning",
+      "description": "Hela kursen samlad, plus avbrott, minne, IoT-ekosystemet och 20 dos and don'ts.",
+      "lessons": [
+        "interrupts",
+        "clean-code",
+        "esp32-cpp",
+        "portregister"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Sim",
+      "title": "Wokwi",
+      "url": "https://wokwi.com/",
+      "description": "Simulera Arduino och ESP32 och ladda upp din hex- eller bin-fil."
+    },
+    {
+      "kind": "Data",
+      "title": "ATmega328P datablad",
+      "url": "https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf",
+      "description": "Allt om register, timers och avbrott."
+    },
+    {
+      "kind": "Mem",
+      "title": "Arduino: Memory guide",
+      "url": "https://docs.arduino.cc/learn/programming/memory-guide/",
+      "description": "Flash, SRAM och EEPROM och hur man sparar minne."
+    },
+    {
+      "kind": "Calc",
+      "title": "AVR Timer Calculator",
+      "url": "https://eleccelerator.com/avr-timer-calculator/",
+      "description": "Räkna ut prescaler och compare-värden."
+    },
+    {
+      "kind": "Tool",
+      "title": "avr-gcc för Windows",
+      "url": "https://github.com/ZakKemble/avr-gcc-build/releases/latest/",
+      "description": "Välj avr-gcc-15.2.0-x64-windows.zip."
+    },
+    {
+      "kind": "Tool",
+      "title": "Cppcheck",
+      "url": "https://cppcheck.sourceforge.io/",
+      "description": "Gratis statisk analys med MISRA-tillägg."
+    },
+    {
+      "kind": "Test",
+      "title": "GoogleTest",
+      "url": "https://github.com/google/googletest",
+      "description": "Testramverket som används i testlabben."
+    },
+    {
+      "kind": "IDF",
+      "title": "ESP-IDF Get Started",
+      "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html",
+      "description": "Installera ESP-IDF och kom igång med ESP32."
+    },
+    {
+      "kind": "Ref",
+      "title": "Power of 10 (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/The_Power_of_10:_Rules_for_Developing_Safety-Critical_Code",
+      "description": "NASA JPL:s regler för säkerhetskritisk kod."
+    },
+    {
+      "kind": "Git",
+      "title": "Git-it",
+      "url": "https://github.com/jlord/git-it-electron",
+      "description": "Desktop-app för att lära sig Git och GitHub i terminalen."
+    }
+  ]
+}

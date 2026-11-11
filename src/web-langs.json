@@ -179,5 +179,36 @@
   ],
   "algo/08-grafer-2": [
     "py"
+  ],
+  "inbyggda/02-bitmanipulation-1": [
+    "py"
+  ],
+  "inbyggda/02-bitmanipulation-2": [
+    "py"
+  ],
+  "inbyggda/03-portregister-1": [
+    "py"
+  ],
+  "inbyggda/03-portregister-2": [
+    "py"
+  ],
+  "inbyggda/04-hardvara-1": [
+    "cpp",
+    "py"
+  ],
+  "inbyggda/04-hardvara-2": [
+    "py"
+  ],
+  "inbyggda/05-timers-1": [
+    "py"
+  ],
+  "inbyggda/06-knappar-debouncing-1": [
+    "py"
+  ],
+  "inbyggda/07-interrupts-1": [
+    "py"
+  ],
+  "inbyggda/09-tillstandsmaskin-1": [
+    "py"
   ]
 }

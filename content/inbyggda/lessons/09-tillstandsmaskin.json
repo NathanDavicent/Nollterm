@@ -1,0 +1,167 @@
+{
+  "id": "tillstandsmaskin",
+  "title": "Tillståndsmaskiner: kassaskåpet",
+  "category": "Projekt",
+  "minutes": 11,
+  "date": "2026-03-10",
+  "lead": "Hur man bygger ett system som reagerar olika beroende på vad som hänt tidigare: tillstånd, övergångar, enum och switch.",
+  "sources": [
+    "Genomgång 2026-03-10 (Projekt i C: bygga kassaskåp)"
+  ],
+  "goals": [
+    "Förklara vad en tillståndsmaskin är",
+    "Rita tillstånd och övergångar för ett enkelt system",
+    "Implementera en tillståndsmaskin med enum och switch",
+    "Förklara var signalerna till hårdvaran skickas i maskinen"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Tillstånd och övergångar"
+    },
+    {
+      "type": "p",
+      "html": "Många inbyggda system gör olika saker beroende på vad som hänt tidigare. En kodlåsknapp betyder en sak när man precis börjat och en annan när tre siffror redan är rätt. En <strong>tillståndsmaskin</strong> (state machine) beskriver det som ett antal <strong>tillstånd</strong> och <strong>övergångar</strong> mellan dem, där varje övergång triggas av en indata."
+    },
+    {
+      "type": "h",
+      "text": "Kassaskåpet"
+    },
+    {
+      "type": "p",
+      "html": "Koden är 1234. Varje rätt siffra tar oss ett steg närmare. Fel siffra tar oss tillbaka till idle. När den fjärde siffran är rätt skickar vi signalen som låser upp dörren. I olåst läge låser 0 dörren igen, och andra siffror gör ingenting."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "         1          2          3          4\n IDLE ------> 1 ------> 12 ------> 123 ------> OLÅST\n  ^  \\______/ |          |          |          |  \\__ 1-9: stanna\n  |   fel      | fel     | fel      | fel      |\n  +------------+---------+----------+          |\n  +---------------------- 0: lås dörren -------+\n",
+      "caption": "tillståndsdiagram"
+    },
+    {
+      "type": "h",
+      "text": "I kod"
+    },
+    {
+      "type": "list",
+      "items": [
+        "En <strong>enum</strong> för tillstånden",
+        "Läs av indata",
+        "En <strong>switch</strong> (eller if-else) som bestämmer nästa tillstånd"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "typedef enum { STATE_IDLE, STATE_1, STATE_12, STATE_123, STATE_UNLOCKED } SafeState;\n\nSafeState nextState(SafeState s, char key) {\n    switch (s) {\n        case STATE_IDLE:     return key == '1' ? STATE_1 : STATE_IDLE;\n        case STATE_1:        return key == '2' ? STATE_12 : STATE_IDLE;\n        case STATE_12:       return key == '3' ? STATE_123 : STATE_IDLE;\n        case STATE_123:\n            if (key == '4') { unlock_door(); return STATE_UNLOCKED; }\n            return STATE_IDLE;\n        case STATE_UNLOCKED:\n            if (key == '0') { lock_door(); return STATE_IDLE; }\n            return STATE_UNLOCKED;\n    }\n    return STATE_IDLE;\n}\n",
+      "caption": "C"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Lägg sidoeffekterna (signaler till hårdvaran) i övergångarna, och håll själva nextState-logiken ren. Då kan den unit-testas utan hårdvara."
+    },
+    {
+      "type": "h",
+      "text": "Varför tillståndsmaskiner?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Allt beteende syns i diagrammet, och koden följer det rad för rad.",
+        "Det är lätt att se om något fall saknas: varje tillstånd behöver ett svar för varje sorts indata.",
+        "Ingen blockerande väntan: maskinen tar ett steg per indata, och fungerar bra med avbrott och millis.",
+        "Mönstret finns överallt: trafikljus, protokoll, menyer och spel."
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Bygg kassaskåpet",
+      "html": "<p>Bygg kassaskåpet i C med en knappsats eller knappar som indata, en LED eller ett servo som lås och en LCD som visar läget. Utöka sedan: tre fel i rad låser i 30 sekunder, och koden går att byta när skåpet är olåst.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en tillståndsmaskin?",
+      "options": [
+        "En typ av MCU",
+        "Ett antal tillstånd och övergångar som triggas av indata",
+        "En timer",
+        "Ett sorts minne"
+      ],
+      "answer": 1,
+      "why": "Beteendet beror på tillståndet."
+    },
+    {
+      "type": "multi",
+      "q": "Vad behövs för att koda en tillståndsmaskin enligt genomgången?",
+      "options": [
+        "En enum för tillstånden",
+        "Att läsa indata",
+        "En switch eller if-else för nästa tillstånd",
+        "Rekursion"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Ingen rekursion behövs, och den ska undvikas i inbyggd kod."
+    },
+    {
+      "type": "mc",
+      "q": "Kassaskåpet står i tillståndet 12 och får siffran 5. Vart går det?",
+      "options": [
+        "12",
+        "123",
+        "IDLE",
+        "OLÅST"
+      ],
+      "answer": 2,
+      "why": "Fel siffra skickar tillbaka till idle."
+    },
+    {
+      "type": "mc",
+      "q": "Var skickas signalen som låser upp dörren?",
+      "options": [
+        "I IDLE",
+        "I övergången från 123 till olåst när rätt fjärde siffra kommer",
+        "Vid varje knapptryck",
+        "Aldrig"
+      ],
+      "answer": 1,
+      "why": "Sidoeffekter hör till övergångarna."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer i olåst läge när man trycker 7?",
+      "options": [
+        "Låser",
+        "Ingenting, stannar olåst",
+        "Går till 1",
+        "Larm"
+      ],
+      "answer": 1,
+      "why": "Bara 0 låser."
+    },
+    {
+      "type": "mc",
+      "q": "Varför passar tillståndsmaskiner bra i inbyggda system?",
+      "options": [
+        "De kräver mycket minne",
+        "De tar ett steg per indata utan att blockera, och beteendet är tydligt",
+        "De behöver ett OS",
+        "De använder malloc"
+      ],
+      "answer": 1,
+      "why": "Fungerar ihop med avbrott och millis."
+    },
+    {
+      "type": "code",
+      "q": "Kassaskåpet: läs en sträng med knapptryck och skriv tillståndet efter varje tryck, som <code>1 -&gt; 1</code>, <code>4 -&gt; OLÅST</code>. Tillstånden heter IDLE, 1, 12, 123 och OLÅST. Fel siffra ger IDLE, och 0 låser när skåpet är olåst.",
+      "task": "09-tillstandsmaskin-1",
+      "why": "En enum och en switch. I Python går det med en Enum och en tabell.",
+      "web": true
+    }
+  ]
+}

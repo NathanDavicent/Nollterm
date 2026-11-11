@@ -1,0 +1,400 @@
+{
+  "id": "clean-code",
+  "title": "Bra kod, MISRA och statisk analys",
+  "category": "Kodkvalitet",
+  "minutes": 15,
+  "lead": "Vad bra kod är, varför inbyggd kod har strängare regler, policies som MISRA C och Power of 10, och hur cppcheck hittar problemen åt dig.",
+  "sources": [
+    "Embedded Code best practices",
+    "LAB Static Code Analyzer",
+    "Kurssammanfattning (dos and don'ts)"
+  ],
+  "goals": [
+    "Beskriva clean code-principer",
+    "Förklara varför man undviker malloc och rekursion i inbyggd kod",
+    "Känna till MISRA C, Power of 10, ISO 26262 och AUTOSAR",
+    "Köra cppcheck med MISRA-tillägget och åtgärda varningar",
+    "Känna igen vanliga dos and don'ts"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är bra kod?"
+    },
+    {
+      "type": "p",
+      "html": "Det beror på vem som frågar: slutanvändaren, företaget, kollegorna eller lagen. Ren kod ger läsbarhet, underhållbarhet, samarbete, färre buggar, effektivitet, säkerhet och robusthet. I IoT och inbyggda system styr koden den fysiska världen, som ABS-bromsar och industrirobotar, och det finns inget utrymme för \"oops\"."
+    },
+    {
+      "type": "h",
+      "text": "Clean code"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Meningsfulla namn på variabler och funktioner",
+        "Korta funktioner, helst utan att man behöver scrolla",
+        "Kommentarer sparsamt: förklara <em>varför</em>, inte <em>vad</em>. Koden ska helst förklara sig själv.",
+        "Konsekvent formatering och indentering",
+        "DRY: Don't Repeat Yourself",
+        "Felhantering, tester, refaktorering och versionshantering"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Best practice i inbyggda system"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Använd så lite RAM som möjligt</strong>, och minsta möjliga datatyp.",
+        "<strong>Använd så få CPU-cykler som möjligt.</strong> Bitmanipulering i stället för Arduinos bibliotek.",
+        "<strong>Undvik minnesfragmentering: aldrig malloc i drift.</strong> Bara stack. Stacken är deterministisk och kan analyseras statiskt innan körning. Malloc är oförutsägbart och kostar cykler. (I initieringsfasen går det, men inte efter att main-loopen startat.)",
+        "<strong>Aldrig rekursion.</strong> Stackanvändningen blir svår att förutsäga, och stack overflow är svårt att upptäcka."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Hur upprätthåller man reglerna?"
+    },
+    {
+      "type": "p",
+      "html": "Kom överens i teamet, använd statiska kodanalysverktyg, följ scoutregeln (lämna koden lite bättre än du hittade den), gör code reviews och parprogrammering, skriv unit-tester, och följ processer som ISO 26262 och AUTOSAR."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Policy",
+        "Vad"
+      ],
+      "rows": [
+        [
+          "MISRA C",
+          "Riktlinjer för C i inbyggda och säkerhetskritiska system. Själva regellistan kostar pengar."
+        ],
+        [
+          "Power of 10",
+          "NASA JPL:s tio regler för säkerhetskritisk kod"
+        ],
+        [
+          "ISO 26262",
+          "Funktionell säkerhet för vägfordon"
+        ],
+        [
+          "AUTOSAR",
+          "Standardiserad mjukvaruarkitektur i bilindustrin"
+        ],
+        [
+          "ISO 2700x",
+          "Informationssäkerhet"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Power of 10 i korthet"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Enkel kontrollflöde: ingen goto och ingen rekursion",
+        "Alla loopar har en fast övre gräns",
+        "Ingen dynamisk minnesallokering efter initiering",
+        "Korta funktioner, ungefär en sida (60 rader)",
+        "Minst två assertions per funktion i snitt",
+        "Deklarera data i minsta möjliga scope",
+        "Kontrollera alla returvärden och alla parametrar",
+        "Använd preprocessorn sparsamt",
+        "Begränsa pekare: en nivå av dereferens, inga funktionspekare",
+        "Kompilera med alla varningar påslagna och kör statisk analys"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Dos and don'ts"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Undvik",
+        "Varför"
+      ],
+      "rows": [
+        [
+          "Heap-allokering (malloc, new) i drift",
+          "Fragmentering, oförutsägbar tid, minnesläckor (MISRA 21.3)"
+        ],
+        [
+          "Rekursion",
+          "Okänd stackanvändning, stack overflow (MISRA 17.2)"
+        ],
+        [
+          "Implicita typkonverteringar",
+          "Trunkering och signed/unsigned-buggar (MISRA 10.x)"
+        ],
+        [
+          "Globala variabler utan tydlig ägare",
+          "Svårt att spåra, sidoeffekter, race conditions"
+        ],
+        [
+          "printf och iostreams i begränsade system",
+          "Stor kod, mycket stack"
+        ],
+        [
+          "Blockerande I/O i en ISR",
+          "Missade avbrott och jitter"
+        ],
+        [
+          "Delade variabler utan synkronisering",
+          "Race conditions som är svåra att återskapa"
+        ],
+        [
+          "Flyttal i tidskritiska delar utan analys",
+          "Långsamt utan FPU, precisionsproblem"
+        ],
+        [
+          "Magic numbers",
+          "Svårt att förstå och ändra. Använd namngivna konstanter."
+        ],
+        [
+          "Antaganden om hårdvarans starttillstånd",
+          "Initiera alltid kringutrustningen explicit"
+        ],
+        [
+          "Ignorerade returvärden",
+          "Fel tystas och växer"
+        ],
+        [
+          "Långa kritiska sektioner",
+          "Ökad latens"
+        ],
+        [
+          "Att tro att volatile ger atomicitet",
+          "Det gör det inte"
+        ],
+        [
+          "Odefinierat beteende (signed overflow, skift för långt)",
+          "Kompilatorn får optimera bort dina antaganden"
+        ],
+        [
+          "Antaganden om endianness och storlekar",
+          "Portabilitetsbuggar i protokoll"
+        ],
+        [
+          "Tätt ihopkopplad kod",
+          "Svår att testa"
+        ],
+        [
+          "Onödiga makron",
+          "Döljer typfel och gör analys svårare"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Statisk analys med cppcheck"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Cppcheck</strong> är gratis och har ett Python-tillägg för MISRA-kontroller. Kommersiella alternativ är bland annat PC-lint, Perforce QA-C och AbsInt."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "cppcheck --inline-suppr --enable=all \\\n  --template=\"{file}({line}): {severity} ({id}): {message}\" --dump main.c\npython /usr/share/cppcheck/addons/misra.py --rule-texts=misrarules.txt main.c.dump\n",
+      "caption": "terminal (på Windows: C:\\Program Files\\Cppcheck\\addons\\misra.py)"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Varning",
+        "Åtgärd"
+      ],
+      "rows": [
+        [
+          "unusedFunction",
+          "Ta bort funktionen, eller i sällsynta fall <code>// cppcheck-suppress unusedFunction</code>"
+        ],
+        [
+          "constVariablePointer",
+          "Gör pekaren const: <code>const CAR *</code>"
+        ],
+        [
+          "shadowFunction",
+          "Byt namn på variabeln som skuggar en funktion"
+        ],
+        [
+          "misra-c2012-8.2",
+          "Prototyper ska ha namngivna parametrar eller <code>void</code>: <code>int main(void)</code>"
+        ],
+        [
+          "misra-c2012-8.4",
+          "Funktioner ska ha en prototyp som matchar definitionen"
+        ],
+        [
+          "misra-c2012-21.10",
+          "&lt;time.h&gt; är inte tillåtet. Kan undertryckas med en motivering."
+        ],
+        [
+          "misra-c2012-10.2",
+          "Aritmetik med char-typer. Refaktorera eller undertryck."
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Statisk analys-labb",
+      "html": "<p>Installera cppcheck med Python-tilläggen (lägg till i PATH vid behov). Analysera repot <code>aspcodenet/Algo20230320</code> och åtgärda varningarna. Bestäm för varje regel: refaktorera eller undertryck med motivering?</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad ska en kommentar helst förklara?",
+      "options": [
+        "Vad koden gör",
+        "Varför koden gör något",
+        "Vem som skrev den",
+        "Datumet"
+      ],
+      "answer": 1,
+      "why": "Koden ska helst förklara vad den gör själv."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder DRY?",
+      "options": [
+        "Don't Repeat Yourself",
+        "Do Run Yearly",
+        "Debug Release Yield",
+        "Data Ready Yes"
+      ],
+      "answer": 0,
+      "why": "Upprepa inte kod."
+    },
+    {
+      "type": "mc",
+      "q": "Varför undviker man malloc i main-loopen på en MCU?",
+      "options": [
+        "Det finns inte i C",
+        "Fragmentering och oförutsägbar tid",
+        "Det är för snabbt",
+        "Stacken räcker alltid"
+      ],
+      "answer": 1,
+      "why": "I initieringsfasen kan det gå, men inte i drift."
+    },
+    {
+      "type": "mc",
+      "q": "Varför undviker man rekursion i inbyggd kod?",
+      "options": [
+        "Det är långsamt att skriva",
+        "Stackanvändningen blir svår att förutsäga",
+        "Kompilatorn stöder det inte",
+        "Det kräver malloc"
+      ],
+      "answer": 1,
+      "why": "Risk för stack overflow."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är MISRA C?",
+      "options": [
+        "En kompilator",
+        "Riktlinjer för säker C i inbyggda och säkerhetskritiska system",
+        "Ett operativsystem",
+        "En MCU"
+      ],
+      "answer": 1,
+      "why": "Med regler som 8.2 och 21.3."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken standard gäller funktionell säkerhet i vägfordon?",
+      "options": [
+        "ISO 27001",
+        "ISO 26262",
+        "IEEE 754",
+        "MISRA"
+      ],
+      "answer": 1,
+      "why": "ISO 26262."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken av dessa är en Power of 10-regel?",
+      "options": [
+        "Använd goto för felhantering",
+        "Alla loopar ska ha en fast övre gräns",
+        "Allokera minne fritt",
+        "Använd så många makron som möjligt"
+      ],
+      "answer": 1,
+      "why": "Plus ingen rekursion och ingen dynamisk allokering efter initiering."
+    },
+    {
+      "type": "mc",
+      "q": "Vad säger MISRA 8.2 om <code>int main()</code>?",
+      "options": [
+        "Inget",
+        "Prototyper ska ha namngivna parametrar eller void, alltså <code>int main(void)</code>",
+        "main får inte returnera int",
+        "main ska vara static"
+      ],
+      "answer": 1,
+      "why": "Tom parameterlista betyder \"okända parametrar\" i C."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en magic number?",
+      "options": [
+        "Ett primtal",
+        "Ett hårdkodat värde utan namn i koden",
+        "Ett slumptal",
+        "En hex-konstant"
+      ],
+      "answer": 1,
+      "why": "Använd #define eller const."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka verktyg gör statisk kodanalys?",
+      "options": [
+        "Cppcheck",
+        "PC-lint",
+        "Perforce QA-C",
+        "Wokwi"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Wokwi är en simulator."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör flaggan <code>--dump</code> i cppcheck?",
+      "options": [
+        "Tar bort filen",
+        "Skapar en dump-fil som MISRA-skriptet sedan analyserar",
+        "Visar hjälp",
+        "Kompilerar"
+      ],
+      "answer": 1,
+      "why": "main.c.dump läses av misra.py."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är scoutregeln?",
+      "options": [
+        "Lämna koden lite bättre än du hittade den",
+        "Skriv alltid tester först",
+        "Commita varje dag",
+        "Kör alltid cppcheck"
+      ],
+      "answer": 0,
+      "why": "Boy scout rule."
+    }
+  ]
+}

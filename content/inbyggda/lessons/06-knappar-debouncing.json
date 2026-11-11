@@ -1,0 +1,190 @@
+{
+  "id": "knappar-debouncing",
+  "title": "Knappar och debouncing",
+  "category": "Tid och händelser",
+  "minutes": 11,
+  "date": "2026-02-24",
+  "lead": "Varför en knapptryckning ofta blir flera, och hur man filtrerar bort studsarna i mjukvara eller hårdvara.",
+  "sources": [
+    "Knappar och debouncing",
+    "Dagens laboration 2026-02-24"
+  ],
+  "goals": [
+    "Förklara varför knappar studsar (bounce)",
+    "Jämföra debouncing med delay, med millis och med sampling",
+    "Förklara hårdvarudebouncing med en RC-krets",
+    "Implementera en debouncer som kräver n stabila sampel"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Digitalt är inte så digitalt"
+    },
+    {
+      "type": "p",
+      "html": "Vi tänker oss att en knapp går rent från 0 till 1. I verkligheten studsar kontakten: ojämnheter i kontaktytorna, smuts, och vid högre spänning kan strömmen hoppa innan ytorna ens nuddat. Signalen fladdrar då mellan 0 och 1 i några millisekunder. Det kallas <strong>rippel</strong> eller <strong>bounce</strong>, och ett tryck kan räknas som flera. Egentligen ger alla snabba spänningshopp lite rippel."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "ideal:     ____________|‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\nverklig:   ____________|‾|_|‾‾|_|‾‾‾‾‾‾‾‾\n                       ^ studsar i några ms\n",
+      "caption": "knapptryck"
+    },
+    {
+      "type": "h",
+      "text": "Debouncing i mjukvara"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Metod",
+        "Hur",
+        "Fördel",
+        "Nackdel"
+      ],
+      "rows": [
+        [
+          "Delay",
+          "Vänta \"tillräckligt länge\" med busy wait när en ändring syns",
+          "Enkelt och snabbt att skriva",
+          "MCU:n gör inget annat under tiden. Utan oscilloskop vet man inte om man bara haft tur."
+        ],
+        [
+          "millis",
+          "Notera tiden och ignorera ändringar en stund",
+          "Blockerar inte",
+          "Samma osäkerhet om hur länge det studsar"
+        ],
+        [
+          "Räkna stabila sampel",
+          "Byt tillstånd först när signalen haft den nya nivån n gånger i rad",
+          "Robust, eliminerar extra flanker",
+          "Ger en fördröjning innan ändringen godkänns"
+        ],
+        [
+          "Timer-sampling",
+          "Sampla med ett timeravbrott och kräv stabil signal ett antal avbrott i rad",
+          "Mest robust",
+          "Mer kod och en timer"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#define STABLE_SAMPLES 5\n\n// Anropas regelbundet, till exempel varje millisekund.\n// Returnerar 1 precis när ett nytt tryck har godkänts.\nuint8_t button_update(uint8_t raw_level) {\n    static uint8_t stable = 0, count = 0;\n    if (raw_level == stable) {\n        count = 0;                      // studs tillbaka: börja om\n    } else if (++count >= STABLE_SAMPLES) {\n        stable = raw_level;             // ny nivå har hållit i sig\n        count = 0;\n        return stable == 1;             // stigande flank = tryck\n    }\n    return 0;\n}\n",
+      "caption": "debouncing med stabila sampel"
+    },
+    {
+      "type": "h",
+      "text": "Debouncing i hårdvara"
+    },
+    {
+      "type": "p",
+      "html": "Med en <strong>RC-krets</strong> (resistorer och en kondensator, \"Capacitor\") jämnas signalen ut innan den når MCU:n. För debouncing används ofta två resistorer och en kondensator. Det kostar ingen processorkraft eller minne, men mer hårdvara gör produkten dyrare."
+    },
+    {
+      "type": "exercise",
+      "title": "Button click blink",
+      "html": "<p>Utgå från repot <code>avr_button</code>. Bygg en krets med en knapp och två LED:er. En LED blinkar var 300:e ms, och varje klick byter vilken LED som blinkar.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Many button click",
+      "html": "<p>Tre knappar och en LED. 1) Tre tryck i rad på första knappen tänder LED:en, tre till släcker den. Håll reda på de tre senaste klicken. 2) Välj en kombination, till exempel 1 → 3 → 1, som tänder och släcker. 3) Tre LED:er med var sin sekvens på minst fyra tryck, till exempel 1 → 3 → 1 → 2, 3 → 3 → 1 → 1 och 2 → 2 → 1 → 2.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Varför kan ett knapptryck räknas flera gånger?",
+      "options": [
+        "Knappen är trasig",
+        "Kontakten studsar och signalen fladdrar några ms",
+        "MCU:n är för långsam",
+        "Pull-up saknas alltid"
+      ],
+      "answer": 1,
+      "why": "Bounce eller rippel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är nackdelen med att debounca med en delay?",
+      "options": [
+        "Den är svår att skriva",
+        "Processorn kan inte göra annat under tiden",
+        "Den kräver en kondensator",
+        "Den fungerar aldrig"
+      ],
+      "answer": 1,
+      "why": "Och man vet inte säkert hur länge det studsar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fördelen med att räkna stabila sampel?",
+      "options": [
+        "Ingen fördröjning",
+        "Robust: extra flanker från studsar filtreras bort",
+        "Ingen kod behövs",
+        "Det sparar flash"
+      ],
+      "answer": 1,
+      "why": "Nackdelen är fördröjningen innan ändringen godkänns."
+    },
+    {
+      "type": "mc",
+      "q": "Vad står RC för i en RC-krets?",
+      "options": [
+        "Remote Control",
+        "Resistor och Capacitor (kondensator)",
+        "Reset och Clock",
+        "Real-time Counter"
+      ],
+      "answer": 1,
+      "why": "Den jämnar ut signalen i hårdvara."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fördelen med hårdvarudebouncing?",
+      "options": [
+        "Billigare",
+        "Ingen processorkraft eller minne går åt",
+        "Snabbare att koda",
+        "Fungerar utan knapp"
+      ],
+      "answer": 1,
+      "why": "Men det blir fler komponenter."
+    },
+    {
+      "type": "mc",
+      "q": "I debouncern ovan, vad händer om signalen studsar tillbaka till det stabila läget?",
+      "options": [
+        "Tillståndet byts direkt",
+        "Räknaren nollställs",
+        "Ett tryck räknas",
+        "Ingenting alls"
+      ],
+      "answer": 1,
+      "why": "Den nya nivån måste hålla i sig n gånger i rad."
+    },
+    {
+      "type": "mc",
+      "q": "Hur håller man reda på de tre senaste klicken i labben?",
+      "options": [
+        "Med tre globala int",
+        "Med en liten buffert eller ett skiftregister i en byte",
+        "Med malloc",
+        "Det går inte"
+      ],
+      "answer": 1,
+      "why": "Till exempel <code>history = (history &lt;&lt; 2) | knapp</code>, två bitar per klick."
+    },
+    {
+      "type": "code",
+      "q": "Läs n och en sträng med sampel (0 och 1, ett per millisekund). Skriv hur många tryck (0 → 1) det blir utan debouncing och med en debouncer som kräver n stabila sampel, som <code>Rå: 3</code> och <code>Debouncad: 1</code>.",
+      "task": "06-knappar-debouncing-1",
+      "why": "Stabilt läge börjar på 0. Räkna upp när samplet skiljer sig, nollställ när det är lika, och byt läge när räknaren når n.",
+      "web": true
+    }
+  ]
+}

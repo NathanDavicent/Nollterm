@@ -1,0 +1,30 @@
+--- in
+16000000 1024 8
+--- out
+Tick: 64.000 us
+Overflow: 16.384 ms
+1 s = 61 overflows + 9 ticks
+--- in
+16000000 64 8
+--- out
+Tick: 4.000 us
+Overflow: 1.024 ms
+1 s = 976 overflows + 144 ticks
+--- in
+16000000 256 16
+--- out
+Tick: 16.000 us
+Overflow: 1048.576 ms
+1 s = 0 overflows + 62500 ticks
+--- in
+16000000 8 8
+--- out
+Tick: 0.500 us
+Overflow: 0.128 ms
+1 s = 7812 overflows + 128 ticks
+--- in
+8000000 1 16
+--- out
+Tick: 0.125 us
+Overflow: 8.192 ms
+1 s = 122 overflows + 4608 ticks

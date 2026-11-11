@@ -1,0 +1,221 @@
+{
+  "id": "interrupts",
+  "title": "Avbrott (interrupts)",
+  "category": "Tid och händelser",
+  "minutes": 13,
+  "date": "2026-02-27",
+  "lead": "Händelsestyrd programmering: ISR:er, externa avbrott och pin change-avbrott, volatile och race conditions.",
+  "sources": [
+    "Kurssammanfattning (händelsestyrd programmering)",
+    "Genomgång 2026-02-27 (interrupts)"
+  ],
+  "goals": [
+    "Förklara skillnaden mellan polling och händelsestyrd kod",
+    "Beskriva vad som händer när ett avbrott triggas",
+    "Ställa in ett pin change-avbrott och hitta vilken pinne som ändrats",
+    "Förklara varför delade variabler ska vara volatile och när avbrott måste stängas av"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Händelsestyrd programmering"
+    },
+    {
+      "type": "p",
+      "html": "Med polling frågar huvudloopen hela tiden: är vi framme snart? Är vi framme snart? Med <strong>avbrott</strong> prenumererar vi i stället på händelser: \"säg till när vi är framme\"."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Interna händelser:</strong> oftast en timertick eller räknare",
+        "<strong>Externa händelser:</strong> UART är redo för nästa tecken, eller en signal ändras på en pinne"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Vad händer vid ett avbrott?"
+    },
+    {
+      "type": "p",
+      "html": "Processorn avbryter din kod och anropar en <strong>ISR</strong> (Interrupt Service Routine). Allt tillstånd (variabler i register, programräknaren) sparas på stacken och hämtas tillbaka när ISR:en är klar. Man kan tänka på ISR:er som funktioner som hårdvaran startar automatiskt när den ser det vi bett den leta efter."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Håll ISR:er så korta som möjligt. Tänk dig en timer som tickar varje klockcykel och en ISR som tar två cykler: den triggar hela tiden och inget annat händer. Gör bara det nödvändigaste i ISR:en, till exempel sätt en flagga, och gör resten i huvudloopen. Ingen printf eller väntan i en ISR."
+    },
+    {
+      "type": "h",
+      "text": "Tre nivåer på ATmega328P"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Globalt:</strong> <code>sei()</code> slår på alla avbrott och <code>cli()</code> stänger av dem.",
+        "<strong>Externa avbrott INT0 och INT1</strong> (pin 2 och 3) slås på i <code>EIMSK</code>. I <code>EICRA</code> väljer man stigande, fallande eller båda flankerna.",
+        "<strong>Pin change-avbrott (PCINT):</strong> slås på per port i <code>PCICR</code> och per pinne i <code>PCMSK0</code> (port B), <code>PCMSK1</code> (port C) och <code>PCMSK2</code> (port D)."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Hur tänker man?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Sök på \"interrupts\" i databladet och hitta ett lämpligt avbrott.",
+        "Leta upp statusregistren och vilka inställningar som finns. Anteckna sidnumren.",
+        "Titta i ett pinout-diagram vilka pinnar som har avbrottet.",
+        "Skriv koden och testa. Kommer signalen från en knapp kan den behöva debouncas, så att avbrottet inte triggar flera gånger."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Pin change: vilken pinne ändrades?"
+    },
+    {
+      "type": "p",
+      "html": "PCINT triggar när <em>någon</em> pinne i porten ändras. Därför jämför man med förra värdet med XOR för att se vilka bitar som skiljer sig, och sedan om biten är 1 eller 0 nu."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "ISR(PCINT0_vect) {                              // port B\n    const uint8_t pinMask = 1 << PCINT3;        // PB3\n    static uint8_t prevState = 0;\n    uint8_t currState = PINB;\n    uint8_t changedPins = currState ^ prevState;   // 00001000 ^ 00000000 = 00001000\n    prevState = currState;\n    if (changedPins & pinMask) {\n        if (currState & pinMask) { /* PB3 gick HIGH */ }\n        else                     { /* PB3 gick LOW  */ }\n    }\n}\n\n// i main:\nPCICR  |= (1 << PCIE0);     // slå på pin change för port B\nPCMSK0 |= (1 << PCINT3);    // ... men bara för PB3\nsei();\n",
+      "caption": "pin change-avbrott"
+    },
+    {
+      "type": "h",
+      "text": "volatile och race conditions"
+    },
+    {
+      "type": "p",
+      "html": "En variabel som ändras i en ISR och läses i huvudloopen ska vara <code>volatile</code>. Annars kan kompilatorn lägga värdet i ett register och aldrig läsa om det från minnet, och då ser huvudloopen aldrig ändringen."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "volatile uint8_t button_event = 0;   // volatile: läs alltid från minnet\n\nISR(INT0_vect) {\n    button_event = 1;                // bara signalera\n}\n\nint main(void) {\n    /* ... */\n    while (1) {\n        if (button_event) {\n            cli();                   // kort kritisk sektion\n            button_event = 0;\n            sei();\n            /* hantera trycket här */\n        }\n    }\n}\n",
+      "caption": "flagga från ISR"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<code>volatile</code> ger <em>inte</em> atomicitet. En <code>uint32_t</code> läses i fyra steg på en 8-bitars AVR och kan ändras av en ISR mitt i. Läs den med avbrotten avstängda (eller med <code>ATOMIC_BLOCK</code> från <code>&lt;util/atomic.h&gt;</code>), och håll sådana kritiska sektioner korta."
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en ISR?",
+      "options": [
+        "En sensor",
+        "En funktion som hårdvaran anropar när ett avbrott triggas",
+        "Ett register",
+        "Ett protokoll"
+      ],
+      "answer": 1,
+      "why": "Interrupt Service Routine."
+    },
+    {
+      "type": "mc",
+      "q": "Vad sparas på stacken när ett avbrott triggas?",
+      "options": [
+        "Ingenting",
+        "Processorns tillstånd, så att koden kan fortsätta efteråt",
+        "Hela flashminnet",
+        "EEPROM"
+      ],
+      "answer": 1,
+      "why": "Register och programräknare."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska en ISR vara kort?",
+      "options": [
+        "Kompilatorn kräver det",
+        "Annars missas andra avbrott och huvudloopen hinner inte köra",
+        "Den får max vara 10 rader",
+        "Den kan inte innehålla if"
+      ],
+      "answer": 1,
+      "why": "Sätt en flagga och gör jobbet i huvudloopen."
+    },
+    {
+      "type": "text",
+      "q": "Vilken funktion slår på avbrott globalt på AVR?",
+      "accept": [
+        "sei",
+        "sei()"
+      ],
+      "placeholder": "funktion",
+      "why": "<code>sei()</code> slår på och <code>cli()</code> stänger av."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket register väljer vilka pinnar på port B som ger pin change-avbrott?",
+      "options": [
+        "EIMSK",
+        "PCICR",
+        "PCMSK0",
+        "PINB"
+      ],
+      "answer": 2,
+      "why": "PCICR slår på porten, PCMSK0 väljer pinnarna."
+    },
+    {
+      "type": "mc",
+      "q": "Varför används XOR mellan nuvarande och förra värdet i en PCINT-ISR?",
+      "options": [
+        "För att nollställa porten",
+        "För att se vilka pinnar som ändrats",
+        "För att debounca",
+        "För att slå på pull-up"
+      ],
+      "answer": 1,
+      "why": "1 där bitarna skiljer sig."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>volatile</code>?",
+      "options": [
+        "Gör variabeln atomisk",
+        "Tvingar kompilatorn att läsa och skriva variabeln i minnet varje gång",
+        "Sparar variabeln i EEPROM",
+        "Gör variabeln konstant"
+      ],
+      "answer": 1,
+      "why": "Viktigt för variabler som delas med en ISR."
+    },
+    {
+      "type": "mc",
+      "q": "Ger volatile skydd mot race conditions på en uint32_t på AVR?",
+      "options": [
+        "Ja",
+        "Nej, läsningen sker i flera steg och kan avbrytas",
+        "Bara i C++",
+        "Bara om den är global"
+      ],
+      "answer": 1,
+      "why": "Stäng av avbrott runt läsningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilka pinnar har de externa avbrotten INT0 och INT1 på Arduino Uno?",
+      "options": [
+        "0 och 1",
+        "2 och 3",
+        "12 och 13",
+        "A0 och A1"
+      ],
+      "answer": 1,
+      "why": "PD2 och PD3."
+    },
+    {
+      "type": "code",
+      "q": "Simulera en PCINT-ISR för port B. Läs nya värden på PINB som 8-bitars binära strängar (förra värdet börjar på 0). Skriv för varje ändrad pinne <code>PB3 HIGH</code> eller <code>PB3 LOW</code>, från bit 0 och uppåt, eller <code>ingen ändring</code>.",
+      "task": "07-interrupts-1",
+      "why": "changed = nu ^ förra. Gå igenom bit 0–7 och titta på biten i nu för de som ändrats.",
+      "web": true
+    }
+  ]
+}

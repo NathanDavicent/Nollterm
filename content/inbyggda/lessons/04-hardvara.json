@@ -1,0 +1,323 @@
+{
+  "id": "hardvara",
+  "title": "Hårdvarukomponenter och LCD",
+  "category": "Hårdvara",
+  "minutes": 13,
+  "date": "2026-02-12",
+  "lead": "Komponenterna du kopplar till en MCU: resistorer, kondensatorer, dioder, knappar, potentiometrar, sensorer och ställdon. Plus LCD-skärmen med HD44780.",
+  "sources": [
+    "Hårdvarukomponenter",
+    "HD44780 datablad",
+    "Dagens laboration 2026-02-12 (LCD) och 2026-02-17 (breadboard och Tinkercad)"
+  ],
+  "goals": [
+    "Förklara vad resistor, kondensator, diod, zenerdiod och LED gör",
+    "Koppla en knapp rätt och förstå en potentiometer",
+    "Beskriva PIR, ultraljudssensor och temperatursensor",
+    "Skala ett ADC-värde med map()",
+    "Förklara hur en HD44780-skärm styrs med kommandon"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Passiva komponenter"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Komponent",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "Resistor (motstånd)",
+          "Den vanligaste komponenten. Begränsar strömmen och omvandlar spänningen till det MCU:n och kringutrustningen behöver."
+        ],
+        [
+          "Kondensator",
+          "Två plattor med ett isolerande material emellan. Lagrar laddning och kan tömmas mycket snabbt (som en kamerablixt). Bryter en DC-krets men släpper igenom AC. Jämnar ut rippel och spikar."
+        ],
+        [
+          "Diod",
+          "Släpper bara igenom ström åt ett håll. Blir backspänningen för hög sker genombrott, och dioden kan skadas."
+        ],
+        [
+          "Zenerdiod",
+          "Gjord för att tåla backspänning. Används bland annat för att skydda mot överspänning."
+        ],
+        [
+          "LED",
+          "En diod som gör om en del av energin till ljus. Behöver alltid ett seriemotstånd."
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "En LED utan motstånd får för mycket ström och går sönder. Seriemotståndet blir (matningsspänning − LED:ens framspänning) / önskad ström, till exempel (5 − 2) / 0,015 = 200 Ω, och man väljer närmaste standardvärde uppåt, 220 Ω."
+    },
+    {
+      "type": "h",
+      "text": "Knappar och potentiometrar"
+    },
+    {
+      "type": "p",
+      "html": "En knapp håller en krets bruten tills den trycks in. På de vanliga fyrbenta knapparna är benen mitt emot varandra redan ihopkopplade, så koppla <strong>diagonalt</strong> för att få en riktig brytare."
+    },
+    {
+      "type": "p",
+      "html": "En <strong>potentiometer</strong> är en variabel resistor med två terminaler och en \"wiper\" i mitten. En 1000 Ω-potentiometer som ger 100 Ω mellan terminal 1 och wipern ger 900 Ω mellan terminal 2 och wipern. Kopplad som spänningsdelare mellan 5 V och GND ger wipern en spänning som ADC:n kan läsa."
+    },
+    {
+      "type": "h",
+      "text": "Sensorer och ställdon"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>PIR (passiv infraröd):</strong> tre pinnar (matning, jord, signal). Reagerar på värme som rör sig. Ofta två potentiometrar för räckvidd och känslighet. Larm och automatisk belysning.",
+        "<strong>Ultraljudsavståndsmätare:</strong> tre pinnar (en signalpinne som både triggar och läser) eller fyra (trigger och echo). Man skickar en puls och mäter tiden tills ekot kommer.",
+        "<strong>Temperatursensor:</strong> antingen analog (spänning som varierar med temperaturen) eller digital (värdet skickas seriellt). Skiljer sig i mätområde och noggrannhet.",
+        "<strong>Ställdon:</strong> motorer, servon och ventiler, som gör en signal till fysisk rörelse."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Skala ett värde: map()"
+    },
+    {
+      "type": "p",
+      "html": "Ofta läser man ett värde i ett intervall och behöver det i ett annat: ADC:n ger 0–1023 men PWM vill ha 0–255, eller ett servo vill ha 0–180 grader. Arduinos <code>map()</code> gör det med heltal:"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "long map_range(long x, long in_min, long in_max, long out_min, long out_max) {\n    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;\n}\n\nmap_range(512, 0, 1023, 0, 255);   // 127\n",
+      "caption": "C"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Multiplicera först och dividera sist. <code>(x - in_min) / (in_max - in_min)</code> är nästan alltid 0 i heltalsaritmetik."
+    },
+    {
+      "type": "h",
+      "text": "LCD med HD44780"
+    },
+    {
+      "type": "p",
+      "html": "De vanliga 16×2-teckenskärmarna styrs av kretsen <strong>HD44780</strong>. Den tar emot <strong>kommandon</strong> (RS = 0) och <strong>tecken</strong> (RS = 1), antingen 8 bitar åt gången eller i <strong>4-bitarsläge</strong> där bara D4–D7 används och varje byte skickas i två halvor. Det sparar fyra pinnar på MCU:n. E-pinnen klockar in datan."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Kommando",
+        "Värde",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "Clear display",
+          "0x01",
+          "Tömmer skärmen och flyttar markören till början"
+        ],
+        [
+          "Return home",
+          "0x02",
+          "Flyttar markören till början"
+        ],
+        [
+          "Entry mode set",
+          "0x06",
+          "Markören flyttas åt höger efter varje tecken"
+        ],
+        [
+          "Display on/off",
+          "0x0C",
+          "Skärmen på, markören av"
+        ],
+        [
+          "Function set",
+          "0x28",
+          "4-bitarsläge, 2 rader, 5×8 punkter"
+        ],
+        [
+          "Set DDRAM address",
+          "0x80 | adress",
+          "Flytta markören. Rad 1 börjar på 0x00, rad 2 på 0x40."
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Skärmen är långsam. Efter varje kommando måste man vänta tills den är klar, antingen genom att läsa busy flag eller med en kort fördröjning (de flesta kommandon tar runt 40 µs, Clear display runt 1,5 ms)."
+    },
+    {
+      "type": "exercise",
+      "title": "Breadboard i Tinkercad",
+      "html": "<p>1. Ett 9 V-batteri till plus- och jordskenorna på båda sidor, och en LED med motstånd. Vad händer utan motstånd? 2. Tre LED:er i serie (katod till nästa anod) med ett motstånd. Hur många kan man seriekoppla och fortfarande se ljus? 3. LED, batteri och motstånd i serie med en knapp, utan någon programmering. 4. Utgå från <em>Ultrasonic Range Finder</em> och byt till sensorn med 4 pinnar. Vad behöver ändras i koden?</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "LCD-labb",
+      "html": "<p>Utgå från repot <code>avr_lcd</code> och Wokwi-projektet. Skriv text på båda raderna, och skriv sedan en funktion <code>lcd_set_cursor(row, col)</code> som skickar rätt Set DDRAM-kommando.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad behöver en LED alltid?",
+      "options": [
+        "En kondensator",
+        "Ett seriemotstånd",
+        "En zenerdiod",
+        "En transistor"
+      ],
+      "answer": 1,
+      "why": "Annars blir strömmen för stor."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en kondensator i en DC-krets när den laddats upp?",
+      "options": [
+        "Leder som en kabel",
+        "Bryter kretsen, som en oändlig resistans",
+        "Förstärker",
+        "Lyser"
+      ],
+      "answer": 1,
+      "why": "I en AC-krets leder den däremot nästan som en kabel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad används en zenerdiod till hos oss?",
+      "options": [
+        "Att ge ljus",
+        "Att skydda mot överspänning",
+        "Att lagra laddning",
+        "Att mäta temperatur"
+      ],
+      "answer": 1,
+      "why": "Den är gjord för att tåla backspänning."
+    },
+    {
+      "type": "mc",
+      "q": "Hur kopplar man en vanlig fyrbent knapp för att få en brytare?",
+      "options": [
+        "Två ben på samma sida",
+        "Diagonalt",
+        "Alla fyra ben",
+        "Spelar ingen roll"
+      ],
+      "answer": 1,
+      "why": "Benen mitt emot varandra är redan ihopkopplade."
+    },
+    {
+      "type": "text",
+      "q": "En potentiometer på 1000 Ω ger 300 Ω mellan terminal 1 och wipern. Hur mycket blir det mellan terminal 2 och wipern?",
+      "accept": [
+        "700",
+        "700 ohm",
+        "700Ω",
+        "700 Ω"
+      ],
+      "placeholder": "ohm",
+      "why": "1000 − 300 = 700 Ω."
+    },
+    {
+      "type": "mc",
+      "q": "Vad mäter en PIR-sensor?",
+      "options": [
+        "Avstånd",
+        "Infraröd strålning från värme som rör sig",
+        "Ljusstyrka",
+        "Tryck"
+      ],
+      "answer": 1,
+      "why": "Passiv infraröd."
+    },
+    {
+      "type": "mc",
+      "q": "Hur fungerar en ultraljudssensor med trigger och echo?",
+      "options": [
+        "Echo ger avståndet i cm direkt",
+        "Man triggar en puls och mäter tiden tills ekot kommer tillbaka",
+        "Den mäter värme",
+        "Den läses med I2C"
+      ],
+      "answer": 1,
+      "why": "Avstånd = tid · ljudhastighet / 2."
+    },
+    {
+      "type": "text",
+      "q": "Vad ger <code>map(1023, 0, 1023, 0, 180)</code>?",
+      "accept": [
+        "180"
+      ],
+      "placeholder": "tal",
+      "why": "Högsta in ger högsta ut."
+    },
+    {
+      "type": "mc",
+      "q": "Varför multiplicerar man före division i map()?",
+      "options": [
+        "Det är snabbare",
+        "Heltalsdivision först ger nästan alltid 0",
+        "Det krävs av C-standarden",
+        "För att undvika negativa tal"
+      ],
+      "answer": 1,
+      "why": "Ordningen spelar roll i heltalsaritmetik."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är fördelen med HD44780:s 4-bitarsläge?",
+      "options": [
+        "Snabbare",
+        "Det sparar fyra pinnar på MCU:n",
+        "Fler tecken",
+        "Färger"
+      ],
+      "answer": 1,
+      "why": "Varje byte skickas i två halvor."
+    },
+    {
+      "type": "text",
+      "q": "Vilket värde har kommandot Clear display? (hex)",
+      "accept": [
+        "0x01",
+        "01",
+        "1"
+      ],
+      "placeholder": "hex",
+      "why": "0x01 tömmer skärmen."
+    },
+    {
+      "type": "mc",
+      "q": "Var börjar rad 2 i en 16×2-skärms DDRAM?",
+      "options": [
+        "0x10",
+        "0x20",
+        "0x40",
+        "0x80"
+      ],
+      "answer": 2,
+      "why": "Rad 1 börjar på 0x00 och rad 2 på 0x40."
+    },
+    {
+      "type": "code",
+      "q": "Skriv Arduinos <code>map()</code> med heltal. Läs antal rader och sedan <code>x in_min in_max out_min out_max</code> per rad, och skriv ut resultatet.",
+      "task": "04-hardvara-1",
+      "why": "(x − in_min) · (out_max − out_min) / (in_max − in_min) + out_min.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Läs rad och kolumn och skriv ut HD44780-kommandot som flyttar markören dit, som <code>rad 1, kolumn 5: 0xC5</code>.",
+      "task": "04-hardvara-2",
+      "why": "0x80 | (rad · 0x40 + kolumn). Skriv med två hexsiffror i versaler.",
+      "web": true
+    }
+  ]
+}

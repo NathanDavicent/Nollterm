@@ -1,0 +1,276 @@
+{
+  "id": "git",
+  "title": "Versionshantering och branches",
+  "category": "Arbetssätt",
+  "minutes": 13,
+  "date": "2026-02-26",
+  "lead": "Git och GitHub: commits, local och remote, push och pull, merge-konflikter, branches och stash.",
+  "sources": [
+    "Versionshantering",
+    "Branching",
+    "Kurssammanfattning (utvecklingsmiljöer och verktyg)"
+  ],
+  "goals": [
+    "Förklara vad versionshantering är och skillnaden mellan Git och GitHub",
+    "Beskriva arbetsflödet fetch, pull, commit och push",
+    "Skriva bra commit-meddelanden",
+    "Skapa, byta och merga branches och använda stash",
+    "Förklara vad en pull request och en merge-konflikt är"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Versionshantering"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Versionshantering</strong> spårar och hanterar ändringar i filer över tid. Med historik för varje ändring ser man vem som gjort vad, när och varför. Det gör det lätt att samarbeta, testa nya funktioner i isolerade grenar och gå tillbaka om något går fel. Vi vill <em>inte</em> kopiera filer och döpa dem till version1 och version2."
+    },
+    {
+      "type": "h",
+      "text": "Git och GitHub"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Git</strong> är verktyget. Det skapades av Linus Torvalds (som skapade Linux) och är <strong>distribuerat</strong>: varje användare har en fullständig kopia av hela projektets historik. Varje commit har ett unikt id. <strong>GitHub</strong> är en molnplattform där man lagrar repon, granskar kod och samarbetar. GitLab, Bitbucket och Azure DevOps är alternativ."
+    },
+    {
+      "type": "h",
+      "text": "Local och remote"
+    },
+    {
+      "type": "p",
+      "html": "Du har en <strong>lokal</strong> kopia och en <strong>remote</strong> i molnet. En commit sparas bara lokalt tills du gör <strong>push</strong>. Har någon annan pushat behöver du göra <strong>pull</strong>. Local och remote synkas inte automatiskt."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "git clone https://github.com/anvandare/repo   # hämta repot med historik\ngit status                                     # vad har ändrats?\ngit add .                                      # välj ändringar till nästa commit\ngit commit -m \"Add debounced button driver\"\ngit pull origin main                           # hämta andras ändringar, lös ev. konflikter\ngit push origin main                           # skicka dina commits\n",
+      "caption": "grundflödet"
+    },
+    {
+      "type": "h",
+      "text": "Arbetsflöde med en branch"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Hämta (fetch) ändringar från remote och se om något krockar med det du gjort.",
+        "Uppdatera (pull) till senaste versionen.",
+        "Arbeta.",
+        "Checka in (commit) lokalt.",
+        "Pull igen och lös eventuella merge-konflikter lokalt. Commita lösningen.",
+        "Push till remote. Alla andra hämtar dina ändringar."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Merge-konflikter"
+    },
+    {
+      "type": "p",
+      "html": "Om två personer ändrat samma rader försöker Git lösa det själv. Går det inte får den som checkar in sist merga ihop ändringarna för hand i en ny merge-commit. Det är en av de vanligaste utmaningarna när man jobbar i samma projekt."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "<<<<<<< HEAD\n#define LED_PIN 5\n=======\n#define LED_PIN 4\n>>>>>>> feature/move-led\n",
+      "caption": "en konflikt i filen: välj, ta bort markeringarna och commita"
+    },
+    {
+      "type": "h",
+      "text": "Bra commits"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Skriv rakt och tydligt: <em>Add CustomerService class</em>, inte <em>jAg skpade enm ny kund klass tjänst..eller var det booking?</em>",
+        "Gör som resten av teamet, till exempel engelska.",
+        "Commita ofta, så att historiken går att följa och kan rädda dig.",
+        "Commita aldrig kod som inte fungerar, och helst inte kod utan syfte, som utkommenterad kod eller filer som inte ska vara med."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "<strong>Download ZIP</strong> på GitHub ger en kopia <em>utan</em> .git-mappen, alltså utan koppling till repot. Vill du kunna pusha, använd <code>git clone</code>. En <strong>fork</strong> är en egen kopia av någon annans repo bland dina repon."
+    },
+    {
+      "type": "h",
+      "text": "Branches"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>branch</strong> låter dig jobba parallellt utan att störa huvudkoden i <code>main</code> (eller master), som alltid ska vara den officiella, fungerande versionen. Man använder branches för att jobba på flera saker samtidigt, hålla ofärdig kod borta från produktion och minska risken för konflikter. Vanligt är <strong>feature branches</strong> som <code>feature/lcd-driver</code> och <strong>hotfix</strong>-branches för akuta buggar."
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "git switch -c feature/lcd-driver    # skapa och byt (gamla sättet: git checkout -b)\ngit branch                          # lista lokala branches (-a: även remote)\ngit switch main                     # byt tillbaka\ngit switch -                        # till förra branchen\ngit merge feature/lcd-driver        # merga in i branchen du står på\ngit branch -d feature/lcd-driver    # ta bort branchen\ngit stash                           # spara ocommittade ändringar undan\ngit stash pop                       # ta tillbaka dem (och ta bort från stash-stacken)\n",
+      "caption": "branches och stash"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Rebase</strong> flyttar dina commits så att de ligger ovanpå den andra branchen, och historiken ser ut som en rak linje. I stället för att merga direkt gör man ofta en <strong>pull request</strong>, där en eller flera andra utvecklare granskar och godkänner koden innan den mergas till main."
+    },
+    {
+      "type": "h",
+      "text": "Utvecklingsmiljöer och verktyg"
+    },
+    {
+      "type": "p",
+      "html": "Inom inbyggda system är VS Code vanligast, följt av CLion och att köra utan IDE med texteditor och byggkommandon. MCU-tillverkare har ofta egna IDE:er byggda på VS Code eller Eclipse. Andra verktyg: multimeter, oscilloskop och logikanalysator (med till exempel PulseView), signalgenerator, lödstation, testramverk som GoogleTest och CppUTest, debuggern GDB och simulatorer som Wokwi."
+    },
+    {
+      "type": "exercise",
+      "title": "Portfolio-branch",
+      "html": "<p>Skapa en branch i ditt portfolioprojekt, lägg till några filer, commita och publicera branchen. Hoppa mellan main och branchen och se hur filträdet ändras. Merga in i main, pusha och kolla på GitHub att allt kom med. För mer kommandoradsövning: appen <em>Git-it</em> (jlord/git-it-electron).</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan Git och GitHub?",
+      "options": [
+        "Ingen",
+        "Git är versionshanteringsverktyget, GitHub är en molnplattform för repon",
+        "GitHub är nyare version av Git",
+        "Git kräver GitHub"
+      ],
+      "answer": 1,
+      "why": "Git fungerar även med GitLab, Bitbucket och utan server alls."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder att Git är distribuerat?",
+      "options": [
+        "Det körs i molnet",
+        "Varje användare har en full kopia av historiken",
+        "Det kräver flera servrar",
+        "Filerna delas i bitar"
+      ],
+      "answer": 1,
+      "why": "Det gör det snabbt och mindre beroende av en server."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>git push</code>?",
+      "options": [
+        "Hämtar ändringar",
+        "Skickar dina lokala commits till remote",
+        "Skapar en branch",
+        "Sparar ändringar undan"
+      ],
+      "answer": 1,
+      "why": "Pull hämtar."
+    },
+    {
+      "type": "mc",
+      "q": "Var hamnar en commit innan du pushat?",
+      "options": [
+        "På GitHub",
+        "Bara lokalt",
+        "I stash",
+        "Ingenstans"
+      ],
+      "answer": 1,
+      "why": "Local och remote synkas inte automatiskt."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är det bästa commit-meddelandet?",
+      "options": [
+        "fix",
+        "asdf",
+        "Add debounced button driver",
+        "ändrade lite saker här och där och sen lite till"
+      ],
+      "answer": 2,
+      "why": "Rakt och tydligt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en merge-konflikt?",
+      "options": [
+        "När Git kraschar",
+        "När två ändringar i samma rader inte kan slås ihop automatiskt",
+        "När en branch tas bort",
+        "När man glömt pusha"
+      ],
+      "answer": 1,
+      "why": "Lös den för hand och commita."
+    },
+    {
+      "type": "text",
+      "q": "Vilket modernt kommando skapar en ny branch och byter till den? (git ...)",
+      "accept": [
+        "git switch -c",
+        "switch -c",
+        "git checkout -b",
+        "checkout -b"
+      ],
+      "placeholder": "kommando",
+      "why": "<code>git switch -c namn</code>, eller det äldre <code>git checkout -b namn</code>."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör <code>git stash</code>?",
+      "options": [
+        "Tar bort ändringarna",
+        "Sparar ocommittade ändringar undan så att du kan byta branch",
+        "Pushar",
+        "Skapar en tag"
+      ],
+      "answer": 1,
+      "why": "<code>git stash pop</code> tar tillbaka dem."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en pull request?",
+      "options": [
+        "Samma sak som git pull",
+        "En begäran om att få merga en branch, där andra granskar koden först",
+        "En bugg",
+        "Ett sätt att ladda ner ZIP"
+      ],
+      "answer": 1,
+      "why": "Kopplat till code reviews."
+    },
+    {
+      "type": "mc",
+      "q": "Vad får du med Download ZIP på GitHub?",
+      "options": [
+        "Hela historiken",
+        "Filerna utan .git-mappen, alltså utan koppling till repot",
+        "En fork",
+        "En branch"
+      ],
+      "answer": 1,
+      "why": "Använd git clone för att kunna pusha."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan merge och rebase?",
+      "options": [
+        "Ingen",
+        "Rebase flyttar dina commits så att historiken blir rak, merge skapar en merge-commit",
+        "Merge tar bort branchen",
+        "Rebase fungerar bara på GitHub"
+      ],
+      "answer": 1,
+      "why": "Båda för in ändringar från en annan branch."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ska alltid finnas i main?",
+      "options": [
+        "Experimentell kod",
+        "Den officiella, fungerande versionen",
+        "Bara README",
+        "Utkommenterad kod"
+      ],
+      "answer": 1,
+      "why": "Därför jobbar man i branches."
+    }
+  ]
+}
