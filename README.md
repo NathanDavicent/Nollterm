@@ -30,6 +30,7 @@ Finns i två versioner som läser samma kursfiler i `content/`:
 | Programmering för inbyggda system | 13 | 144 | 10, i C, C++ och Python |
 | Datorkommunikation | 10 | 159 | 10, i C, C++ och Python |
 | Test och kvalitetssäkring | 10 | 161 | 9, i C, C++ och Python |
+| Big data | 7 | 97 | 7, i C, C++ och Python |
 
 ## Kom igång första gången
 

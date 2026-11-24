@@ -1,0 +1,348 @@
+{
+  "id": "datakvalitet",
+  "title": "AI4I, datakvalitet och pandas",
+  "category": "Data",
+  "minutes": 15,
+  "date": "2026-10-13",
+  "lead": "Första mötet med AI4I-datasetet i pandas: vad en rad är, vilka kolumner som är mätvärden, mål och identifierare, risken för dataläckage, och hur kvalitetsproblem kräver dokumenterade beslut.",
+  "sources": [
+    "Big Data och IoT (del 2)",
+    "Övningar dag 1",
+    "Datakällor"
+  ],
+  "goals": [
+    "Läsa in och inspektera en CSV-fil med pandas",
+    "Skilja på mätvärden, målvariabel och identifierare",
+    "Förklara varför TWF, HDF, PWF, OSF och RNF läcker svaret",
+    "Känna igen vanliga kvalitetsproblem och välja åtgärd",
+    "Validera data med rimlighetskontroller"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Python för C- och C++-vana"
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "temperature = 22.4                 # ingen typdeklaration\nmachine_type = \"M\"\ntorque_values = [42.8, 46.3, 49.4]   # listor kan växa\n\ndef celsius_to_fahrenheit(celsius):\n    return celsius * 9 / 5 + 32    # indraget är blocket, inga måsvingar\n"
+    },
+    {
+      "type": "h",
+      "text": "pandas och DataFrame"
+    },
+    {
+      "type": "p",
+      "html": "En <code>DataFrame</code> är en tabell med namngivna kolumner. Det är kursens huvudverktyg."
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "import pandas as pd\n\ndata = pd.read_csv(\"dag_1/kod/data/ai4i2020.csv\", encoding=\"utf-8-sig\")\n\nprint(data.shape)             # (rader, kolumner)\nprint(data.head())            # de fem första raderna\nprint(data.dtypes)            # typen per kolumn\nprint(data.isna().sum())      # saknade värden per kolumn\nprint(data.duplicated().sum())\nprint(data.describe())        # min, max, medel och kvartiler\n\nfailure_rate = data[\"Machine failure\"].mean()\nprint(f\"Andel maskinfel: {failure_rate:.2%}\")\n"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "<code>encoding=\"utf-8-sig\"</code> tar bort en eventuell BOM i början av filen, annars kan första kolumnen heta <code>\\ufeffUDI</code>."
+    },
+    {
+      "type": "h",
+      "text": "AI4I 2020"
+    },
+    {
+      "type": "p",
+      "html": "Syntetiska industridata från UCI som efterliknar prediktivt underhåll: 10 000 rader, 14 kolumner, cirka 510 kB, licens CC BY 4.0. En rad är en observation av en maskin under bearbetning av en produkt."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Kolumn",
+        "Roll"
+      ],
+      "rows": [
+        [
+          "UDI, Product ID",
+          "Identifierare. Behövs för spårbarhet men är inga mätvärden"
+        ],
+        [
+          "Type",
+          "Produktvariant L, M eller H (låg, medel och hög kvalitet)"
+        ],
+        [
+          "Air temperature [K], Process temperature [K]",
+          "Mätvärden i kelvin"
+        ],
+        [
+          "Rotational speed [rpm]",
+          "Mätvärde, varv per minut"
+        ],
+        [
+          "Torque [Nm]",
+          "Mätvärde, newtonmeter"
+        ],
+        [
+          "Tool wear [min]",
+          "Mätvärde, verktygsslitage i minuter"
+        ],
+        [
+          "Machine failure",
+          "Målvariabeln: 0 normal drift, 1 maskinfel"
+        ],
+        [
+          "TWF, HDF, PWF, OSF, RNF",
+          "Fem feltyper. Läcker svaret till en modell"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Ungefär 3,4 % av raderna är maskinfel, så klasserna är kraftigt obalanserade. Datan saknar tomma värden, så kvalitetsarbetet handlar i stället om identifierare, enheter, klassobalans, rimlighetskontroller, redundanta felkolumner och dataläckage."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<strong>Dataläckage:</strong> TWF (tool wear failure), HDF (heat dissipation), PWF (power), OSF (overstrain) och RNF (random) säger vilken sorts fel som inträffade. Maskinfel är i princip 1 när någon av dem är 1. En modell som får se dem hittar svaret direkt, men vid verklig användning finns de inte förrän felet redan hänt. UDI och Product ID ska inte heller användas som numeriska features: ett löpnummer säger inget om maskinens tillstånd."
+    },
+    {
+      "type": "h",
+      "text": "Vanliga kvalitetsproblem"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Saknade mätningar",
+        "Dubbletter",
+        "Omöjliga eller extrema värden",
+        "Fel enhet eller kalibrering",
+        "Tidsstämplar i fel tidszon",
+        "Data som kommer sent eller i fel ordning"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Varje fel kräver ett beslut: <strong>kasta</strong> mätningen, <strong>rätta</strong> värdet, <strong>markera</strong> det som osäkert, <strong>fylla i</strong> ett uppskattat värde, eller <strong>behålla originalet</strong> och skapa en korrigerad kopia. Dokumentera regeln och dess konsekvens."
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "data[\"Torque [Nm]\"] = pd.to_numeric(data[\"Torque [Nm]\"], errors=\"coerce\")  # text blir NaN\nvalid = data[\"Torque [Nm]\"].ge(0)                                           # rimlighetskontroll\nclean = data[valid].drop_duplicates()\n",
+      "caption": "enkel validering"
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "valid = (\n    data[\"air_temperature_k\"].between(250, 350)\n    & data[\"process_temperature_k\"].between(250, 400)\n    & data[\"rotational_speed_rpm\"].gt(0)\n    & data[\"torque_nm\"].ge(0)\n    & data[\"tool_wear_min\"].ge(0)\n    & data[\"machine_failure\"].isin([0, 1])\n)\nclean = data.loc[valid].copy()\n",
+      "caption": "kontrollerna i analyze_iot.py"
+    },
+    {
+      "type": "h",
+      "text": "Datakällor för projektet"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Dataset",
+        "Storlek",
+        "Passar för"
+      ],
+      "rows": [
+        [
+          "AI4I 2020 (rekommenderat)",
+          "10 000 rader, 14 kolumner, 510 kB",
+          "Visualisering, samband, effektberäkning, klassificering och klassobalans"
+        ],
+        [
+          "Appliances Energy Prediction",
+          "19 735 rader, 29 kolumner, 11,4 MB",
+          "Riktig tidsserie: resampling, tidsfönster och regression"
+        ],
+        [
+          "Eget (efter godkännande)",
+          "Hanterbart på en laptop",
+          "Tydlig källa och licens, dokumenterade kolumner och enheter"
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Läs datasetets dokumentation",
+      "html": "<p>Öppna UCI-sidan för AI4I. Är datan verklig eller syntetisk? Vad representerar en rad? Vilka kolumner är mätvärden, mål och identifierare? Vilka riskerar att läcka svaret? Vilken licens gäller?</p>",
+      "solution": "Syntetisk, gjord för att efterlikna prediktivt underhåll.\nEn rad = en observation av maskinen vid bearbetning av en produkt.\nMätvärden: luft- och processtemperatur, varvtal, vridmoment, slitage.\nMål: Machine failure.\nIdentifierare: UDI och Product ID.\nLäcker: TWF, HDF, PWF, OSF, RNF.\nLicens: CC BY 4.0 (fri användning med källangivelse).\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Individuell projektstart",
+      "html": "<p>Skriv högst en sida: valt dataset med länk, vad en rad representerar, en avgränsad analysfråga, tre relevanta kolumner, ett kvalitets- eller urvalsproblem och en tänkbar visualisering.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en DataFrame?",
+      "options": [
+        "En bild",
+        "En tabell med namngivna kolumner",
+        "En databas på servern",
+        "Ett diagram"
+      ],
+      "answer": 1,
+      "why": "pandas huvudtyp."
+    },
+    {
+      "type": "mc",
+      "q": "Vad visar data.shape?",
+      "options": [
+        "Kolumnernas typer",
+        "(antal rader, antal kolumner)",
+        "Medelvärden",
+        "Saknade värden"
+      ],
+      "answer": 1,
+      "why": "För AI4I (10000, 14)."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket anrop räknar saknade värden per kolumn?",
+      "options": [
+        "data.describe()",
+        "data.isna().sum()",
+        "data.head()",
+        "data.dtypes"
+      ],
+      "answer": 1,
+      "why": "isna ger True för saknade."
+    },
+    {
+      "type": "mc",
+      "q": "Är AI4I verklig eller syntetisk data?",
+      "options": [
+        "Verklig från en fabrik",
+        "Syntetisk",
+        "Från en bil",
+        "Från en simulator i Wokwi"
+      ],
+      "answer": 1,
+      "why": "Den efterliknar prediktivt underhåll."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken kolumn är målvariabeln?",
+      "options": [
+        "UDI",
+        "Type",
+        "Machine failure",
+        "Torque [Nm]"
+      ],
+      "answer": 2,
+      "why": "0 eller 1."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska UDI inte användas som numerisk feature?",
+      "options": [
+        "Den saknar värden",
+        "Ett löpnummer säger inget om maskinens tillstånd",
+        "Den är text",
+        "Den är för stor"
+      ],
+      "answer": 1,
+      "why": "Den behövs för spårbarhet, inte för modellen."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ger TWF, HDF, PWF, OSF och RNF dataläckage?",
+      "options": [
+        "De är text",
+        "De beskriver felet som redan inträffat, så de avslöjar svaret",
+        "De saknar värden",
+        "De är i kelvin"
+      ],
+      "answer": 1,
+      "why": "Vid verklig användning finns de inte i förväg."
+    },
+    {
+      "type": "mc",
+      "q": "Ungefär hur stor andel av AI4I:s rader är maskinfel?",
+      "options": [
+        "50 %",
+        "20 %",
+        "3–4 %",
+        "0 %"
+      ],
+      "answer": 2,
+      "why": "Kraftig klassobalans."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör pd.to_numeric(..., errors=\"coerce\")?",
+      "options": [
+        "Kraschar på text",
+        "Gör text som inte är tal till NaN",
+        "Tar bort kolumnen",
+        "Avrundar"
+      ],
+      "answer": 1,
+      "why": "Felaktig text blir ett saknat värde."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör drop_duplicates()?",
+      "options": [
+        "Tar bort tomma rader",
+        "Tar bort upprepade rader",
+        "Sorterar",
+        "Byter namn"
+      ],
+      "answer": 1,
+      "why": "Den första förekomsten behålls."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka åtgärder kan väljas för ett kvalitetsproblem?",
+      "options": [
+        "Kasta mätningen",
+        "Markera som osäker",
+        "Behålla originalet och skapa en korrigerad kopia",
+        "Tyst ändra originalet utan att dokumentera"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Dokumentera alltid regeln."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket dataset passar tidsserier och regression?",
+      "options": [
+        "AI4I 2020",
+        "Appliances Energy Prediction",
+        "Båda lika bra",
+        "Inget"
+      ],
+      "answer": 1,
+      "why": "Verklig tidsserie från en byggnad."
+    },
+    {
+      "type": "text",
+      "q": "Vilken licens har AI4I? (förkortning)",
+      "accept": [
+        "CC BY 4.0",
+        "CC-BY 4.0",
+        "CC BY",
+        "cc by 4.0"
+      ],
+      "placeholder": "licens",
+      "why": "Creative Commons Attribution."
+    },
+    {
+      "type": "code",
+      "q": "Validera AI4I-rader, ta bort dubbletter och skriv en kvalitetsrapport.",
+      "task": "02-validering-1",
+      "why": "Samma kontroller som analyze_iot.py.",
+      "web": true
+    }
+  ]
+}

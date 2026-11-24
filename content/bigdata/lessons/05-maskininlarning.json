@@ -1,0 +1,395 @@
+{
+  "id": "maskininlarning",
+  "title": "Maskininlärning för IoT",
+  "category": "ML",
+  "minutes": 15,
+  "lead": "Regler, statistik eller ML, de fyra problemtyperna, observation, feature och label, träning och test, baslinjen, överanpassning, dataläckage, drift av modeller, edge mot cloud och vad ML kostar.",
+  "sources": [
+    "Machine Learning (för IoT)",
+    "Övningar dag 3"
+  ],
+  "goals": [
+    "Avgöra om en regel, statistik eller ML passar",
+    "Klassa ett problem som regression, klassificering, anomalidetektion eller klustring",
+    "Förklara observation, feature, label och prediktion",
+    "Dela data i träning och test och använda en baslinje",
+    "Känna igen överanpassning, dataläckage och drift",
+    "Väga edge mot cloud och kostnaden för ML"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Regler, statistik eller ML?"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Metod",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Regel",
+          "Larma om temperaturen överstiger 80 °C"
+        ],
+        [
+          "Statistik",
+          "Larma när värdet ligger mer än tre standardavvikelser från det normala"
+        ],
+        [
+          "ML",
+          "Lär ett mönster från historiska exempel"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Den enklaste metoden som fungerar är en viktig jämförelsepunkt. ML ska slå den för att vara värd besväret."
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "normal = data.loc[data[\"machine_failure\"] == 0, \"torque_nm\"]\nmean, std = normal.mean(), normal.std()          # .std() delar med n - 1\nz = (data[\"torque_nm\"] - mean) / std\ndata[\"torque_alarm\"] = z.abs() > 3                # statistisk regel\n",
+      "caption": "statistik: z-värde"
+    },
+    {
+      "type": "h",
+      "text": "Fyra vanliga IoT-problem"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Typ",
+        "Svarar med",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Regression",
+          "Ett tal",
+          "Återstående livslängd, energianvändning i Wh"
+        ],
+        [
+          "Klassificering",
+          "En klass",
+          "Normal eller maskinfel, feltyp A eller B"
+        ],
+        [
+          "Anomalidetektion",
+          "Ovanligt eller inte",
+          "Ovanliga kombinationer av temperatur, varvtal och vridmoment"
+        ],
+        [
+          "Klustring",
+          "Grupper utan färdiga etiketter",
+          "Driftmönster"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "I <strong>prediktivt underhåll</strong> är signalerna vibration och ljud, temperatur och tryck, effekt och ström, felkoder och driftläge, och tid sedan service. Målet kan vara felrisk, feltyp eller återstående livslängd."
+    },
+    {
+      "type": "h",
+      "text": "Begreppen"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Begrepp",
+        "I AI4I"
+      ],
+      "rows": [
+        [
+          "Observation",
+          "En rad med mätvärden"
+        ],
+        [
+          "Feature",
+          "Temperatur, varvtal, vridmoment, slitage, effekt"
+        ],
+        [
+          "Label",
+          "Machine failure, 0 eller 1"
+        ],
+        [
+          "Prediktion",
+          "Modellens uppskattning för ny data"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Vid <strong>träning</strong> anpassar algoritmen modellens parametrar efter historiska features och labels, och modellen sparas och versionshanteras. Vid <strong>användning</strong> blir nya sensordata features, modellen ger en prediktion, och systemet visar eller använder den."
+    },
+    {
+      "type": "h",
+      "text": "Träning och test"
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "from sklearn.model_selection import train_test_split\n\nfeatures = [\"air_temperature_k\", \"process_temperature_k\", \"rotational_speed_rpm\",\n            \"torque_nm\", \"tool_wear_min\", \"power_w\", \"temperature_difference_k\", \"type\"]\nx = data[features]                  # inte UDI, Product ID eller TWF..RNF\ny = data[\"machine_failure\"]\n\nx_train, x_test, y_train, y_test = train_test_split(\n    x, y, test_size=0.25, random_state=42, stratify=y   # stratify: fel i båda delarna\n)\n"
+    },
+    {
+      "type": "p",
+      "html": "Modellen tränas på en del och utvärderas på data den aldrig sett. Med bara 3–4 % fel ser <code>stratify=y</code> till att båda delarna får samma andel fel. Testdatan rörs inte under träningen."
+    },
+    {
+      "type": "h",
+      "text": "Baslinjen"
+    },
+    {
+      "type": "p",
+      "html": "En enkel metod som modellen måste slå: gissa alltid medelvärdet, använd senaste mätningen som prognos, använd en befintlig tröskelregel, eller välj alltid den vanligaste klassen. Utan baslinje vet vi inte om modellen tillför något."
+    },
+    {
+      "type": "h",
+      "text": "Fallgropar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Överanpassning:</strong> modellen lär sig träningsdatan för detaljerat. Mycket bra på träning, betydligt sämre på test, instabil när miljön ändras. Motåtgärder: enklare modell, mer relevant data och strikt validering.",
+        "<strong>Dataläckage:</strong> träningen använder information som saknas vid verklig användning. Normalisering beräknad på hela datasetet, framtida mätningar i ett tidsfönster, samma maskinhändelse i både träning och test, eller TWF..RNF som features.",
+        "<strong>Drift:</strong> omvärlden ändras när sensorer byts eller kalibreras, maskiner slits eller uppgraderas, firmware ändrar datans betydelse och årstider skiftar. Följ indata, prediktioner och verkliga utfall över tid."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "I <code>train_model.py</code> ligger <code>StandardScaler</code> i en <code>Pipeline</code>. Då beräknas medel och standardavvikelse bara på träningsdatan, och läckaget från normalisering undviks."
+    },
+    {
+      "type": "h",
+      "text": "Edge eller cloud?"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Edge",
+        "Cloud"
+      ],
+      "rows": [
+        [
+          "Låg latens",
+          "Mer beräkningskraft"
+        ],
+        [
+          "Fungerar utan nät",
+          "Enklare att uppdatera centralt"
+        ],
+        [
+          "Mindre data lämnar enheten",
+          "Samlad data från många enheter"
+        ],
+        [
+          "Begränsad energi och minne",
+          "Nätkostnad och beroende av anslutning"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "När ML kostar mer än det smakar"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Insamling och märkning av träningsdata",
+        "Beräkning, lagring och nättrafik",
+        "Utveckling och test",
+        "Övervakning och omträning",
+        "Falska larm och missade fel",
+        "Säkerhet, integritet och ansvar"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Välj problemtyp",
+      "html": "<p>Klassa: 1) förutsäg energianvändning i Wh, 2) hitta driftmönster utan etiketter, 3) avgör om en AI4I-observation är maskinfel, 4) hitta ovanliga kombinationer av temperatur, varvtal och vridmoment, 5) uppskatta återstående verktygslivslängd i minuter.</p>",
+      "solution": "1 regression\n2 klustring\n3 klassificering\n4 anomalidetektion\n5 regression\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är en statistisk regel enligt kursen?",
+      "options": [
+        "Larma över 80 °C",
+        "Larma när värdet ligger mer än tre standardavvikelser från det normala",
+        "En neural nätverksmodell",
+        "En SQL-fråga"
+      ],
+      "answer": 1,
+      "why": "Ett z-värde."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska man jämföra ML med enklare metoder?",
+      "options": [
+        "ML är alltid sämst",
+        "Den enklaste fungerande metoden är jämförelsepunkten som ML måste slå",
+        "Det krävs av sklearn",
+        "För att spara minne"
+      ],
+      "answer": 1,
+      "why": "Annars vet vi inte om ML tillför värde."
+    },
+    {
+      "type": "mc",
+      "q": "Förutsäg energianvändning i wattimmar. Vilken problemtyp?",
+      "options": [
+        "Klassificering",
+        "Regression",
+        "Klustring",
+        "Anomalidetektion"
+      ],
+      "answer": 1,
+      "why": "Svaret är ett tal."
+    },
+    {
+      "type": "mc",
+      "q": "Hitta driftmönster utan färdiga etiketter. Vilken problemtyp?",
+      "options": [
+        "Regression",
+        "Klassificering",
+        "Klustring",
+        "Baslinje"
+      ],
+      "answer": 2,
+      "why": "Ingen label finns."
+    },
+    {
+      "type": "mc",
+      "q": "Avgöra om en observation är maskinfel. Vilken problemtyp?",
+      "options": [
+        "Klassificering",
+        "Regression",
+        "Klustring",
+        "Partitionering"
+      ],
+      "answer": 0,
+      "why": "Två klasser: 0 eller 1."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är label i AI4I?",
+      "options": [
+        "Type",
+        "Machine failure",
+        "UDI",
+        "Torque"
+      ],
+      "answer": 1,
+      "why": "Det modellen ska förutsäga."
+    },
+    {
+      "type": "mc",
+      "q": "Varför används stratify=y i train_test_split?",
+      "options": [
+        "För att blanda kolumner",
+        "Så att både tränings- och testdatan får samma andel fel",
+        "För att ta bort fel",
+        "För att få fler rader"
+      ],
+      "answer": 1,
+      "why": "Viktigt med 3–4 % fel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en baslinje?",
+      "options": [
+        "Den bästa modellen",
+        "En enkel metod som modellen måste slå",
+        "Testdatan",
+        "En graf"
+      ],
+      "answer": 1,
+      "why": "Till exempel att alltid gissa den vanligaste klassen."
+    },
+    {
+      "type": "mc",
+      "q": "Modellen är mycket bra på träningsdatan men dålig på testdatan. Vad är det?",
+      "options": [
+        "Dataläckage",
+        "Överanpassning",
+        "Drift",
+        "Klustring"
+      ],
+      "answer": 1,
+      "why": "Den har lärt sig detaljer i stället för mönster."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är dataläckage?",
+      "options": [
+        "Att använda stratify",
+        "Att normalisera med medel och std från hela datasetet innan uppdelningen",
+        "Att ha en baslinje",
+        "Att använda logistisk regression"
+      ],
+      "answer": 1,
+      "why": "Testdatan påverkar då träningen."
+    },
+    {
+      "type": "mc",
+      "q": "Sensorn byts och modellen blir sämre. Vad kallas det?",
+      "options": [
+        "Överanpassning",
+        "Drift",
+        "Klustring",
+        "Baslinje"
+      ],
+      "answer": 1,
+      "why": "Omvärlden har ändrats."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en fördel med ML på edge?",
+      "options": [
+        "Mer beräkningskraft",
+        "Låg latens och fungerar utan nät",
+        "Enklare central uppdatering",
+        "Samlad data från alla enheter"
+      ],
+      "answer": 1,
+      "why": "Men begränsad energi och minne."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka kostnader ska räknas in för ML?",
+      "options": [
+        "Märkning av träningsdata",
+        "Övervakning och omträning",
+        "Falska larm och missade fel",
+        "Inga, ML är gratis"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Plus beräkning, säkerhet och ansvar."
+    },
+    {
+      "type": "text",
+      "q": "Hur många standardavvikelser används som gräns i kursens statistiska regel?",
+      "accept": [
+        "3",
+        "tre"
+      ],
+      "placeholder": "antal",
+      "why": "Tre standardavvikelser från det normala."
+    },
+    {
+      "type": "code",
+      "q": "Larma med z-värde: mer än tre standardavvikelser från normal drift.",
+      "task": "05-zscore-1",
+      "why": "z = (värde − medel) / std, larm om |z| &gt; 3.",
+      "web": true
+    }
+  ]
+}

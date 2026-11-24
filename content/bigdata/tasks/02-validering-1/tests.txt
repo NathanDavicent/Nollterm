@@ -1,0 +1,46 @@
+--- in
+6
+1,M,298.1,308.6,1551,42.8,0,0
+2,L,298.2,308.7,1408,46.3,3,0
+2,L,298.2,308.7,1408,46.3,3,0
+3,L,298.1,308.5,0,49.4,5,0
+4,L,298.2,308.6,1433,39.5,7,1
+5,H,abc,308.7,1408,40.0,9,0
+--- out
+Ogiltig rad 3: rotational_speed_rpm
+Ogiltig rad 5: air_temperature_k
+Rader: 6
+Dubbletter: 1
+Ogiltiga: 2
+Rena rader: 3
+Maskinfel: 1
+Felandel: 33.33 %
+--- in
+5
+10,M,300.0,310.0,1500,40.0,100,0
+11,M,300.1,310.2,1490,-3.0,102,0
+12,H,500.0,310.0,1500,40.0,104,0
+13,L,299.0,309.0,2800,8.0,210,1
+14,L,299.1,309.1,1300,60.0,215,2
+--- out
+Ogiltig rad 11: torque_nm
+Ogiltig rad 12: air_temperature_k
+Ogiltig rad 14: machine_failure
+Rader: 5
+Dubbletter: 0
+Ogiltiga: 3
+Rena rader: 2
+Maskinfel: 1
+Felandel: 50.00 %
+--- in
+3
+1,L,298.0,308.0,1500,40.0,10,0
+2,L,298.0,308.0,1500,40.0,12,0
+3,M,298.0,308.0,1500,40.0,14,0
+--- out
+Rader: 3
+Dubbletter: 0
+Ogiltiga: 0
+Rena rader: 3
+Maskinfel: 0
+Felandel: 0.00 %

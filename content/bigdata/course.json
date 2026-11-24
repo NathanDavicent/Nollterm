@@ -1,0 +1,249 @@
+{
+  "id": "bigdata",
+  "badge": "DATA",
+  "title": "Big data",
+  "short": "Big data",
+  "tag": "IoT · Python · ML",
+  "description": "Från sensormätning till beslut: big data-ekosystemet för IoT, datakvalitet och pandas, skalbar behandling, analys och visualisering, och maskininlärning med utvärdering, på AI4I-datasetet.",
+  "headline": "Från <em>mätvärde</em> till beslut.",
+  "lessons": [
+    "01-bigdata-iot.json",
+    "02-datakvalitet.json",
+    "03-skalning.json",
+    "04-analys-visualisering.json",
+    "05-maskininlarning.json",
+    "06-utvardering.json",
+    "07-presentation.json"
+  ],
+  "timeline": [
+    {
+      "date": "Tis 13/10",
+      "title": "Från IoT-signal till Big Data-pipeline · första mötet med AI4I",
+      "lessons": [
+        "bigdata-iot",
+        "datakvalitet"
+      ]
+    },
+    {
+      "date": "Okt",
+      "title": "Behandling, analys och visualisering av data",
+      "lessons": [
+        "skalning",
+        "analys-visualisering"
+      ]
+    },
+    {
+      "date": "Okt",
+      "title": "Machine learning för IoT",
+      "lessons": [
+        "maskininlarning",
+        "utvardering"
+      ]
+    },
+    {
+      "date": "Okt",
+      "title": "Repetition och projektarbete",
+      "lessons": [
+        "presentation"
+      ]
+    },
+    {
+      "date": "Okt",
+      "title": "Individuell presentation (boka tid)",
+      "lessons": [
+        "presentation"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "presentation",
+      "kind": "Examination",
+      "title": "Individuell presentation med följdfrågor",
+      "intro": "Ett eget analysprojekt på ett färdigt dataset, helst AI4I 2020, som redovisas i en presentation på 4–6 minuter med följdfrågor. Boka tid med läraren.",
+      "groups": [
+        {
+          "h": "Ska täcka",
+          "items": [
+            "IoT-problem och datakälla",
+            "Datapipeline och resursbehov",
+            "Analys, visualisering och ML",
+            "Resultat och begränsningar",
+            "Kritisk värdering av källor och teknikval"
+          ]
+        },
+        {
+          "h": "Projektets delar per dag",
+          "items": [
+            "Dag 1: dataset, vad en rad är, en avgränsad fråga, tre kolumner, ett kvalitetsproblem och en tänkbar visualisering",
+            "Dag 2: kolumner, minst ett behandlingsval, minst en feature och en första visualisering",
+            "Dag 3: målvariabel och features (och vilka som utesluts), tränings- och teststrategi, baslinje och mätetal, resultat och ett motiverat beslut om praktisk användning",
+            "Dag 4: kamratgranskning och snabbcheck"
+          ]
+        }
+      ],
+      "topics": [
+        "datakvalitet",
+        "skalning",
+        "analys-visualisering",
+        "maskininlarning",
+        "utvardering",
+        "presentation"
+      ],
+      "hint": "Välj en avgränsad fråga tidigt. Ett tydligt litet projekt med baslinje och konkret begränsning slår ett stort och spretigt."
+    },
+    {
+      "id": "labbar",
+      "kind": "Övningar",
+      "title": "Kursens övningar",
+      "intro": "Övningarna och laborationerna från varje dag. Koden finns i lärarens repo joakim-systementor/BigData.",
+      "groups": [
+        {
+          "h": "Dag 1",
+          "items": [
+            "Hur stor blir datan?",
+            "Läs AI4I:s dokumentation",
+            "Första mötet med AI4I i pandas"
+          ]
+        },
+        {
+          "h": "Dag 2",
+          "items": [
+            "När datan växer",
+            "analyze_iot.py: sammanfatta per typ, features, två diagram och tolkning"
+          ]
+        },
+        {
+          "h": "Dag 3",
+          "items": [
+            "Välj rätt problemtyp",
+            "train_model.py: klassificera maskinfel och läs model_metrics.json",
+            "Jämför med en regel",
+            "Källövning: UCI och NIST AI RMF"
+          ]
+        }
+      ],
+      "topics": [
+        "bigdata-iot",
+        "datakvalitet",
+        "skalning",
+        "analys-visualisering",
+        "maskininlarning",
+        "utvardering"
+      ],
+      "hint": "Skapa en virtuell miljö (python -m venv .venv) och installera requirements.txt en gång."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "F1",
+      "title": "Big Data och IoT",
+      "description": "Kursens mål, examination, fem V, batch och ström, pipeline, lagring och datakvalitet.",
+      "lessons": [
+        "bigdata-iot",
+        "datakvalitet"
+      ]
+    },
+    {
+      "kind": "F2",
+      "title": "Behandling, analys och visualisering av data",
+      "description": "Skalbarhet, partitionering, verktygskarta, pandas, features och diagram.",
+      "lessons": [
+        "skalning",
+        "analys-visualisering"
+      ]
+    },
+    {
+      "kind": "F3",
+      "title": "Machine Learning (för IoT)",
+      "description": "Problemtyper, träning och test, baslinje, mätetal, obalans, läckage, drift och NIST.",
+      "lessons": [
+        "maskininlarning",
+        "utvardering"
+      ]
+    },
+    {
+      "kind": "F4",
+      "title": "Repetition",
+      "description": "Analysflödet, teknikval, resurser och presentationen.",
+      "lessons": [
+        "presentation"
+      ]
+    },
+    {
+      "kind": "PDF",
+      "title": "Övningar dag 1, 2 och 3",
+      "description": "Övningar, laborationer och projektstegen.",
+      "lessons": [
+        "bigdata-iot",
+        "datakvalitet",
+        "skalning",
+        "analys-visualisering",
+        "maskininlarning",
+        "utvardering"
+      ]
+    },
+    {
+      "kind": "PDF",
+      "title": "Datakällor",
+      "description": "AI4I 2020, Appliances Energy Prediction och krav på eget dataset.",
+      "lessons": [
+        "datakvalitet"
+      ]
+    },
+    {
+      "kind": "Kod",
+      "title": "analyze_iot.py, train_model.py och inspect_data.py",
+      "description": "Lärarens pipeline med README som förklarar varje steg.",
+      "lessons": [
+        "datakvalitet",
+        "analys-visualisering",
+        "utvardering"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Data",
+      "title": "AI4I 2020 Predictive Maintenance (UCI)",
+      "url": "https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset",
+      "description": "Kursens dataset, CC BY 4.0."
+    },
+    {
+      "kind": "Data",
+      "title": "Appliances Energy Prediction (UCI)",
+      "url": "https://archive.ics.uci.edu/dataset/374/appliances+energy+prediction",
+      "description": "Alternativ med verklig tidsserie."
+    },
+    {
+      "kind": "Repo",
+      "title": "joakim-systementor/BigData",
+      "url": "https://github.com/joakim-systementor/BigData",
+      "description": "Lärarens kod och övningar."
+    },
+    {
+      "kind": "NIST",
+      "title": "NIST AI RMF: Trustworthiness",
+      "url": "https://airc.nist.gov/airmf-resources/airmf/3-sec-characteristics/",
+      "description": "Avsnittet om tillförlitlig AI för källövningen."
+    },
+    {
+      "kind": "Docs",
+      "title": "pandas: Getting started",
+      "url": "https://pandas.pydata.org/docs/getting_started/index.html",
+      "description": "DataFrame, filtrering och groupby."
+    },
+    {
+      "kind": "Docs",
+      "title": "scikit-learn: Model evaluation",
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "description": "Precision, recall, F1, MAE och R²."
+    },
+    {
+      "kind": "Docs",
+      "title": "Matplotlib: Quick start",
+      "url": "https://matplotlib.org/stable/users/explain/quick_start.html",
+      "description": "Figurer, axlar och etiketter."
+    }
+  ]
+}

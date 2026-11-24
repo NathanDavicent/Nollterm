@@ -1,0 +1,30 @@
+--- in
+5
+100 110
+120 118
+140 135
+160 170
+180 176
+--- out
+MAE: 6.200
+MAE för medelvärdesbaslinjen: 24.000
+R2: 0.939
+--- in
+4
+10 10
+20 20
+30 30
+40 40
+--- out
+MAE: 0.000
+MAE för medelvärdesbaslinjen: 10.000
+R2: 1.000
+--- in
+3
+5 15
+10 5
+15 10
+--- out
+MAE: 6.667
+MAE för medelvärdesbaslinjen: 3.333
+R2: -2.000

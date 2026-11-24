@@ -1,0 +1,338 @@
+{
+  "id": "bigdata-iot",
+  "title": "Big data och IoT",
+  "category": "Grunder",
+  "minutes": 13,
+  "date": "2026-10-13",
+  "lead": "När data blir big data, de fem V:na, hur stor en sensorpark blir, batch och strömmande data, IoT-pipelinen från sensor till beslut, och var datan lagras.",
+  "sources": [
+    "Big Data och IoT",
+    "Övningar dag 1",
+    "Övningar 2026-10-13"
+  ],
+  "goals": [
+    "Förklara när data blir big data och de fem egenskaperna",
+    "Räkna ut datamängden från en sensorpark",
+    "Skilja på batch och strömmande behandling",
+    "Beskriva stegen i en IoT-datapipeline och frågorna mellan dem",
+    "Välja lagring och skilja på rådata och bearbetad data"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Kursen i korthet"
+    },
+    {
+      "type": "p",
+      "html": "Fyra lektionsdagar med ett sammanhängande IoT-fall: från sensormätning till beslut, via insamling, lagring, behandling och analys. Efter kursen ska du kunna beskriva ett big data-ekosystem för IoT, planera och utföra behandling, analys och visualisering, tillämpa och värdera enkel maskininlärning, och kommunicera och granska en lösning kritiskt."
+    },
+    {
+      "type": "p",
+      "html": "Kursens gemensamma dataset är <strong>AI4I 2020</strong>: 10 000 syntetiska observationer från ett industrifall med luft- och processtemperatur, rotationshastighet, vridmoment, verktygsslitage och maskinfel. Frågan genom hela kursen: <em>vad skiljer normal drift från observationer där maskinfel inträffar?</em>"
+    },
+    {
+      "type": "h",
+      "text": "När blir data big data?"
+    },
+    {
+      "type": "p",
+      "html": "När vanliga arbetssätt inte längre räcker: för mycket data för en dator eller databas, data som kommer snabbare än vi hinner bearbeta, många format med varierande kvalitet, eller krav på snabba eller kontinuerliga beslut. I kursen fejkar vi: datamängden är relativt stor men inget en laptop får problem med."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Egenskap",
+        "IoT-exempel"
+      ],
+      "rows": [
+        [
+          "Volym (volume)",
+          "Miljarder historiska mätvärden"
+        ],
+        [
+          "Hastighet (velocity)",
+          "Tusentals händelser per sekund"
+        ],
+        [
+          "Variation (variety)",
+          "Sensorvärden, loggar, bilder och GPS-data"
+        ],
+        [
+          "Tillförlitlighet (veracity)",
+          "Bortfall, brus och felkalibrering"
+        ],
+        [
+          "Värde (value)",
+          "Bättre beslut eller automatiska åtgärder"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Hur mycket data blir det?"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "1 000 sensorer × 1 mätning/s × 100 byte = 100 000 byte/s = 100 kB/s\nper dygn:  100 000 × 86 400          = 8,64 GB\nper år:    8,64 GB × 365             ≈ 3,15 TB\n",
+      "caption": "bara rådata, utan kopior, index eller bearbetad data"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Räkna med SI-prefix (1 GB = 10⁹ byte) och skriv ut dina antaganden: inga omsändningar, ingen komprimering, inga metadata, samma takt dygnet runt."
+    },
+    {
+      "type": "h",
+      "text": "Batch och strömmande data"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Batch",
+        "Strömmande"
+      ],
+      "rows": [
+        [
+          "Avgränsad datamängd",
+          "Händelserna fortsätter att komma"
+        ],
+        [
+          "Bearbetas enligt schema",
+          "Bearbetas fortlöpande"
+        ],
+        [
+          "Passar historisk analys",
+          "Passar larm och realtidsbeslut"
+        ],
+        [
+          "Enkel att köra om",
+          "Måste hantera sena och tappade händelser"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "IoT-pipelinen"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Sensor → Enhet/gateway → Broker → Lagring → Beräkning → Analys/ML → Dashboard, larm eller styrning\n"
+    },
+    {
+      "type": "p",
+      "html": "Sensorn mäter, enheten eller gatewayen paketerar, brokern tar emot, lagringen bevarar rådata och bearbetad data, beräkningen rensar och sammanställer, analysen eller ML-modellen skapar resultat, och dashboard, larm eller styrning använder det."
+    },
+    {
+      "type": "p",
+      "html": "<strong>MQTT</strong> sköter transporten: enheter publicerar till topics, brokern distribuerar, konsumenter prenumererar oberoende av producenterna och QoS styr leveransgarantin. Men MQTT löser transporten, inte hela dataplattformen."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Vad händer när nätverket försvinner?",
+        "Hur identifierar vi sensorn och dess firmwareversion?",
+        "Vilken tidsstämpel litar vi på, enhetens eller serverns?",
+        "Kan samma meddelande komma två gånger?",
+        "Hur länge måste rådata sparas?",
+        "Vem får läsa eller ändra data?"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Lagring"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Lagring",
+        "Passar för"
+      ],
+      "rows": [
+        [
+          "Objektlagring",
+          "Billig rådata, historik och data lake"
+        ],
+        [
+          "Relationsdatabas",
+          "Strukturerad data och tydliga relationer"
+        ],
+        [
+          "Tidsseriedatabas",
+          "Tidsstämplade mätningar och tidsfrågor"
+        ],
+        [
+          "NoSQL-databas",
+          "Flexibla dokument och hög skrivlast"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Spara både <strong>rådata</strong>, originalet som gör omkörning och felsökning möjlig, och <strong>bearbetad data</strong> med kontrollerade typer och enheter, rensning, beräkningar och aggregat för analys och rapporter."
+    },
+    {
+      "type": "exercise",
+      "title": "Hur stor blir datan?",
+      "html": "<p>2 500 maskiner skickar ett meddelande på 160 byte två gånger per sekund. Räkna ut byte per sekund, GB per dygn och TB per år. Hur stort blir lagringsbehovet med tre kopior? Skriv två antaganden som beräkningen inte tar hänsyn till.</p>",
+      "solution": "2 500 × 2 × 160      = 800 000 byte/s\n× 86 400 s           = 69,12 GB per dygn\n× 365                ≈ 25,23 TB per år\n× 3 kopior           ≈ 75,69 TB per år\n\nAntaganden som saknas: protokoll-overhead (MQTT, TCP, TLS), index och\nbearbetade kopior, komprimering, att alla maskiner går dygnet runt.\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "När uppstår big data?",
+      "options": [
+        "När datan är i CSV",
+        "När vanliga arbetssätt inte längre räcker",
+        "När man använder Python",
+        "När datan är syntetisk"
+      ],
+      "answer": 1,
+      "why": "För mycket, för snabbt, för varierat."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken egenskap handlar om bortfall, brus och felkalibrering?",
+      "options": [
+        "Volym",
+        "Hastighet",
+        "Tillförlitlighet (veracity)",
+        "Värde"
+      ],
+      "answer": 2,
+      "why": "Kan vi lita på datan?"
+    },
+    {
+      "type": "mc",
+      "q": "Vilken egenskap handlar om tusentals händelser per sekund?",
+      "options": [
+        "Volym",
+        "Hastighet (velocity)",
+        "Variation",
+        "Värde"
+      ],
+      "answer": 1,
+      "why": "Data som kommer snabbt."
+    },
+    {
+      "type": "mc",
+      "q": "1 000 sensorer skickar 100 byte en gång per sekund. Hur mycket blir det per dygn?",
+      "options": [
+        "100 MB",
+        "8,64 GB",
+        "3,15 TB",
+        "86,4 kB"
+      ],
+      "answer": 1,
+      "why": "100 kB/s × 86 400 s."
+    },
+    {
+      "type": "mc",
+      "q": "Vad passar strömmande behandling för?",
+      "options": [
+        "Historisk analys en gång i månaden",
+        "Larm och realtidsbeslut",
+        "Att köra om enkelt",
+        "Avgränsade filer"
+      ],
+      "answer": 1,
+      "why": "Batch passar historisk analys."
+    },
+    {
+      "type": "mc",
+      "q": "Vad måste strömmande behandling hantera som batch slipper?",
+      "options": [
+        "Kolumnnamn",
+        "Sena och tappade händelser",
+        "CSV-filer",
+        "Diagram"
+      ],
+      "answer": 1,
+      "why": "Händelserna kommer löpande."
+    },
+    {
+      "type": "mc",
+      "q": "Vad löser MQTT i pipelinen?",
+      "options": [
+        "Hela dataplattformen",
+        "Transporten av meddelanden",
+        "Lagringen",
+        "Analysen"
+      ],
+      "answer": 1,
+      "why": "Inte lagring, rensning eller analys."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken lagring passar tidsstämplade mätningar och tidsfrågor?",
+      "options": [
+        "Objektlagring",
+        "Relationsdatabas",
+        "Tidsseriedatabas",
+        "Ett kalkylark"
+      ],
+      "answer": 2,
+      "why": "Till exempel InfluxDB eller TimescaleDB."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken lagring passar billig rådata och historik i en data lake?",
+      "options": [
+        "Objektlagring",
+        "Tidsseriedatabas",
+        "NoSQL",
+        "RAM"
+      ],
+      "answer": 0,
+      "why": "Som S3 eller Azure Blob."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska rådata sparas?",
+      "options": [
+        "Den är snabbare att analysera",
+        "Den gör omkörning och felsökning möjlig",
+        "Den tar mindre plats",
+        "Det krävs av MQTT"
+      ],
+      "answer": 1,
+      "why": "Originalet går inte att återskapa."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka frågor behöver ställas mellan stegen i pipelinen?",
+      "options": [
+        "Kan samma meddelande komma två gånger?",
+        "Vilken tidsstämpel litar vi på?",
+        "Hur länge sparas rådata?",
+        "Vilken färg har dashboarden?"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Plus nätverksbortfall, identitet och behörighet."
+    },
+    {
+      "type": "text",
+      "q": "Hur många sekunder har ett dygn?",
+      "accept": [
+        "86400",
+        "86 400"
+      ],
+      "placeholder": "sekunder",
+      "why": "24 × 60 × 60."
+    },
+    {
+      "type": "code",
+      "q": "Räkna ut datamängden från en sensorpark.",
+      "task": "01-datamangd-1",
+      "why": "Byte per sekund × 86 400 ger dygnet, × 365 året.",
+      "web": true
+    }
+  ]
+}

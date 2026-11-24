@@ -1,0 +1,20 @@
+--- in
+6
+M 42.8 0
+L 46.3 0
+L 49.4 1
+H 39.5 0
+L 40.0 0
+M 60.2 1
+--- out
+H: 1 observationer, 0 fel (0.00 %), medelvridmoment 39.50 Nm
+L: 3 observationer, 1 fel (33.33 %), medelvridmoment 45.23 Nm
+M: 2 observationer, 1 fel (50.00 %), medelvridmoment 51.50 Nm
+--- in
+4
+L 30.0 0
+L 50.0 1
+L 40.0 0
+L 44.0 0
+--- out
+L: 4 observationer, 1 fel (25.00 %), medelvridmoment 41.00 Nm

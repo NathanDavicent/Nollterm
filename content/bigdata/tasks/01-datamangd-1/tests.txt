@@ -1,0 +1,21 @@
+--- in
+1000 1 100 1
+--- out
+Byte per sekund: 100000
+GB per dygn: 8.64
+TB per år: 3.15
+Med 1 kopior: 3.15 TB per år
+--- in
+2500 2 160 3
+--- out
+Byte per sekund: 800000
+GB per dygn: 69.12
+TB per år: 25.23
+Med 3 kopior: 75.69 TB per år
+--- in
+50 10 64 2
+--- out
+Byte per sekund: 32000
+GB per dygn: 2.76
+TB per år: 1.01
+Med 2 kopior: 2.02 TB per år

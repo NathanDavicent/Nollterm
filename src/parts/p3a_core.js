@@ -54,6 +54,13 @@ const HERO_CARDS = {
         <div class="mem bits8">${cells}</div>
         <div class="foot">7 av 8 tester gröna. T04 är rött,<br>så pipelinen stoppar mergen till main.</div></div>`;
   },
+  bigdata: () => {
+    const cells = [..."00010000"].map((ch, i) => `<div><span class="cell ${ch === "1" ? "z" : ""}" style="animation-delay:${i * 90}ms">${ch}</span><span class="ad">rad ${i + 1}</span></div>`).join("");
+    return `<div class="memcard" aria-label="Exempel: kolumnen machine_failure med nollor och ettor">
+        <div class="decl">data[<span class="s">"machine_failure"</span>].mean()</div>
+        <div class="mem bits8">${cells}</div>
+        <div class="foot">Medelvärdet av nollor och ettor är felandelen.<br>I AI4I är ungefär 3,4 % av raderna maskinfel.</div></div>`;
+  },
 };
 const COURSES = CONTENT.map(c => Object.assign(c, {
   card: HERO_CARDS[c.id] || (() => `<div class="memcard"><div class="decl">${esc(c.badge)}</div><div class="foot">${c.lessons.length} lektioner.</div></div>`),

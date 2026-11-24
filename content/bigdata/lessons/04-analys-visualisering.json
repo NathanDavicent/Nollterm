@@ -1,0 +1,351 @@
+{
+  "id": "analys-visualisering",
+  "title": "Analys, features och visualisering",
+  "category": "Analys",
+  "minutes": 16,
+  "lead": "Filtrering och gruppering i pandas, features som mekanisk effekt och temperaturskillnad, rätt diagram för frågan, läsbara diagram i matplotlib och hur man tolkar dem.",
+  "sources": [
+    "Behandling, analys och visualisering av data",
+    "Övningar dag 2",
+    "analyze_iot.py med förklaring"
+  ],
+  "goals": [
+    "Filtrera rader och gruppera med agg",
+    "Skapa features från befintliga kolumner och förklara enheterna",
+    "Välja diagramtyp efter frågan",
+    "Göra ett läsbart diagram med rubrik, axlar och enheter",
+    "Skilja på vad ett diagram visar och vad som kräver fler belägg"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Begripliga kolumnnamn"
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "RENAME = {\n    \"UDI\": \"udi\",\n    \"Type\": \"type\",\n    \"Air temperature [K]\": \"air_temperature_k\",\n    \"Process temperature [K]\": \"process_temperature_k\",\n    \"Rotational speed [rpm]\": \"rotational_speed_rpm\",\n    \"Torque [Nm]\": \"torque_nm\",\n    \"Tool wear [min]\": \"tool_wear_min\",\n    \"Machine failure\": \"machine_failure\",\n}\ndata = pd.read_csv(path, encoding=\"utf-8-sig\").rename(columns=RENAME)\n",
+      "caption": "små bokstäver och understreck, enheten kvar i namnet"
+    },
+    {
+      "type": "h",
+      "text": "Filtrering"
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "failures = data[data[\"machine_failure\"] == 1]\nhigh_torque = data[data[\"torque_nm\"] > 60]\ntype_l = data[data[\"type\"] == \"L\"]\nboth = data[(data[\"type\"] == \"L\") & (data[\"torque_nm\"] > 60)]   # & och parenteser, inte and\n"
+    },
+    {
+      "type": "h",
+      "text": "Gruppering och aggregat"
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "summary = data.groupby(\"type\").agg(\n    observations=(\"udi\", \"size\"),\n    failures=(\"machine_failure\", \"sum\"),\n    failure_rate=(\"machine_failure\", \"mean\"),\n    mean_torque=(\"torque_nm\", \"mean\"),\n)\nprint(summary)\n"
+    },
+    {
+      "type": "p",
+      "html": "Eftersom maskinfel är 0 eller 1 blir summan antalet fel och medelvärdet felandelen. Gruppering besvarar frågor om kategorier och enheter."
+    },
+    {
+      "type": "h",
+      "text": "Features"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>feature</strong> är ett värde som analysen eller modellen använder. Från AI4I kan vi skapa mekanisk effekt, temperaturskillnad, en indikator för högt slitage, interaktionen mellan slitage och vridmoment, och felandel per typ."
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "# Mekanisk effekt P = M · ω, där ω = varvtal · 2π / 60 (rad/s)\ndata[\"power_w\"] = data[\"torque_nm\"] * data[\"rotational_speed_rpm\"] * 2 * 3.141592653589793 / 60\n\n# Hur mycket varmare processen är än omgivningen\ndata[\"temperature_difference_k\"] = data[\"process_temperature_k\"] - data[\"air_temperature_k\"]\n\n# En enkel indikator\ndata[\"high_tool_wear\"] = data[\"tool_wear_min\"] > 180\n"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Feature",
+        "Enhet",
+        "Betyder"
+      ],
+      "rows": [
+        [
+          "power_w",
+          "W (watt)",
+          "Mekanisk effekt i spindeln. Både för låg och för hög effekt hänger ihop med fel"
+        ],
+        [
+          "temperature_difference_k",
+          "K (en skillnad i kelvin är lika stor som i °C)",
+          "Hur bra värmen leds bort. Liten skillnad kan betyda dålig kylning"
+        ],
+        [
+          "high_tool_wear",
+          "sant/falskt",
+          "Verktyget är slitet"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Features bygger på domänkunskap: en temperaturskillnad kan säga mer än två separata temperaturer."
+    },
+    {
+      "type": "h",
+      "text": "Välj diagram efter frågan"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Fråga",
+        "Diagram"
+      ],
+      "rows": [
+        [
+          "Hur förändras värdet över tid?",
+          "Linjediagram"
+        ],
+        [
+          "Hur är värdena fördelade?",
+          "Histogram eller boxplot"
+        ],
+        [
+          "Finns ett samband?",
+          "Punktdiagram"
+        ],
+        [
+          "Vilka enheter skiljer sig?",
+          "Sorterat stapeldiagram"
+        ],
+        [
+          "När inträffar avvikelser?",
+          "Tidsserie med markerade händelser"
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "En tydlig rubrik som säger vad diagrammet visar",
+        "Enheter på båda axlarna",
+        "Läsbara färger för normal drift och fel",
+        "Transparens (<code>alpha</code>) när många punkter överlappar",
+        "Rimligt urval eller aggregering, och en förklaring av klassobalansen"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "import matplotlib.pyplot as plt\n\nfig, axes = plt.subplots(1, 2, figsize=(11, 4.5))\n\nnormal = data[data[\"machine_failure\"] == 0]\nfailed = data[data[\"machine_failure\"] == 1]\naxes[0].scatter(normal[\"rotational_speed_rpm\"], normal[\"torque_nm\"], s=8, alpha=0.2, label=\"Normal drift\")\naxes[0].scatter(failed[\"rotational_speed_rpm\"], failed[\"torque_nm\"], s=18, alpha=0.75, label=\"Maskinfel\")\naxes[0].set_title(\"Varvtal och vridmoment\")\naxes[0].set_xlabel(\"Rotationshastighet (rpm)\")\naxes[0].set_ylabel(\"Vridmoment (Nm)\")\naxes[0].legend()\n\nrates = data.groupby(\"type\")[\"machine_failure\"].mean().sort_index() * 100\naxes[1].bar(rates.index, rates.values)\naxes[1].set_title(\"Andel maskinfel per produkttyp\")\naxes[1].set_xlabel(\"Produkttyp\")\naxes[1].set_ylabel(\"Maskinfel (%)\")\n\nfig.tight_layout()\nfig.savefig(\"ai4i_overview.png\", dpi=160)\n",
+      "caption": "de två diagrammen i analyze_iot.py"
+    },
+    {
+      "type": "p",
+      "html": "Punktdiagrammet visar att varvtal och vridmoment hänger ihop omvänt (hög hastighet, lågt moment), och att felen samlas i ytterkanterna: mycket högt moment vid lågt varvtal och tvärtom. Det är där effekten blir för hög eller för låg."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Skilj på vad diagrammet visar och vad som kräver fler belägg. Att typ L har högst felandel i diagrammet säger inte varför, och med få fel per grupp kan skillnaden vara slump. AI4I är dessutom syntetiskt, så sambanden har byggts in av den som skapade datan."
+    },
+    {
+      "type": "h",
+      "text": "Analysplanen"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Analysfråga och mottagare",
+        "Datakälla och kvalitetskontroller",
+        "Filtrering, aggregat och features",
+        "Vald visualisering och varför den passar",
+        "Verktyg, tid och övriga resurser",
+        "Vad som prioriteras till nästa gång"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Från AI4I till visualisering",
+      "html": "<p>Kör <code>analyze_iot.py</code>, läs in <code>ai4i_clean.csv</code> och gör: A) en tabell per typ med antal, fel, felandel och medelvridmoment, B) kontrollera <code>power_w</code> och <code>temperature_difference_k</code> och skapa en egen feature, C) två diagram (felandel per typ, och varvtal mot vridmoment färgat efter fel), D) tre observationer och en begränsning.</p>",
+      "solution": "import pandas as pd\nimport matplotlib.pyplot as plt\n\ndata = pd.read_csv(\"dag_2/kod/output/ai4i_clean.csv\")\n\nsummary = data.groupby(\"type\").agg(\n    observations=(\"udi\", \"size\"),\n    failures=(\"machine_failure\", \"sum\"),\n    failure_rate=(\"machine_failure\", \"mean\"),\n    mean_torque=(\"torque_nm\", \"mean\"),\n)\nprint(summary)\n\ndata[\"high_tool_wear\"] = data[\"tool_wear_min\"] > 180\nprint(data.groupby(\"high_tool_wear\")[\"machine_failure\"].mean())   # felandel med och utan slitage\n\nrates = summary[\"failure_rate\"].sort_values(ascending=False) * 100\nplt.bar(rates.index, rates.values)\nplt.title(\"Andel maskinfel per produkttyp\")\nplt.xlabel(\"Produkttyp\")\nplt.ylabel(\"Maskinfel (%)\")\nplt.show()\n",
+      "lang": "py"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur filtrerar man fram raderna med maskinfel?",
+      "options": [
+        "data.filter(1)",
+        "data[data[\"machine_failure\"] == 1]",
+        "data.groupby(1)",
+        "data.where()"
+      ],
+      "answer": 1,
+      "why": "Ett villkor inom hakparenteser."
+    },
+    {
+      "type": "mc",
+      "q": "Hur kombinerar man två villkor i pandas?",
+      "options": [
+        "and",
+        "&amp; med parenteser runt varje villkor",
+        "&amp;&amp;",
+        "+"
+      ],
+      "answer": 1,
+      "why": "and fungerar inte på hela kolumner."
+    },
+    {
+      "type": "mc",
+      "q": "Vad blir medelvärdet av en kolumn med 0 och 1?",
+      "options": [
+        "Antalet ettor",
+        "Andelen ettor",
+        "Alltid 0,5",
+        "Ingenting"
+      ],
+      "answer": 1,
+      "why": "Felandelen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör groupby(\"type\")?",
+      "options": [
+        "Sorterar",
+        "Delar raderna i grupper per typ så att varje grupp kan sammanfattas",
+        "Tar bort typ",
+        "Ritar ett diagram"
+      ],
+      "answer": 1,
+      "why": "Följs av agg, mean eller sum."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en feature?",
+      "options": [
+        "Ett diagram",
+        "Ett värde som analysen eller modellen använder",
+        "En bugg",
+        "En kolumn med text"
+      ],
+      "answer": 1,
+      "why": "Ofta härledd från andra kolumner."
+    },
+    {
+      "type": "mc",
+      "q": "Hur räknas mekanisk effekt i W?",
+      "options": [
+        "vridmoment + varvtal",
+        "vridmoment · varvtal · 2π / 60",
+        "varvtal / vridmoment",
+        "vridmoment · 60"
+      ],
+      "answer": 1,
+      "why": "P = M · ω med ω i rad/s."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken enhet har temperature_difference_k?",
+      "options": [
+        "Watt",
+        "Kelvin",
+        "rpm",
+        "Procent"
+      ],
+      "answer": 1,
+      "why": "En skillnad i kelvin är lika stor som i grader Celsius."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket diagram passar frågan om det finns ett samband mellan två mätvärden?",
+      "options": [
+        "Linjediagram",
+        "Punktdiagram",
+        "Tårtdiagram",
+        "Histogram"
+      ],
+      "answer": 1,
+      "why": "Scatter plot."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket diagram passar fördelningen av ett mätvärde?",
+      "options": [
+        "Histogram eller boxplot",
+        "Punktdiagram",
+        "Linjediagram",
+        "Karta"
+      ],
+      "answer": 0,
+      "why": "Hur är värdena fördelade?"
+    },
+    {
+      "type": "mc",
+      "q": "Varför används alpha (transparens) i punktdiagrammet?",
+      "options": [
+        "För att det är snyggt",
+        "För att se var många punkter överlappar",
+        "För att spara minne",
+        "För att dölja fel"
+      ],
+      "answer": 1,
+      "why": "10 000 punkter täcker varandra."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ska ett läsbart diagram ha?",
+      "options": [
+        "En rubrik som säger vad det visar",
+        "Enheter på axlarna",
+        "Läsbara färger för normal drift och fel",
+        "Så många färger som möjligt"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "En huvudpoäng per diagram."
+    },
+    {
+      "type": "mc",
+      "q": "Diagrammet visar högst felandel för typ L. Vad kan man säga?",
+      "options": [
+        "L orsakar felen",
+        "Skillnaden syns i datan, men orsaken kräver fler belägg",
+        "Diagrammet är fel",
+        "Alla L-maskiner går sönder"
+      ],
+      "answer": 1,
+      "why": "Korrelation är inte orsak, och datan är syntetisk."
+    },
+    {
+      "type": "text",
+      "q": "Vilken matplotlib-funktion sparar figuren till en fil? (fig.?)",
+      "accept": [
+        "savefig",
+        "fig.savefig",
+        "savefig()"
+      ],
+      "placeholder": "funktion",
+      "why": "fig.savefig(\"fil.png\", dpi=160)."
+    },
+    {
+      "type": "code",
+      "q": "Räkna mekanisk effekt och temperaturskillnad per rad.",
+      "task": "04-features-1",
+      "why": "P = M · varvtal · 2π / 60.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Gruppera per produkttyp: antal, fel, felandel och medelvridmoment.",
+      "task": "04-groupby-1",
+      "why": "Som groupby(\"type\").agg(...).",
+      "web": true
+    }
+  ]
+}

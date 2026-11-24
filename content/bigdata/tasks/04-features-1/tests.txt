@@ -1,0 +1,16 @@
+--- in
+3
+298.1 308.6 1551 42.8
+298.2 308.7 1408 46.3
+298.9 309.1 1410 65.7
+--- out
+effekt 6951.6 W, temperaturskillnad 10.5 K
+effekt 6826.7 W, temperaturskillnad 10.5 K
+effekt 9700.9 W, temperaturskillnad 10.2 K
+--- in
+2
+300.0 310.0 2861 4.6
+302.5 310.3 1311 68.2
+--- out
+effekt 1378.2 W, temperaturskillnad 10.0 K
+effekt 9363.0 W, temperaturskillnad 7.8 K

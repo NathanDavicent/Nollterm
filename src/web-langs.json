@@ -267,5 +267,26 @@
   ],
   "testkval/08-pipeline-1": [
     "py"
+  ],
+  "bigdata/01-datamangd-1": [
+    "py"
+  ],
+  "bigdata/02-validering-1": [
+    "py"
+  ],
+  "bigdata/04-features-1": [
+    "py"
+  ],
+  "bigdata/04-groupby-1": [
+    "py"
+  ],
+  "bigdata/05-zscore-1": [
+    "py"
+  ],
+  "bigdata/06-metrics-1": [
+    "py"
+  ],
+  "bigdata/06-regression-1": [
+    "py"
   ]
 }

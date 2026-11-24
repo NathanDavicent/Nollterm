@@ -1,0 +1,316 @@
+{
+  "id": "presentation",
+  "title": "Repetition och presentationen",
+  "category": "Repetition",
+  "minutes": 10,
+  "lead": "Hela analysflödet, hur teknikval motiveras med krav, resurserna i ett big data-projekt, och vad den individuella presentationen ska visa, inklusive kritisk värdering, källor och följdfrågor.",
+  "sources": [
+    "Repetition",
+    "Big Data och IoT (examinationen)"
+  ],
+  "goals": [
+    "Beskriva hela analysflödet från datakälla till slutsats",
+    "Motivera teknikval utifrån krav",
+    "Planera resurser för ett big data-projekt",
+    "Bygga en presentation som visar både resultat och metod",
+    "Värdera källor och den egna lösningen kritiskt"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Hela analysflödet"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Del",
+        "Centralt beslut"
+      ],
+      "rows": [
+        [
+          "Datakälla",
+          "Varifrån kommer filen och hur dokumenteras den?"
+        ],
+        [
+          "Inspektion",
+          "Vad betyder rader, kolumner och enheter?"
+        ],
+        [
+          "Behandling",
+          "Hur valideras, väljs och omformas data?"
+        ],
+        [
+          "Analys och ML",
+          "Vilken fråga besvaras och hur utvärderas svaret?"
+        ],
+        [
+          "Visualisering",
+          "Vad behöver mottagaren förstå?"
+        ],
+        [
+          "Slutsats",
+          "Vad visar resultatet och vilka begränsningar finns?"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Teknikval börjar med krav"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Datamängd och filformat",
+        "Dokumentation och licens",
+        "Datakvalitet och spårbarhet",
+        "Kostnad och tillgänglig kompetens",
+        "Säkerhet och integritet",
+        "Konsekvensen av fel"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Ett rimligt val passar problemet och kan motiveras. Planera för mer än processorkraft: datakällor och lagring, beräkning och nätverk, utveckling, drift och domänkunskap, tid för rensning och test, åtkomst och ansvar, och övervakning efter driftsättning."
+    },
+    {
+      "type": "h",
+      "text": "Examinationen"
+    },
+    {
+      "type": "p",
+      "html": "En individuell presentation på 4–6 minuter med följdfrågor. Den ska visa IoT-problemet och datakällan, datapipelinen och resursbehovet, analys, visualisering och ML, resultat och begränsningar, och en kritisk värdering av källor och teknikval."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Ska finnas med",
+        "Visar fördjupad förståelse"
+      ],
+      "rows": [
+        [
+          "En tydlig fråga, datakälla och arbetsflöde",
+          "Välmotiverade val mellan flera rimliga metoder"
+        ],
+        [
+          "En konkret datakvalitetsåtgärd",
+          "Självständig tillämpning och felsökning"
+        ],
+        [
+          "En analys med läsbar visualisering",
+          "Tydlig koppling mellan data, metod och resultat"
+        ],
+        [
+          "En enkel ML-körning med baslinje",
+          "Nyanserad värdering av för- och nackdelar"
+        ],
+        [
+          "En slutsats och en verklig begränsning",
+          "Förståelse för skalning och verklig drift"
+        ],
+        [
+          "En relevant engelsk teknisk källa",
+          "Slutsatser som tar hänsyn till osäkerhet"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Visa både resultat och metod"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Vilken fråga besvarades?",
+        "Vilken data ingick?",
+        "Jämfört med vad?",
+        "Hur stort är felet eller osäkerheten?",
+        "Vilket beslut kan resultatet stödja?",
+        "När ska resultatet inte användas?"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Diagrammen i presentationen: en huvudpoäng per diagram, en rubrik som säger vad det visar, axlar med enheter, läsbar text och få färger, markerad avvikelse eller jämförelse, och en förklaring av urval och aggregering."
+    },
+    {
+      "type": "h",
+      "text": "Kritisk värdering och källor"
+    },
+    {
+      "type": "list",
+      "items": [
+        "En styrka i lösningen",
+        "En teknisk begränsning",
+        "En risk i datan",
+        "En praktisk kostnad eller resursfråga",
+        "Ett alternativt angreppssätt",
+        "Vad som krävs före verklig driftsättning"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "För varje viktig källa: avsändare och titel, vad ni använder, varför den är relevant, och möjliga begränsningar eller intressen. Använd svenska och engelska källor där det passar."
+    },
+    {
+      "type": "h",
+      "text": "Följdfrågor att förbereda"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Varför valde du denna lagring eller metod?",
+        "Vad händer om datamängden blir 1 000 gånger större?",
+        "Hur upptäckte och hanterade du kvalitetsproblem?",
+        "Varför passar visualiseringen mottagaren?",
+        "Hur vet du att modellen är bättre än en enkel regel?",
+        "Vilken risk skulle du prioritera före driftsättning?"
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Snabbcheck: alla obligatoriska delar finns, filer och länkar fungerar, diagram har rubrik, axlar och enheter, resultaten kan återskapas, källorna är värderade, begränsningarna är konkreta, och du kan förklara hela lösningen. Glöm inte att boka tid för redovisningen."
+    },
+    {
+      "type": "exercise",
+      "title": "Kamratgranskning",
+      "html": "<p>Granska en klasskamrats utkast: kan du återge deras problem med en mening? Hänger pipeline, analys och visualisering ihop? Finns en rimlig baslinje? Stöder resultatet slutsatsen? Är begränsningen konkret? Går presentationen att hålla på 4–6 minuter?</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Svara på en följdfråga",
+      "html": "<p>Vad händer med din lösning om datamängden blir 1 000 gånger större?</p>",
+      "solution": "AI4I: 510 kB × 1 000 ≈ 510 MB. Ryms fortfarande på en laptop.\nJag skulle:\n- läsa bara de kolumner frågan behöver (usecols) och i bitar (chunksize)\n- spara i kolumnformat (Parquet), partitionerat per datum\n- förberäkna antal och fel per typ och dag\nFörst om data kommer löpande från många anläggningar, eller inte hinner\nbearbetas på en dator, behövs Spark eller en strömmotor som Flink.\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur lång är den individuella presentationen?",
+      "options": [
+        "1 minut",
+        "4–6 minuter",
+        "30 minuter",
+        "En timme"
+      ],
+      "answer": 1,
+      "why": "Plus följdfrågor."
+    },
+    {
+      "type": "mc",
+      "q": "Var börjar ett teknikval enligt kursen?",
+      "options": [
+        "Med det nyaste verktyget",
+        "Med kraven",
+        "Med lärarens favorit",
+        "Med molnleverantören"
+      ],
+      "answer": 1,
+      "why": "Ett rimligt val passar problemet och kan motiveras."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ska presentationen innehålla?",
+      "options": [
+        "En konkret datakvalitetsåtgärd",
+        "En enkel ML-körning med baslinje",
+        "En relevant engelsk teknisk källa",
+        "All kod rad för rad"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Plus fråga, visualisering, slutsats och begränsning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad visar fördjupad förståelse?",
+      "options": [
+        "Fler diagram",
+        "Välmotiverade val mellan flera rimliga metoder",
+        "Längre presentation",
+        "Mer kod"
+      ],
+      "answer": 1,
+      "why": "Och slutsatser som tar hänsyn till osäkerhet."
+    },
+    {
+      "type": "mc",
+      "q": "Hur vet du att modellen är bättre än en enkel regel?",
+      "options": [
+        "Den har högre accuracy",
+        "Jämför precision och recall mot regeln och baslinjen på samma testdata",
+        "Den är mer avancerad",
+        "Det vet man inte"
+      ],
+      "answer": 1,
+      "why": "Samma testdata, relevanta mätetal."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ska anges för en viktig källa?",
+      "options": [
+        "Bara länken",
+        "Avsändare, vad ni använder, varför den är relevant och dess begränsningar",
+        "Antal sidor",
+        "Publiceringsåret"
+      ],
+      "answer": 1,
+      "why": "Källkritik."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka resurser ska planeras i ett big data-projekt?",
+      "options": [
+        "Lagring och beräkning",
+        "Tid för rensning och test",
+        "Övervakning efter driftsättning",
+        "Bara processorkraft"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Mer än processorkraft."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en bra begränsning att ta upp för AI4I?",
+      "options": [
+        "Att filen är CSV",
+        "Att datan är syntetisk, så sambanden kanske inte finns i en riktig fabrik",
+        "Att den har 14 kolumner",
+        "Att den är på engelska"
+      ],
+      "answer": 1,
+      "why": "Konkret och verklig."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många huvudpoänger ska ett diagram ha?",
+      "options": [
+        "En",
+        "Tre",
+        "Så många som möjligt",
+        "Ingen"
+      ],
+      "answer": 0,
+      "why": "Rubriken säger vad den är."
+    },
+    {
+      "type": "text",
+      "q": "Vilket kolumnformat läser bara de kolumner som behövs? (filformat)",
+      "accept": [
+        "Parquet",
+        "parquet",
+        "Apache Parquet"
+      ],
+      "placeholder": "format",
+      "why": "Bra när datan växer."
+    }
+  ]
+}

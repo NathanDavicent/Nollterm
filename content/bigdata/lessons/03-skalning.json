@@ -1,0 +1,339 @@
+{
+  "id": "skalning",
+  "title": "Skalbar behandling",
+  "category": "Behandling",
+  "minutes": 11,
+  "lead": "Från fråga till pipeline: vad skalbarhet betyder, att skala upp eller ut, partitionering, när arbete kan delas parallellt, och verktygskartan från SQL och pandas till Spark och Flink.",
+  "sources": [
+    "Behandling, analys och visualisering av data",
+    "Övningar dag 2"
+  ],
+  "goals": [
+    "Börja med en analysfråga innan verktyget väljs",
+    "Förklara skalbarhet och skillnaden mellan att skala upp och ut",
+    "Välja partitioneringsnyckel",
+    "Avgöra när ett problem kan parallelliseras",
+    "Placera databaser, pandas, Spark och Flink i verktygskartan"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Från rådata till resultat"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Steg",
+        "Huvudfråga"
+      ],
+      "rows": [
+        [
+          "Insamling",
+          "Kom datan fram?"
+        ],
+        [
+          "Lagring",
+          "Kan vi bevara och hitta den?"
+        ],
+        [
+          "Behandling",
+          "Kan vi göra den användbar?"
+        ],
+        [
+          "Analys",
+          "Vad visar datan?"
+        ],
+        [
+          "Visualisering",
+          "Kan en människa förstå resultatet?"
+        ],
+        [
+          "Beslut",
+          "Vad ska hända nu?"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "En fråga före ett verktyg"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Hur skiljer sig vridmoment och varvtal vid maskinfel?",
+        "Hur stor är felandelen per produkttyp?",
+        "Vilka kombinationer av mätvärden avviker?",
+        "Kan mekanisk effekt beräknas från befintliga kolumner?",
+        "Vilka features kan hjälpa en modell att hitta fel?"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Välj metod efter frågan, inte tvärtom."
+    },
+    {
+      "type": "h",
+      "text": "Skalbarhet"
+    },
+    {
+      "type": "p",
+      "html": "Ett flöde är <strong>skalbart</strong> när det klarar ökande belastning utan att byggas om från grunden: mer data, fler enheter, högre hastighet, fler samtidiga frågor och längre historik."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Skala upp",
+        "Skala ut"
+      ],
+      "rows": [
+        [
+          "Starkare dator",
+          "Fler datorer"
+        ],
+        [
+          "Enklare arkitektur",
+          "Distribuerad arkitektur"
+        ],
+        [
+          "Tydlig fysisk gräns",
+          "Kan växa stegvis"
+        ],
+        [
+          "En felpunkt",
+          "Kräver koordinering och felhantering"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Partitionering och parallellism"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Partitionering</strong> delar data i oberoende delar, till exempel per datum eller timme, sensor-ID, geografiskt område eller anläggning. Bra partitioner begränsar hur mycket data en fråga behöver läsa: frågan om gårdagen läser bara gårdagens partition."
+    },
+    {
+      "type": "p",
+      "html": "Ett problem kan delas upp parallellt när delarna kan bearbetas oberoende, resultaten kan kombineras efteråt, och kommunikationen inte kostar mer än beräkningen sparar. Felandel per typ går bra: räkna antal och fel per partition och summera sedan."
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "# Medelvärden går inte att slå ihop direkt, men summor och antal gör det\nparts = [data.iloc[:5000], data.iloc[5000:]]          # två oberoende delar\npartial = [(p[\"machine_failure\"].sum(), len(p)) for p in parts]\nfailures = sum(f for f, _ in partial)\nrows = sum(n for _, n in partial)\nprint(failures / rows)                                 # samma som data[\"machine_failure\"].mean()\n",
+      "caption": "dela, beräkna och kombinera"
+    },
+    {
+      "type": "h",
+      "text": "Verktygskarta"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Kategori",
+        "Gör",
+        "Exempel",
+        "Används till"
+      ],
+      "rows": [
+        [
+          "Databaser",
+          "Lagrar och låter dig söka, filtrera och sammanställa, ofta med SQL",
+          "PostgreSQL, MySQL, SQLite",
+          "Kundregister, beställningar, sensormätningar"
+        ],
+        [
+          "Dataanalysbibliotek",
+          "Bearbetar tabelldata i ett program på en dator",
+          "pandas, Polars",
+          "Utforska, rensa CSV och analysera mätningar"
+        ],
+        [
+          "Distribuerade motorer",
+          "Fördelar bearbetningen över flera datorer",
+          "Apache Spark",
+          "Stora historiska datamängder och loggar"
+        ],
+        [
+          "Strömbearbetning",
+          "Bearbetar data löpande när den kommer in",
+          "Apache Flink, Spark Structured Streaming",
+          "Tidsfönster, avvikelser och larm"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "När filen blir tio gånger större"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Läser vi bara nödvändiga kolumner och rader? (<code>usecols</code>, filter tidigt)",
+        "Kan data aggregeras tidigare?",
+        "Passar filformatet? Kolumnformat som Parquet läser bara de kolumner som behövs.",
+        "Kan arbetet delas i oberoende delar?",
+        "Behövs en motor som sköter distributionen?"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "py",
+      "code": "cols = [\"Type\", \"Torque [Nm]\", \"Rotational speed [rpm]\", \"Machine failure\"]\nchunks = pd.read_csv(\"ai4i2020.csv\", usecols=cols, chunksize=2_000)   # läs i bitar\ntotals = None\nfor chunk in chunks:\n    part = chunk.groupby(\"Type\")[\"Machine failure\"].agg([\"sum\", \"count\"])\n    totals = part if totals is None else totals.add(part, fill_value=0)\nprint(totals[\"sum\"] / totals[\"count\"])                                 # felandel per typ\n",
+      "caption": "bara rätt kolumner, i bitar"
+    },
+    {
+      "type": "exercise",
+      "title": "När datan växer",
+      "html": "<p>Anta att AI4I:s schema används för 100 miljoner observationer. Vilka kolumner behövs för din fråga och vilka kan väljas bort tidigt? Hur kan data partitioneras? Vilka sammanfattningar kan beräknas i förväg? När räcker en starkare dator, och när behövs distribuerad behandling?</p>",
+      "solution": "Fråga: felandel per produkttyp.\nBehövs: Type, Machine failure. Bort tidigt: UDI, Product ID, TWF..RNF, temperaturerna.\nPartitionera: per datum och anläggning (och type om frågorna alltid gäller en typ).\nI förväg: antal och antal fel per typ och dag, så att frågan bara summerar.\nStarkare dator räcker så länge de valda kolumnerna ryms i minnet eller kan läsas i bitar.\nDistribuerat behövs när en dator inte hinner läsa datan inom tidskravet,\neller när data kommer löpande från många källor.\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad ska komma först, fråga eller verktyg?",
+      "options": [
+        "Verktyget",
+        "Frågan",
+        "Spelar ingen roll",
+        "Diagrammet"
+      ],
+      "answer": 1,
+      "why": "Välj metod efter frågan."
+    },
+    {
+      "type": "mc",
+      "q": "När är ett flöde skalbart?",
+      "options": [
+        "När det är skrivet i Python",
+        "När det klarar ökande belastning utan att byggas om",
+        "När det kör i molnet",
+        "När det har en databas"
+      ],
+      "answer": 1,
+      "why": "Mer data, fler enheter, högre hastighet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder att skala ut?",
+      "options": [
+        "Köpa en starkare dator",
+        "Använda fler datorer",
+        "Ta bort data",
+        "Komprimera"
+      ],
+      "answer": 1,
+      "why": "Distribuerad arkitektur."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en nackdel med att skala upp?",
+      "options": [
+        "Kräver koordinering",
+        "En tydlig fysisk gräns och en felpunkt",
+        "Svårt att växa stegvis",
+        "Både B och C"
+      ],
+      "answer": 3,
+      "why": "Den större datorn tar slut någon gång."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör partitionering?",
+      "options": [
+        "Krypterar data",
+        "Delar data i oberoende delar så att frågor läser mindre",
+        "Tar bort dubbletter",
+        "Skapar diagram"
+      ],
+      "answer": 1,
+      "why": "Till exempel per datum eller sensor-ID."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken nyckel passar för frågor om en viss dag?",
+      "options": [
+        "Produkt-ID",
+        "Datum",
+        "Vridmoment",
+        "Slumpmässigt"
+      ],
+      "answer": 1,
+      "why": "Då läses bara den dagens partition."
+    },
+    {
+      "type": "multi",
+      "q": "När kan ett problem parallelliseras?",
+      "options": [
+        "Delarna kan bearbetas oberoende",
+        "Resultaten kan kombineras efteråt",
+        "Kommunikationen kostar mindre än den sparar",
+        "Varje steg beror på föregående"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Beroenden mellan stegen förhindrar parallellism."
+    },
+    {
+      "type": "mc",
+      "q": "Varför kombinerar man summor och antal i stället för medelvärden?",
+      "options": [
+        "Det är snabbare att skriva",
+        "Medelvärden från delar med olika storlek kan inte bara medelvärdesbildas",
+        "Medelvärden är förbjudna",
+        "Det sparar minne"
+      ],
+      "answer": 1,
+      "why": "Summa och antal går att lägga ihop."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg fördelar bearbetning över flera datorer?",
+      "options": [
+        "pandas",
+        "SQLite",
+        "Apache Spark",
+        "matplotlib"
+      ],
+      "answer": 2,
+      "why": "En distribuerad motor."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg bearbetar data löpande när den kommer in?",
+      "options": [
+        "pandas",
+        "Apache Flink",
+        "Excel",
+        "PostgreSQL"
+      ],
+      "answer": 1,
+      "why": "Strömbearbetning med tidsfönster."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör usecols i pd.read_csv?",
+      "options": [
+        "Sorterar kolumner",
+        "Läser bara de valda kolumnerna",
+        "Byter namn",
+        "Tar bort rader"
+      ],
+      "answer": 1,
+      "why": "Mindre data i minnet."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter pandas-parametern som läser en CSV i bitar?",
+      "accept": [
+        "chunksize"
+      ],
+      "placeholder": "parameter",
+      "why": "pd.read_csv(..., chunksize=2000) ger en iterator."
+    }
+  ]
+}
