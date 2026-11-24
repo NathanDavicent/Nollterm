@@ -1,0 +1,54 @@
+--- in
+factory/+/temp
+5
+factory/machine1/temp
+factory/machine2/temp
+factory/machine1/humidity
+factory/alarm
+factory/a/b/temp
+--- out
+factory/machine1/temp: ja
+factory/machine2/temp: ja
+factory/machine1/humidity: nej
+factory/alarm: nej
+factory/a/b/temp: nej
+--- in
+factory/#
+4
+factory/machine1/temp
+factory/alarm
+factory
+home/kitchen/temp
+--- out
+factory/machine1/temp: ja
+factory/alarm: ja
+factory: ja
+home/kitchen/temp: nej
+--- in
+sti/iot25/smart-home
+3
+sti/iot25/smart-home
+sti/iot25/test
+sti/iot25/smart-home/lamp
+--- out
+sti/iot25/smart-home: ja
+sti/iot25/test: nej
+sti/iot25/smart-home/lamp: nej
+--- in
++/+/temp
+3
+home/kitchen/temp
+home/temp
+factory/m1/temp
+--- out
+home/kitchen/temp: ja
+home/temp: nej
+factory/m1/temp: ja
+--- in
+#
+2
+vad/som/helst
+x
+--- out
+vad/som/helst: ja
+x: ja

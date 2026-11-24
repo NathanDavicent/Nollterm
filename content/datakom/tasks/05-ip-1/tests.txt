@@ -1,0 +1,63 @@
+--- in
+192.168.1.10/24
+--- out
+Nätverk: 192.168.1.0/24
+Mask: 255.255.255.0
+Broadcast: 192.168.1.255
+Första värd: 192.168.1.1
+Sista värd: 192.168.1.254
+Antal värdar: 254
+--- in
+192.168.1.130/25
+--- out
+Nätverk: 192.168.1.128/25
+Mask: 255.255.255.128
+Broadcast: 192.168.1.255
+Första värd: 192.168.1.129
+Sista värd: 192.168.1.254
+Antal värdar: 126
+--- in
+172.70.19.42/25
+--- out
+Nätverk: 172.70.19.0/25
+Mask: 255.255.255.128
+Broadcast: 172.70.19.127
+Första värd: 172.70.19.1
+Sista värd: 172.70.19.126
+Antal värdar: 126
+--- in
+10.11.12.13/16
+--- out
+Nätverk: 10.11.0.0/16
+Mask: 255.255.0.0
+Broadcast: 10.11.255.255
+Första värd: 10.11.0.1
+Sista värd: 10.11.255.254
+Antal värdar: 65534
+--- in
+192.168.1.200/26
+--- out
+Nätverk: 192.168.1.192/26
+Mask: 255.255.255.192
+Broadcast: 192.168.1.255
+Första värd: 192.168.1.193
+Sista värd: 192.168.1.254
+Antal värdar: 62
+--- in
+10.0.0.77/30
+--- out
+Nätverk: 10.0.0.76/30
+Mask: 255.255.255.252
+Broadcast: 10.0.0.79
+Första värd: 10.0.0.77
+Sista värd: 10.0.0.78
+Antal värdar: 2
+--- in
+172.16.32.200/19
+--- out
+Nätverk: 172.16.32.0/19
+Mask: 255.255.224.0
+Broadcast: 172.16.63.255
+Första värd: 172.16.32.1
+Sista värd: 172.16.63.254
+Antal värdar: 8190

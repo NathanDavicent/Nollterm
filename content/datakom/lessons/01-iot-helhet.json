@@ -1,0 +1,251 @@
+{
+  "id": "iot-helhet",
+  "title": "Kursintroduktion och IoT-systemet",
+  "category": "Grunder",
+  "minutes": 8,
+  "date": "2026-04-07",
+  "lead": "Vad datorkommunikation är, hur ett IoT-system hänger ihop från sensor till app, och vad som kan gå fel på vägen.",
+  "sources": [
+    "Kursintroduktion",
+    "Dagens övningar 2026-04-07"
+  ],
+  "goals": [
+    "Förklara vad datorkommunikation är",
+    "Beskriva kedjan sensor → enhet → nätverk → server → app",
+    "Räkna upp delarna i ett IoT-ekosystem",
+    "Ge exempel på vad som kan gå fel i ett uppkopplat system"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Kursen i korthet"
+    },
+    {
+      "type": "p",
+      "html": "Kursen handlar om <strong>hur system kommunicerar</strong>, med fokus på IoT och nätverk. Det är mycket teori och praktiskt arbete där det passar. Förenklat ska du efter kursen förstå hur system kommunicerar, kunna bygga och felsöka nätverk, och kunna designa IoT-lösningar."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Moment",
+        "Vad det täcker"
+      ],
+      "rows": [
+        [
+          "Tentamen",
+          "Kunskapsmålen i kursplanen (KUN19–KUN21)"
+        ],
+        [
+          "Inlämningsuppgift",
+          "Kompetens- och färdighetsmålen (KOM15 och F23). Även den är teoretisk."
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Grunderna:</strong> OSI-modellen, nätverk, protokoll och felsökning",
+        "<strong>Teknikområden:</strong> Ethernet och WiFi, LoRaWAN och Zigbee, Bluetooth och BLE, UART, SPI och I2C"
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Vad är datorkommunikation?"
+    },
+    {
+      "type": "p",
+      "html": "Kommunikation och dataöverföring mellan enheter. Antingen direkt <strong>enhet till enhet</strong> (en sensor och en mikrokontroller på samma kort) eller <strong>enhet till och från en server</strong> via ett nätverk."
+    },
+    {
+      "type": "h",
+      "text": "Ett IoT-system"
+    },
+    {
+      "type": "p",
+      "html": "Smarta hem-prylar, industri och sensorer är exempel. De flesta IoT-system följer samma kedja, där varje pil är en kommunikationslänk:"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Sensor → Enhet (MCU) → Nätverk → Server → App\n",
+      "caption": "dataflödet i ett IoT-system"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Del i ekosystemet",
+        "Vad den gör"
+      ],
+      "rows": [
+        [
+          "Enheter och sensorer",
+          "Edge-enheter med sensorer, ställdon och lokal bearbetning"
+        ],
+        [
+          "Nätverk och protokoll",
+          "WiFi, BLE, LoRaWAN, 5G, MQTT och CoAP"
+        ],
+        [
+          "Edge och gateway",
+          "Förbearbetar, filtrerar och skyddar lokalt, vilket minskar latens och bandbredd"
+        ],
+        [
+          "Moln och plattformar",
+          "Skalbar lagring, analys, device management och API:er"
+        ],
+        [
+          "Dataanalys och AI",
+          "Prediktivt underhåll, avvikelsedetektion och automatisering"
+        ],
+        [
+          "Applikationer och tjänster",
+          "Användargränssnitt, integrationer, säkerhet och livscykel"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Vad kan gå fel?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ingen uppkoppling",
+        "Fel data",
+        "Fördröjning",
+        "Mänsklig störning, avsiktlig (en attack) eller oavsiktlig",
+        "Kosmisk strålning som flippar bitar",
+        "En oskyddad eller dåligt placerad enhet (fukt, värme) och slitage"
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Installera <strong>Wireshark</strong> redan nu. Det används för att titta på riktiga paket i flera av lektionerna."
+    },
+    {
+      "type": "exercise",
+      "title": "Rita ett IoT-system",
+      "html": "<p>Rita i grupp ett IoT-system du känner till, till exempel ett smart hem. Markera noderna (sensor, MCU, gateway, server, app) och pilarna mellan dem. Skriv vid varje pil hur datan skickas, om du vet, och en sak som kan gå fel just där.</p>",
+      "solution": "Exempel: smart termostat\n\nTemperatursensor --I2C--> ESP32 --WiFi--> router --internet--> MQTT-broker --> app\n\nKan gå fel:\n  I2C:      fel adress, glömda pull-up-motstånd\n  WiFi:     svag signal, fel lösenord\n  internet: routern nere, DNS fungerar inte\n  broker:   nere, fel topic\n  app:      bugg, fel dataformat\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är datorkommunikation?",
+      "options": [
+        "Bara internet",
+        "Kommunikation och dataöverföring mellan enheter",
+        "Bara trådlösa nätverk",
+        "Programmering av servrar"
+      ],
+      "answer": 1,
+      "why": "Både enhet till enhet och enhet till server via nätverk."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken ordning har dataflödet i ett typiskt IoT-system?",
+      "options": [
+        "App → server → sensor",
+        "Sensor → enhet → nätverk → server → app",
+        "Server → sensor → app",
+        "Nätverk → sensor → app → server"
+      ],
+      "answer": 1,
+      "why": "Datan går från det som mäter till det som visar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en edge-gateway?",
+      "options": [
+        "Lagrar all data för alltid",
+        "Förbearbetar och filtrerar nära enheterna, så att latens och bandbredd minskar",
+        "Ersätter sensorerna",
+        "Visar data för användaren"
+      ],
+      "answer": 1,
+      "why": "Mindre data behöver skickas upp till molnet."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är teknikområden i kursen?",
+      "options": [
+        "Ethernet och WiFi",
+        "LoRaWAN och Zigbee",
+        "UART, SPI och I2C",
+        "Grafikprogrammering"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Plus Bluetooth och BLE."
+    },
+    {
+      "type": "multi",
+      "q": "Vad kan gå fel i ett uppkopplat system?",
+      "options": [
+        "Ingen uppkoppling",
+        "Fel data",
+        "Fördröjning",
+        "Kosmisk strålning som flippar bitar"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Alla förekommer, även om strålningen är ovanlig."
+    },
+    {
+      "type": "mc",
+      "q": "Vad täcker tentamen?",
+      "options": [
+        "Kompetensmålen",
+        "Kunskapsmålen (KUN19–KUN21)",
+        "Bara labbarna",
+        "Inget, kursen har ingen tenta"
+      ],
+      "answer": 1,
+      "why": "Inlämningsuppgiften täcker kompetens- och färdighetsmålen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg används för att titta på nätverkspaket i kursen?",
+      "options": [
+        "Wokwi",
+        "Wireshark",
+        "Excel",
+        "Git"
+      ],
+      "answer": 1,
+      "why": "Wireshark fångar och avkodar paket lager för lager."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ingår i moln och plattformar?",
+      "options": [
+        "Sensorer och ställdon",
+        "Lagring, analys, device management och API:er",
+        "Kablar",
+        "Pull-up-motstånd"
+      ],
+      "answer": 1,
+      "why": "Den skalbara delen långt från enheterna."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter enheten mellan sensorn och nätverket, ofta en mikrokontroller? Svara med förkortningen.",
+      "accept": [
+        "MCU",
+        "mcu"
+      ],
+      "placeholder": "förkortning",
+      "why": "Microcontroller unit, till exempel en ESP32."
+    }
+  ]
+}

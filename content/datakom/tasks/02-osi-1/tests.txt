@@ -1,0 +1,56 @@
+--- in
+5
+HTTP
+TCP
+IP
+MAC
+Kabel
+--- out
+HTTP: lager 7 (Applikation)
+TCP: lager 4 (Transport)
+IP: lager 3 (Nätverk)
+MAC: lager 2 (Datalänk)
+Kabel: lager 1 (Fysiska)
+--- in
+6
+MQTT
+JSON
+UDP
+Router
+Switch
+Radio
+--- out
+MQTT: lager 7 (Applikation)
+JSON: lager 6 (Presentation)
+UDP: lager 4 (Transport)
+Router: lager 3 (Nätverk)
+Switch: lager 2 (Datalänk)
+Radio: lager 1 (Fysiska)
+--- in
+7
+DNS
+TLS
+Inloggning
+Segment
+Ramar
+Paket
+Bitar
+--- out
+DNS: lager 7 (Applikation)
+TLS: lager 6 (Presentation)
+Inloggning: lager 5 (Session)
+Segment: lager 4 (Transport)
+Ramar: lager 2 (Datalänk)
+Paket: lager 3 (Nätverk)
+Bitar: lager 1 (Fysiska)
+--- in
+4
+CoAP
+ICMP
+WiFi
+XML
+--- out
+CoAP: lager 7 (Applikation)
+ICMP: lager 3 (Nätverk)
+WiFi: okänt
+XML: lager 6 (Presentation)

@@ -278,7 +278,7 @@
     {
       "kind": "Notes",
       "title": "notes.txt",
-      "description": "Hur PORTD |= (1 &lt;&lt; 7) och BIT_CLEAR expanderar, steg för steg.",
+      "description": "Hur PORTD |= (1 << 7) och BIT_CLEAR expanderar, steg för steg.",
       "lessons": [
         "bitmanipulation"
       ]

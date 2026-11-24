@@ -210,5 +210,35 @@
   ],
   "inbyggda/09-tillstandsmaskin-1": [
     "py"
+  ],
+  "datakom/02-osi-1": [
+    "py"
+  ],
+  "datakom/03-testkedja-1": [
+    "py"
+  ],
+  "datakom/05-ip-1": [
+    "py"
+  ],
+  "datakom/05-ip-2": [
+    "py"
+  ],
+  "datakom/05-ipv6-1": [
+    "py"
+  ],
+  "datakom/05-routing-1": [
+    "py"
+  ],
+  "datakom/06-mqtt-1": [
+    "py"
+  ],
+  "datakom/06-portar-1": [
+    "py"
+  ],
+  "datakom/07-i2c-1": [
+    "py"
+  ],
+  "datakom/07-uart-1": [
+    "py"
   ]
 }

@@ -1,0 +1,361 @@
+{
+  "id": "felsokning",
+  "title": "Felsökning och diagnostik",
+  "category": "Felsökning",
+  "minutes": 11,
+  "date": "2026-04-29",
+  "lead": "Att felsöka metodiskt med hypoteser, att gå genom lagren nerifrån och upp, verktygen för varje lager och de vanligaste felen. Med Wireshark-fångster som övning.",
+  "sources": [
+    "Felsökning & diagnostik",
+    "Dagens övningar 2026-04-29"
+  ],
+  "goals": [
+    "Arbeta metodiskt med hypoteser och dokumentation",
+    "Felsöka lager för lager nerifrån och upp",
+    "Välja verktyg för varje lager",
+    "Känna igen vanliga fel"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Metod före gissning"
+    },
+    {
+      "type": "p",
+      "html": "Det vanliga misstaget är att testa det man <em>tror</em> är fel. Det kan gå snabbt, men gissar man fel tidigt missar man felet. Arbeta i stället så här:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Identifiera symptomen",
+        "Skapa hypoteser och lista dem, så att de kan testas metodiskt",
+        "Testa en hypotes",
+        "Dokumentera resultatet",
+        "Gå vidare till nästa"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Exempel: en sensor skickar inte data. Det kan vara sensorn, kabeln, protokollet, nätverket, servern och mycket mer. Listan blir lång, så beta av den systematiskt."
+    },
+    {
+      "type": "h",
+      "text": "Lager för lager"
+    },
+    {
+      "type": "p",
+      "html": "Börja längst ner och gå uppåt tills något inte fungerar. Man kan gå uppifrån och ner, men problem längre ner är oftast snabbare att hitta."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Lager",
+        "Kontrollera"
+      ],
+      "rows": [
+        [
+          "Physical",
+          "Ström? Kablar? Signal?"
+        ],
+        [
+          "Data Link",
+          "MAC? WiFi-anslutning? Interface up eller down?"
+        ],
+        [
+          "Network",
+          "IP? Subnät? Gateway?"
+        ],
+        [
+          "Transport",
+          "Är porten öppen? TCP eller UDP?"
+        ],
+        [
+          "Application",
+          "API? Broker? Payload-format?"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Verktyg"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Verktyg",
+        "Visar"
+      ],
+      "rows": [
+        [
+          "ping",
+          "Om en adress går att nå"
+        ],
+        [
+          "traceroute",
+          "Hoppen på vägen"
+        ],
+        [
+          "nslookup, dig",
+          "Om DNS svarar rätt"
+        ],
+        [
+          "netstat, ss, nc",
+          "Öppna portar och sockets"
+        ],
+        [
+          "curl",
+          "Om HTTP svarar"
+        ],
+        [
+          "mosquitto_pub, mosquitto_sub",
+          "Om MQTT fungerar"
+        ],
+        [
+          "Wireshark",
+          "Paketen"
+        ],
+        [
+          "Logikanalysator",
+          "Signalerna på ledningarna"
+        ],
+        [
+          "UART-utskrifter",
+          "Loggar från enheten"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "nslookup sti.se                                  # vad svarar DNS?\nss -tlnp                                         # vilka TCP-portar lyssnar? (Linux)\nnc -vz test.mosquitto.org 1883                   # går det att ansluta till porten?\ncurl -I https://sti.se                           # bara HTTP-headers och statuskod\nmosquitto_sub -h test.mosquitto.org -t 'sti/#' -v\nmosquitto_pub -h test.mosquitto.org -t sti/test -m hej\n"
+    },
+    {
+      "type": "h",
+      "text": "Vanliga fel"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Symptom",
+        "Troligt fel"
+      ],
+      "rows": [
+        [
+          "Kan pinga IP men inte domän",
+          "DNS"
+        ],
+        [
+          "Når inte gatewayen eller andra lokala enheter",
+          "Lokalt nät eller routing"
+        ],
+        [
+          "Anslutningen nekas eller får timeout på en port",
+          "Brandvägg, stängd port"
+        ],
+        [
+          "MQTT-meddelandena kommer inte fram",
+          "Fel topic"
+        ],
+        [
+          "I2C-enheten svarar NACK",
+          "Fel adress"
+        ],
+        [
+          "SPI-enheten svarar inte",
+          "Fel CS/SS"
+        ],
+        [
+          "Konstiga tecken på UART",
+          "Fel baud rate"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Strategi"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fråga alltid: vad fungerar, och vad fungerar inte?",
+        "Ändra bara <strong>en variabel</strong> åt gången",
+        "Logga allt",
+        "Dokumentera fel som går att återskapa"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Wireshark-felsökning",
+      "html": "<p>Läraren gav tre fångster (<code>first_capture.pcapng</code>, <code>second_capture.pcapng</code>, <code>third_capture.pcapng</code>) filtrerade med <code>ip.addr == 10.68.38.34</code>. En är en fungerande uppkoppling mot en hemsida, en är mot en hemsida utan HTTPS, och en är ett försök mot en hemsida som inte nås. Para ihop dem och förklara varför.</p>",
+      "solution": "Leta efter det som inte följer förväntat mönster.\n\nfirst_capture:  HTTP (port 80) i klartext mot neverssl.com, hela sidor syns\n                → hemsidan utan HTTPS\nsecond_capture: DNS, TCP-handskakning och TLS, inget konstigt\n                → den fungerande uppkopplingen\nthird_capture:  väldigt många DNS-frågor efter slumpmässiga namn,\n                svaren är 'No such name' (NXDOMAIN)\n                → försöket mot en sida som inte nås\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Analysera signaler",
+      "html": "<p>Flasha ett I2C-exempel från förra lektionen, koppla logikanalysatorn och fånga en överföring i PulseView. Om enheten bara skickar en gång, starta om den medan fångsten pågår.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är det vanliga misstaget vid felsökning?",
+      "options": [
+        "Att dokumentera",
+        "Att testa det man tror är fel i stället för att arbeta metodiskt",
+        "Att börja i fysiska lagret",
+        "Att använda ping"
+      ],
+      "answer": 1,
+      "why": "Gissar man fel tidigt kan man missa felet."
+    },
+    {
+      "type": "mc",
+      "q": "Var är det oftast enklast att börja felsöka?",
+      "options": [
+        "I applikationslagret",
+        "Längst ner, i fysiska lagret",
+        "Mitt i",
+        "Spelar ingen roll"
+      ],
+      "answer": 1,
+      "why": "Problem längre ner hittas oftast snabbast."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg verifierar DNS?",
+      "options": [
+        "nslookup eller dig",
+        "ss",
+        "curl",
+        "Logikanalysator"
+      ],
+      "answer": 0,
+      "why": "De visar vad DNS svarar."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg visar öppna portar?",
+      "options": [
+        "ping",
+        "netstat, ss eller nc",
+        "traceroute",
+        "nslookup"
+      ],
+      "answer": 1,
+      "why": "Transportlagret."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg testar HTTP?",
+      "options": [
+        "curl",
+        "ping",
+        "mosquitto_sub",
+        "dig"
+      ],
+      "answer": 0,
+      "why": "curl -I visar statuskoden."
+    },
+    {
+      "type": "mc",
+      "q": "Konstiga tecken kommer ut på UART. Vad är troligast?",
+      "options": [
+        "Fel I2C-adress",
+        "Fel baud rate",
+        "Fel topic",
+        "Fel CS"
+      ],
+      "answer": 1,
+      "why": "Båda sidor måste ha samma baud rate."
+    },
+    {
+      "type": "mc",
+      "q": "MQTT-subscribern får inga meddelanden fast brokern är uppe. Vad kollar du först?",
+      "options": [
+        "Kabeln",
+        "Topicen",
+        "Baud rate",
+        "Pull-up-motstånden"
+      ],
+      "answer": 1,
+      "why": "Fel topic är ett av de vanligaste felen."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska man bara ändra en variabel åt gången?",
+      "options": [
+        "Det går snabbare",
+        "Annars vet man inte vilken ändring som gjorde skillnad",
+        "Det krävs av Wireshark",
+        "Det sparar ström"
+      ],
+      "answer": 1,
+      "why": "Metodiskt arbete."
+    },
+    {
+      "type": "mc",
+      "q": "Kan pinga en IP men inte ett domännamn. Vilket fel?",
+      "options": [
+        "Routing",
+        "DNS",
+        "Brandvägg",
+        "I2C"
+      ],
+      "answer": 1,
+      "why": "Namnuppslagningen fungerar inte."
+    },
+    {
+      "type": "mc",
+      "q": "I en Wireshark-fångst syns många DNS-svar <em>No such name</em> för slumpmässiga namn. Vad tyder det på?",
+      "options": [
+        "En fungerande sida",
+        "Ett försök mot en sida som inte nås",
+        "En sida utan HTTPS",
+        "Fel baud rate"
+      ],
+      "answer": 1,
+      "why": "Namnen går inte att slå upp."
+    },
+    {
+      "type": "mc",
+      "q": "Hur syns det i Wireshark att en sida inte använder HTTPS?",
+      "options": [
+        "Det syns inte",
+        "HTTP på port 80 och sidans innehåll i klartext",
+        "Inga paket alls",
+        "Bara UDP"
+      ],
+      "answer": 1,
+      "why": "Med TLS är innehållet krypterat."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka hör till Application-lagret vid felsökning?",
+      "options": [
+        "API",
+        "Broker",
+        "Payload-format",
+        "Kabel"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Kabeln hör till Physical."
+    },
+    {
+      "type": "text",
+      "q": "Vilket verktyg analyserar signaler på ledningarna?",
+      "accept": [
+        "logikanalysator",
+        "logikanalysatorn",
+        "en logikanalysator",
+        "logic analyzer"
+      ],
+      "placeholder": "verktyg",
+      "why": "Med till exempel PulseView."
+    }
+  ]
+}

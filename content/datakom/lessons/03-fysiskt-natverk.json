@@ -1,0 +1,349 @@
+{
+  "id": "fysiskt-natverk",
+  "title": "Fysiskt nätverk och uppkoppling",
+  "category": "Nätverk",
+  "minutes": 15,
+  "date": "2026-04-14",
+  "lead": "Hur en enhet kopplar upp sig: komponenterna, DHCP, privata och publika IP-adresser, portar, gateway och DNS, och kommandona som visar om det fungerar.",
+  "sources": [
+    "Fysiska nätverk & uppkoppling",
+    "Dagens övningar 2026-04-14"
+  ],
+  "goals": [
+    "Skilja på fysisk och logisk anslutning",
+    "Förklara vad router, switch, accesspunkt, klient och server gör",
+    "Förklara DHCP, gateway, portar och DNS",
+    "Använda ipconfig/ip, ping och traceroute/tracepath",
+    "Felsöka med testkedjan"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Fysisk och logisk anslutning"
+    },
+    {
+      "type": "p",
+      "html": "Ett nätverk är en samling enheter som kan kommunicera, och kräver enheter, ett medium (kabel eller WiFi) och protokoll. Anslutningen har två delar:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Fysisk:</strong> kabeln eller den trådlösa signalen",
+        "<strong>Logisk:</strong> IP-adressen och nätverksinställningarna"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Du kan ha fysisk anslutning utan nätverk: WiFi anslutet men inget internet, eller kabeln i men ingen IP-adress."
+    },
+    {
+      "type": "h",
+      "text": "Nätverkskomponenter"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Komponent",
+        "Vad den gör"
+      ],
+      "rows": [
+        [
+          "Router",
+          "Kopplar nätverk till internet, hanterar IP-adresser och skickar trafik mellan nätverk"
+        ],
+        [
+          "Switch",
+          "Vidarebefordrar data mellan inkopplade enheter och routern. En enklare variant av router, \"en accesspunkt med kablar\""
+        ],
+        [
+          "Accesspunkt (AP)",
+          "Ger trådlös anslutning. Kan vara kopplad med kabel, vara en repeater, eller vara nod i ett mesh-nät"
+        ],
+        [
+          "Klient",
+          "Din dator, mobil eller IoT-enhet. Tar emot en IP-adress, skickar och tar emot data"
+        ],
+        [
+          "Server",
+          "Tillhandahåller tjänster: webbserver, filserver, databasserver. Lokalt eller på internet"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "DHCP och IP-adresser"
+    },
+    {
+      "type": "p",
+      "html": "<strong>DHCP</strong> (Dynamic Host Configuration Protocol) delar automatiskt ut IP-adresser från en server, oftast i routern. När en enhet ansluter får den en <strong>privat</strong> (intern) adress, till exempel <code>192.168.1.10</code>. Den <strong>publika</strong> adressen är den som syns på internet, alltså på andra sidan routern."
+    },
+    {
+      "type": "h",
+      "text": "Portar och gateway"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>port</strong> är ett 16-bitarstal (0–65535) som skiljer på tjänster på samma IP-adress. Om IP-adressen är ett höghus med företag i varje lägenhet, är porten lägenhetsnumret. Den skrivs efter ett kolon: <code>8.8.8.8:80</code>."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Gatewayen</strong> är vägen ut till internet, oftast routern."
+    },
+    {
+      "type": "h",
+      "text": "DNS"
+    },
+    {
+      "type": "p",
+      "html": "Människor använder domännamn, datorer använder IP-adresser. <strong>DNS</strong> (Domain Name System) översätter mellan dem: datorn frågar en DNS-server vad <code>google.com</code> har för IP och kontaktar sedan servern via IP. DNS sker alltså före själva kommunikationen. Om DNS inte fungerar kan internet fortfarande fungera, men inga sidor nås via namn."
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "<code>8.8.8.8</code> är Googles DNS-server med namnet <code>dns.google</code>. <code>ping 8.8.8.8</code> testar internet, <code>ping dns.google</code> testar dessutom att namn kan slås upp. Fungerar IP men inte namnet är det ett DNS-problem."
+    },
+    {
+      "type": "h",
+      "text": "Kommandon"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "ipconfig                  # Windows: IP-adress, gateway och DNS\nip a                      # Linux: lokala IP-adresser och interface\nip route                  # Linux: default gateway och routing\ncurl ifcfg.me             # din publika IP, som en server ser den\n\nping google.com           # Windows skickar 4 ping\nping -c 4 google.com      # Linux pingar tills Ctrl+C, -c 4 ger exakt 4\n\ntracert google.com        # Windows: alla hopp på vägen\ntracepath google.com      # Linux, förinstallerat\ntracepath -p 33434 sti.se # om tracepath inte hittar rätt, ge en startport\n"
+    },
+    {
+      "type": "p",
+      "html": "<strong>ping</strong> visar om en enhet svarar, hur lång tid det tar (latens) och om paket förloras. <strong>traceroute</strong> visar varje router (hopp) på vägen och tiden för varje hopp. Många hopp betyder lång väg, och timeout på ett hopp kan peka på ett problem där. Många routrar ignorerar dock förfrågningarna och visar <em>no reply</em> utan att något är fel."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<code>192.0.2.0/24</code> är reserverat för dokumentation och har inga riktiga servrar. <code>ping 192.0.2.1</code> misslyckas alltid, fast nätverket fungerar. Alla adresser svarar inte, och nätverket kan fungera fast destinationen inte gör det."
+    },
+    {
+      "type": "h",
+      "text": "Testkedjan"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Steg",
+        "Test",
+        "Om det fungerar vet du att…",
+        "Lager"
+      ],
+      "rows": [
+        [
+          "1",
+          "ping 127.0.0.1 (dig själv)",
+          "nätverkskortet och stacken fungerar",
+          "1"
+        ],
+        [
+          "2",
+          "ping gateway",
+          "lokala nätverket fungerar",
+          "2"
+        ],
+        [
+          "3",
+          "ping 8.8.8.8",
+          "internet fungerar",
+          "3"
+        ],
+        [
+          "4",
+          "ping dns.google",
+          "DNS fungerar",
+          "7"
+        ],
+        [
+          "5",
+          "ping sti.se",
+          "tjänsten och dess DNS fungerar",
+          "7"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Det första steget som misslyckas visar var felet sitter. Vanliga problem: ingen IP-adress, fel adress till gatewayen eller att den gått ner, DNS fungerar inte, ingen signal. På WiFi dessutom för många användare, interferens och låg signalstyrka. Ett instabilt nät ger paketförlust, och omsändningarna upplevs som segt eller hackigt."
+    },
+    {
+      "type": "exercise",
+      "title": "Kartlägg ditt nätverk",
+      "html": "<p>Ta reda på din privata IP, din publika IP, din gateway och din DNS-server. Vilka kommandon använde du?</p>",
+      "solution": "ipconfig /all      (Windows)  eller  ip a  +  ip route  +  resolvectl status  (Linux)\ncurl ifcfg.me      publik IP\n\nPrivat IP:  t.ex. 192.168.1.23 (från DHCP)\nGateway:    t.ex. 192.168.1.1 (routern)\nDNS:        ofta routern eller ISP:ns server\nPublik IP:  routerns adress på internet\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Felsök tre scenarier",
+      "html": "<ol><li>Ping till gatewayen misslyckas.</li><li>Ping till en IP-adress fungerar men inte till ett domännamn.</li><li>Ping fungerar hela vägen men sidan laddar inte.</li></ol><p>Var sitter felet i varje fall?</p>",
+      "solution": "1. Lokalt: kabel, WiFi, ingen IP från DHCP eller fel gateway (lager 1-2).\n2. DNS: fel DNS-server eller DNS-servern nere.\n3. Applikationen: webbservern, porten (brandvägg), HTTPS-certifikat eller själva sidan.\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Du har WiFi-anslutning men inget internet. Vad är det?",
+      "options": [
+        "Fysisk anslutning utan fungerande logisk anslutning",
+        "Ett DNS-namn",
+        "En switch",
+        "Helt normalt, inget fel"
+      ],
+      "answer": 0,
+      "why": "Signalen finns men IP, gateway eller annat logiskt saknas."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör DHCP?",
+      "options": [
+        "Översätter namn till IP",
+        "Delar automatiskt ut IP-adresser",
+        "Krypterar trafiken",
+        "Mäter latens"
+      ],
+      "answer": 1,
+      "why": "Oftast en server i routern."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör DNS?",
+      "options": [
+        "Delar ut IP-adresser",
+        "Översätter domännamn till IP-adresser",
+        "Routar paket",
+        "Kopplar ihop kablar"
+      ],
+      "answer": 1,
+      "why": "google.com → 142.x.x.x."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är gatewayen oftast?",
+      "options": [
+        "DNS-servern",
+        "Routern",
+        "Switchen",
+        "Din dator"
+      ],
+      "answer": 1,
+      "why": "Vägen ut ur det lokala nätet."
+    },
+    {
+      "type": "mc",
+      "q": "Hur stort är ett portnummer?",
+      "options": [
+        "8 bitar",
+        "16 bitar",
+        "32 bitar",
+        "128 bitar"
+      ],
+      "answer": 1,
+      "why": "0–65535."
+    },
+    {
+      "type": "mc",
+      "q": "Ping till 8.8.8.8 fungerar men inte till dns.google. Vad är felet?",
+      "options": [
+        "Kabeln",
+        "DNS",
+        "Gatewayen",
+        "Nätverkskortet"
+      ],
+      "answer": 1,
+      "why": "Internet fungerar, namnuppslagningen inte."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket kommando visar default gateway i Linux?",
+      "options": [
+        "ip route",
+        "ping",
+        "curl",
+        "tracepath"
+      ],
+      "answer": 0,
+      "why": "ip a visar adresserna, ip route vägarna."
+    },
+    {
+      "type": "mc",
+      "q": "Vad visar traceroute?",
+      "options": [
+        "Din publika IP",
+        "Varje hopp (router) på vägen och tiden för varje hopp",
+        "Lösenordet till WiFi",
+        "Öppna portar"
+      ],
+      "answer": 1,
+      "why": "Tracert på Windows, traceroute eller tracepath på Linux."
+    },
+    {
+      "type": "mc",
+      "q": "Varför misslyckas alltid ping 192.0.2.1?",
+      "options": [
+        "Nätverket är trasigt",
+        "Adressen är reserverad för dokumentation och har inga servrar",
+        "Den är en privat adress",
+        "Ping är avstängt i Windows"
+      ],
+      "answer": 1,
+      "why": "Nätverket kan fungera fast destinationen inte svarar."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många pingar skickar Windows som standard?",
+      "options": [
+        "1",
+        "4",
+        "10",
+        "Tills man trycker Ctrl+C"
+      ],
+      "answer": 1,
+      "why": "Linux fortsätter tills Ctrl+C, eller använd -c 4."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan en switch och en router enligt kursen?",
+      "options": [
+        "Ingen",
+        "Switchen vidarebefordrar inom nätet, routern kopplar ihop nätverk och mot internet",
+        "Routern är alltid trådlös",
+        "Switchen delar ut IP-adresser"
+      ],
+      "answer": 1,
+      "why": "Switchen är en enklare variant."
+    },
+    {
+      "type": "mc",
+      "q": "Gatewayen svarar inte på ping. Var sitter felet troligast?",
+      "options": [
+        "I DNS",
+        "I det lokala nätet: kabel, WiFi, IP eller gateway",
+        "Hos webbservern",
+        "I applikationen"
+      ],
+      "answer": 1,
+      "why": "Steg 2 i testkedjan."
+    },
+    {
+      "type": "text",
+      "q": "Vilket kommando visar din publika IP enligt kursen?",
+      "accept": [
+        "curl ifcfg.me"
+      ],
+      "placeholder": "kommando",
+      "why": "En server svarar med adressen den ser att du kommer ifrån."
+    },
+    {
+      "type": "code",
+      "q": "Gå igenom testkedjan och säg var felet ligger.",
+      "task": "03-testkedja-1",
+      "why": "Sluta vid första steget som misslyckas.",
+      "web": true
+    }
+  ]
+}

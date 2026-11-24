@@ -1,0 +1,458 @@
+{
+  "id": "protokoll-enheter",
+  "title": "Protokoll mellan komponenter: UART, SPI, I2C och USB",
+  "category": "Protokoll",
+  "minutes": 17,
+  "date": "2026-04-28",
+  "lead": "Kommunikationen inuti enheten: seriellt och parallellt, UART och baud rate, USART, SPI med chip select, I2C med adresser och pull-up-motstånd, USB och logikanalysatorn.",
+  "sources": [
+    "Kommunikationsprotokoll (mellan enheter/komponenter)",
+    "Dagens övningar 2026-04-28",
+    "Genomgång (SPI-tutorial)",
+    "Dagens övningar 2026-04-29 (logikanalysator)"
+  ],
+  "goals": [
+    "Förklara skillnaden mellan seriell och parallell kommunikation",
+    "Förklara hur UART skickar en ram och vad baud rate och 8N1 betyder",
+    "Skilja på UART och USART",
+    "Förklara SPI:s fyra ledningar och full duplex",
+    "Förklara I2C:s adressering, ACK/NACK och pull-up-motstånd",
+    "Välja mellan SPI och I2C"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Var i systemet?"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Sensor → MCU ↔ WiFi ↔ Internet ↔ Molntjänst\n",
+      "caption": "idag: länken mellan sensor och MCU"
+    },
+    {
+      "type": "p",
+      "html": "En IoT-enhet består av en mikrokontroller, sensorer och ställdon, skärm, minne och kommunikationsmoduler. De måste prata med varandra, till exempel en ATmega328 med temperatursensor, display, WiFi-modul och externt flashminne."
+    },
+    {
+      "type": "h",
+      "text": "Parallellt och seriellt"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Parallellt</strong> skickar flera bitar samtidigt på flera ledare. Det ger hög genomströmning på korta avstånd och används internt: CPU och RAM, interna bussar och 64-bitars databussar."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Clock skew:</strong> bitarna kommer inte fram exakt samtidigt om ledningarna är olika långa.",
+        "<strong>Crosstalk:</strong> ledningarna stör varandra elektromagnetiskt, vilket ger brus och felaktiga bitar. Värre vid höga hastigheter.",
+        "<strong>Många kablar:</strong> 8 data plus klocka plus kontroll blir dyrt, stort och komplext."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Därför tog <strong>seriellt</strong> över extern kommunikation: USB ersatte parallellporten, SATA ersatte ATA, Ethernet är seriellt. För sensorer ersatte I2C, SPI och UART de parallella bussarna. Färre kablar, billigare och enklare kretskort."
+    },
+    {
+      "type": "h",
+      "text": "UART"
+    },
+    {
+      "type": "p",
+      "html": "Universal Asynchronous Receiver-Transmitter är <strong>asynkron</strong>: det finns ingen gemensam klocka, så båda sidor måste vara överens om <strong>baud rate</strong> och format. Linjen ligger hög i vila. Vanligast är <strong>8N1</strong>: 8 databitar, ingen paritet, 1 stoppbit."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "vila   start  b0 b1 b2 b3 b4 b5 b6 b7  stopp  vila\n 1       0    0  0  0  1  0  0  1  0     1     1      'H' = 0x48, LSB först\n"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Startbit (0), 5–9 databitar (oftast 8, minst signifikanta först), ibland en paritetsbit, och 1 stoppbit (0,5–2, oftast 1).",
+        "<strong>Baud rate</strong> är symboler per sekund. För digitala signaler är det samma som bitar per sekund. Vanliga värden: 9600, 19200 och 115200.",
+        "<strong>Koppling:</strong> TX till RX och RX till TX, plus gemensam jord. Ett vanligt misstag är TX till TX, då pratar båda på samma ledning och ingen lyssnar.",
+        "En 5 V-enhet kan skada en 3,3 V-enhet utan nivåomvandlare.",
+        "Används till debugging, GPS- och GSM-moduler. Nackdelar: kort räckvidd och bara punkt-till-punkt."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<strong>USART</strong> (Universal Synchronous and Asynchronous Receiver-Transmitter) är samma sak med fler inställningar, men kan också köra <strong>synkront</strong> med en delad klocka, vilket ger högre hastigheter utan att tappa stabilitet."
+    },
+    {
+      "type": "h",
+      "text": "SPI"
+    },
+    {
+      "type": "p",
+      "html": "Serial Peripheral Interface är <strong>synkront</strong>: mastern skickar klockan och styr kommunikationen, och en eller flera slavar sitter på bussen. Det är snabbt, ofta några MHz och ibland tiotals MHz."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Ledning",
+        "Betyder"
+      ],
+      "rows": [
+        [
+          "MOSI",
+          "Master Out Slave In"
+        ],
+        [
+          "MISO",
+          "Master In Slave Out"
+        ],
+        [
+          "SCLK",
+          "Klockan från mastern"
+        ],
+        [
+          "CS/SS",
+          "Chip Select/Slave Select, en per slav. Låg = vald"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Alla slavar delar MOSI, MISO och SCLK, men varje slav har en egen CS. SPI är <strong>full duplex</strong>: data går åt båda hållen samtidigt. Läsa en temperatursensor: välj sensorn med CS, skicka kommandot, sensorn svarar, MCU:n tolkar. Används till displayer, SD-kort, flashminnen, ADC och DAC. Nackdelar: många kablar och ingen inbyggd adressering. Vanliga fel: fel clock mode, fel chip select, fel koppling, fel spänning."
+    },
+    {
+      "type": "h",
+      "text": "I2C"
+    },
+    {
+      "type": "p",
+      "html": "Inter-Integrated Circuit använder bara <strong>två ledningar</strong> för kommunikationen: <strong>SDA</strong> (data) och <strong>SCL</strong> (klocka). Alla enheter delar dem. Varje enhet har en <strong>adress</strong> på 7 (ibland 10) bitar, till exempel <code>0x48</code>, <code>0x76</code> eller <code>0x3C</code>."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "START | A6 A5 A4 A3 A2 A1 A0 R/W | ACK | data | ACK | ... | STOP\n        adressen 0x48 = 1001000, W = 0  →  adressbyten 10010000 = 0x90\n"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Mastern skickar adressen, den rätta enheten svarar <strong>ACK</strong>, sedan skickas data och kommunikationen avslutas. <strong>NACK</strong> betyder att ingen svarade, vilket är viktigt vid felsökning.",
+        "I2C <strong>kräver pull-up-motstånd</strong> på både SDA och SCL, typiskt 1–10 kΩ. Att glömma dem är det vanligaste felet.",
+        "Hastigheter: 100 kHz, 400 kHz och 1 MHz (fast mode plus). Långsammare än SPI.",
+        "Fördelar: få kablar, många enheter, enkelt kretskort. Nackdelar: långsammare, adresser kan krocka, känsligare för störningar.",
+        "Används till temperatursensorer, OLED-displayer, RTC-moduler och accelerometrar."
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Egenskap",
+        "SPI",
+        "I2C"
+      ],
+      "rows": [
+        [
+          "Hastighet",
+          "Hög",
+          "Lägre"
+        ],
+        [
+          "Kablar",
+          "Fler",
+          "Färre (2)"
+        ],
+        [
+          "Adressering",
+          "Nej, CS per enhet",
+          "Ja"
+        ],
+        [
+          "Full duplex",
+          "Ja",
+          "Nej"
+        ],
+        [
+          "Många enheter",
+          "Sämre",
+          "Bättre"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Välj <strong>SPI</strong> för hög hastighet, displayer och minneskort. Välj <strong>I2C</strong> för många sensorer, få lediga pinnar och enkel koppling. Smart växthus: temperatursensorn på I2C, displayen på SPI och WiFi mot nätet."
+    },
+    {
+      "type": "h",
+      "text": "USB"
+    },
+    {
+      "type": "p",
+      "html": "Universal Serial Bus har rollerna <strong>host</strong> och <strong>device</strong> och versionerna USB 2, USB 3 och kontakten USB-C. Bakom kulisserna sköter den enumeration (enheten berättar vad den är), strömförsörjning och dataöverföring."
+    },
+    {
+      "type": "h",
+      "text": "Felsöka signaler"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>logikanalysator</strong> visar signalerna på ledningarna. Med PulseView kan man välja en I2C- eller SPI-avkodare och se adresser, ACK och data i klartext."
+    },
+    {
+      "type": "exercise",
+      "title": "UART och Serial Monitor",
+      "html": "<p>Utgå från <code>hello_world</code> i ESP-IDF. Skicka text både till och från ESP32:an och se den i Serial Monitor.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "I2C device scanning",
+      "html": "<p>Koppla 2–3 ESP32:or, en som master (<code>i2c_basic</code>) och resten som slavar (<code>i2c_slave_network_sensor</code>). Ställ in WiFi i menuconfig, flasha och scanna bussen. Vilka adresser svarar?</p>",
+      "solution": "// En I2C-scanner: prova varje giltig adress och se vem som svarar ACK\nfor (uint8_t addr = 0x08; addr <= 0x77; addr++) {\n    if (i2c_master_probe(bus, addr, 50) == ESP_OK) {   // ACK\n        printf(\"Hittade enhet på 0x%02X\\n\", addr);\n    }\n}\n",
+      "lang": "c"
+    },
+    {
+      "type": "exercise",
+      "title": "Logikanalysator",
+      "html": "<p>Installera PulseView och koppla proberna: SDA till kanal 1, SCL till kanal 2 och jord till GND. Starta fångsten, välj I2C-avkodaren och koppla SDA och SCL till rätt kanal. Hittar du adressbyten och ACK?</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Varför tog seriell kommunikation över externt?",
+      "options": [
+        "Den är alltid snabbare",
+        "Färre kablar, billigare och inga problem med clock skew mellan ledningar",
+        "Den kräver ingen jord",
+        "Den är krypterad"
+      ],
+      "answer": 1,
+      "why": "Parallellt lever kvar internt, som CPU och RAM."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är clock skew?",
+      "options": [
+        "Fel baud rate",
+        "Att bitar på olika ledningar inte kommer fram samtidigt",
+        "Brus från andra kablar",
+        "En trasig klocka"
+      ],
+      "answer": 1,
+      "why": "Crosstalk är när ledningarna stör varandra."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder 8N1?",
+      "options": [
+        "8 bitar, ingen paritet, 1 stoppbit",
+        "8 bytes, nätverk 1",
+        "8 MHz, ingen klocka",
+        "8 startbitar"
+      ],
+      "answer": 0,
+      "why": "Den vanligaste UART-inställningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är UART:s startbit?",
+      "options": [
+        "1",
+        "0",
+        "Paritetsbiten",
+        "Klockan"
+      ],
+      "answer": 1,
+      "why": "Linjen ligger hög i vila, så en nolla markerar start."
+    },
+    {
+      "type": "mc",
+      "q": "I vilken ordning skickar UART databitarna?",
+      "options": [
+        "MSB först",
+        "LSB först",
+        "Slumpvis",
+        "Båda samtidigt"
+      ],
+      "answer": 1,
+      "why": "Minst signifikanta biten först."
+    },
+    {
+      "type": "mc",
+      "q": "Hur ska UART kopplas?",
+      "options": [
+        "TX till TX och RX till RX",
+        "TX till RX och RX till TX, plus gemensam jord",
+        "Bara TX",
+        "SDA till SCL"
+      ],
+      "answer": 1,
+      "why": "TX till TX är ett vanligt misstag."
+    },
+    {
+      "type": "mc",
+      "q": "Vad skiljer USART från UART?",
+      "options": [
+        "Den saknar TX",
+        "Den kan också köra synkront med delad klocka",
+        "Den är trådlös",
+        "Den har adresser"
+      ],
+      "answer": 1,
+      "why": "Samma i övrigt, men fler inställningar."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken SPI-ledning väljer vilken slav som pratar?",
+      "options": [
+        "MOSI",
+        "MISO",
+        "SCLK",
+        "CS/SS"
+      ],
+      "answer": 3,
+      "why": "En per slav."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder MISO?",
+      "options": [
+        "Master In Slave Out",
+        "Master Out Slave In",
+        "Main I/O",
+        "Memory In Serial Out"
+      ],
+      "answer": 0,
+      "why": "Data från slaven till mastern."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder full duplex i SPI?",
+      "options": [
+        "Två masters",
+        "Data skickas och tas emot samtidigt",
+        "Dubbel spänning",
+        "Två klockor"
+      ],
+      "answer": 1,
+      "why": "MOSI och MISO samtidigt."
+    },
+    {
+      "type": "mc",
+      "q": "Vilka två ledningar använder I2C?",
+      "options": [
+        "TX och RX",
+        "SDA och SCL",
+        "MOSI och MISO",
+        "D+ och D−"
+      ],
+      "answer": 1,
+      "why": "Data och klocka."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är det vanligaste I2C-felet enligt kursen?",
+      "options": [
+        "Fel baud rate",
+        "Glömda pull-up-motstånd",
+        "För många CS",
+        "Fel MAC-adress"
+      ],
+      "answer": 1,
+      "why": "Både SDA och SCL behöver pull-up, 1–10 kΩ."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder NACK i I2C?",
+      "options": [
+        "Datan togs emot",
+        "Ingen enhet svarade eller den tog inte emot",
+        "Starta om",
+        "Byt master"
+      ],
+      "answer": 1,
+      "why": "Viktigt vid felsökning, till exempel vid fel adress."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken adressbyte skickas för att skriva till 0x48?",
+      "options": [
+        "0x48",
+        "0x90",
+        "0x91",
+        "0x24"
+      ],
+      "answer": 1,
+      "why": "Adressen ett steg vänster, R/W-biten 0."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket protokoll passar en snabb display eller ett SD-kort?",
+      "options": [
+        "I2C",
+        "SPI",
+        "UART",
+        "LoRa"
+      ],
+      "answer": 1,
+      "why": "Hög hastighet."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket protokoll passar många sensorer och få lediga pinnar?",
+      "options": [
+        "SPI",
+        "I2C",
+        "Parallellt",
+        "USB"
+      ],
+      "answer": 1,
+      "why": "Två ledningar och adressering."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är enumeration i USB?",
+      "options": [
+        "Strömförsörjning",
+        "Att enheten berättar för hosten vad den är",
+        "Kryptering",
+        "Felrättning"
+      ],
+      "answer": 1,
+      "why": "Sker när enheten kopplas in."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket verktyg visar signalerna på SDA och SCL?",
+      "options": [
+        "Wireshark",
+        "Logikanalysator",
+        "ping",
+        "traceroute"
+      ],
+      "answer": 1,
+      "why": "Med PulseView och en I2C-avkodare."
+    },
+    {
+      "type": "text",
+      "q": "Vilken vanlig baud rate är snabbast av 9600, 19200 och 115200?",
+      "accept": [
+        "115200"
+      ],
+      "placeholder": "baud",
+      "why": "115 200 bitar per sekund."
+    },
+    {
+      "type": "code",
+      "q": "Bygg UART-ramen för varje tecken, med eller utan paritet.",
+      "task": "07-uart-1",
+      "why": "Startbit 0, data LSB först, paritet och stoppbit 1.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Räkna ut I2C-adressbyten för läsning och skrivning.",
+      "task": "07-i2c-1",
+      "why": "(adress &lt;&lt; 1) | R/W.",
+      "web": true
+    }
+  ]
+}

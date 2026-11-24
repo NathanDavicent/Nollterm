@@ -1,0 +1,352 @@
+{
+  "id": "natverksteknologier",
+  "title": "Nätverksteknologier och topologier",
+  "category": "Nätverk",
+  "minutes": 13,
+  "date": "2026-04-16",
+  "lead": "Ethernet, WiFi, Bluetooth och BLE, mobilnät, LR-WPAN, LoRa och LoRaWAN och Zigbee, hur topologierna ser ut, och hur man väljer teknik efter kraven.",
+  "sources": [
+    "Nätverksteknologier",
+    "Dagens övningar 2026-04-16"
+  ],
+  "goals": [
+    "Räkna upp vanliga nätverksteknologier och deras egenskaper",
+    "Jämföra räckvidd, hastighet, latens och energi",
+    "Beskriva topologierna punkt-till-punkt, stjärna, mesh och buss",
+    "Välja teknik utifrån krav"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad skiljer teknologierna åt?"
+    },
+    {
+      "type": "p",
+      "html": "En nätverksteknologi definierar hur signaler skickas, hur enheter ansluter och hur data struktureras. De skiljer sig i <strong>räckvidd, bandbredd, latens, energiförbrukning och topologi</strong>. Det finns många eftersom behoven är olika: välj rätt verktyg för problemet."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Teknik",
+        "Räckvidd",
+        "Hastighet",
+        "Energi"
+      ],
+      "rows": [
+        [
+          "Ethernet",
+          "Medel (kabellängd)",
+          "Hög",
+          "Låg"
+        ],
+        [
+          "WiFi",
+          "Medel",
+          "Hög",
+          "Medel"
+        ],
+        [
+          "Bluetooth",
+          "Kort",
+          "Låg",
+          "Låg"
+        ],
+        [
+          "Mobilnät",
+          "Lång",
+          "Medel",
+          "Hög"
+        ],
+        [
+          "LoRa",
+          "Mycket lång",
+          "Mycket låg",
+          "Mycket låg"
+        ],
+        [
+          "Zigbee",
+          "Kort",
+          "Låg",
+          "Låg"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Ethernet och WiFi"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Ethernet</strong> är kabelbaserat: snabbt, låg latens, stabilt och pålitligt, men utan mobilitet. <strong>WiFi</strong> går via radio mellan accesspunkter och enheter: inga sladdar, men begränsad räckvidd och störningar från väggar, andra nät och avsiktlig störning. Det är också svårt att se hur många användare som delar nätet."
+    },
+    {
+      "type": "h",
+      "text": "Bluetooth och BLE"
+    },
+    {
+      "type": "p",
+      "html": "Kort räckvidd och låg energi. <strong>BLE</strong> (Bluetooth Low Energy) är optimerat för batteri och vanligt i IoT: hörlurar, sensorer och wearables."
+    },
+    {
+      "type": "h",
+      "text": "Mobilnät"
+    },
+    {
+      "type": "p",
+      "html": "4G (100–1000 Mbit/s) och 5G (upp till 10 Gbit/s). 2G och 3G fasades ut i slutet av 2025. Lång räckvidd och kan byta mellan 4G och 5G, men det kostar att använda nätet och drar mycket energi."
+    },
+    {
+      "type": "h",
+      "text": "LR-WPAN, Zigbee och LoRa"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>LR-WPAN</strong> (IEEE 802.15.4) är basen för Zigbee, Thread och andra IoT-protokoll. Kort räckvidd (cirka 10 m), 250 kbit/s, väldigt energisnålt. För små batteridrivna enheter med en svag MCU.",
+        "<strong>Zigbee</strong>: 10–100 m, 250 kbit/s, krypterat med 128-bitars nycklar, och bygger ett <strong>mesh-nät</strong> automatiskt. Roller: coordinator (gateway), router och end device. Robust med många enheter, men kräver nätstruktur.",
+        "<strong>LoRa</strong> (Long Range): mycket lång räckvidd (cirka 10 km i praktiken, rekordet är över 300 km), mycket låg hastighet (0,3–27 kbit/s) och låg energi.",
+        "<strong>LoRaWAN</strong> är protokollet ovanpå LoRa som hanterar nätverk och säkerhet. Arkitektur: end device → gateway → network server → application server. Små paket, hög latens, inte realtid. Används i jordbruk, miljösensorer och smarta städer."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Topologier"
+    },
+    {
+      "type": "p",
+      "html": "En topologi beskriver hur enheterna är kopplade och hur datan rör sig."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Punkt-till-punkt   A ─── B\n\nStjärna               B\n                      │\n                 C ── X ── D      allt går via mitten (switch, AP, broker)\n                      │\n                      E\n\nMesh             A ── B\n                 │ ╲  │          flera vägar, noderna skickar vidare\n                 C ── D\n\nBuss             A   B   C   D\n                 │   │   │   │\n                 ═══════════════  alla delar samma ledning (som I2C)\n"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Topologi",
+        "Fördelar",
+        "Nackdelar",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Stjärna",
+          "Enkel, lätt att felsöka",
+          "Mitten är en single point of failure",
+          "WiFi-nät med en AP"
+        ],
+        [
+          "Mesh",
+          "Robust, självläkande, bra täckning",
+          "Mer komplex, kan bli långsam med många hopp",
+          "Zigbee, mesh-WiFi"
+        ],
+        [
+          "P2P",
+          "Ingen central punkt, skalbart, robust",
+          "Svårt att kontrollera och felsöka, säkerhetsproblem",
+          "Fildelning, blockkedjor"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "I ett mesh-nät kan varje nod skicka, ta emot och vidarebefordra data. Data hittar fram antingen genom <strong>flooding</strong> (skickas till alla grannar) eller genom routing som i ett TCP/IP-nät."
+    },
+    {
+      "type": "h",
+      "text": "Hur väljer man?"
+    },
+    {
+      "type": "p",
+      "html": "Fråga: hur långt ska datan, hur ofta skickas den, batteri eller el, och hur mycket data? Exempel: smart hem → Zigbee, sensor i skog → LoRa, streaming → WiFi. Vanliga misstag är att överdimensionera, att ignorera energin och att ignorera miljön enheten sitter i. IoT-system använder ofta flera teknologier tillsammans."
+    },
+    {
+      "type": "exercise",
+      "title": "Välj teknik",
+      "html": "<p>Välj teknik för: smart jordbruk, smart hem, videoövervakning och ett träningsarmband. Motivera.</p>",
+      "solution": "Smart jordbruk:    LoRa/LoRaWAN - stora ytor, lite data, batteri\nSmart hem:         Zigbee (eller WiFi) - många små enheter, mesh, lite energi\nVideoövervakning:  WiFi eller Ethernet - hög bandbredd, el finns\nTräningsarmband:   BLE - kort avstånd till mobilen, liten batteri\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Sensorer i skogen",
+      "html": "<p>Sensorer i en skog använder WiFi och batterierna tar slut hela tiden. Vad är fel och vad gör man?</p>",
+      "solution": "WiFi drar för mycket energi och har för kort räckvidd. Byt till LoRa/LoRaWAN:\nlång räckvidd, låg energi, och sensordatan är liten och skickas sällan.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Smart timmerlager",
+      "html": "<p>Designa ett system för ett stort timmerlager med temperatur- och fuktsensorer, kameror som startar vid rörelse, batteridrivna noder och en server.</p>",
+      "solution": "Sensorer (temp/fukt, batteri):  LoRaWAN till en gateway, eller Zigbee-mesh om ytan är mindre\nKameror (mycket data):           WiFi eller Ethernet (PoE ger ström i samma kabel)\nRörelse:                        sensorn väcker kameran, så den inte strömmar hela tiden\nServer:                         tar emot via gateway, t.ex. med MQTT\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken teknik har längst räckvidd?",
+      "options": [
+        "Bluetooth",
+        "Zigbee",
+        "LoRa",
+        "WiFi"
+      ],
+      "answer": 2,
+      "why": "Cirka 10 km i praktiken."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken teknik passar ett träningsarmband?",
+      "options": [
+        "LoRa",
+        "BLE",
+        "Ethernet",
+        "Mobilnät"
+      ],
+      "answer": 1,
+      "why": "Kort avstånd till mobilen och lite batteri."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är LoRaWAN?",
+      "options": [
+        "En sorts WiFi",
+        "Protokollet ovanpå LoRa som hanterar nätverk och säkerhet",
+        "En kabelstandard",
+        "En Bluetooth-version"
+      ],
+      "answer": 1,
+      "why": "End device → gateway → network server → application server."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken topologi använder Zigbee?",
+      "options": [
+        "Buss",
+        "Mesh",
+        "Punkt-till-punkt",
+        "Ingen"
+      ],
+      "answer": 1,
+      "why": "Enheterna skickar vidare data åt varandra."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken roll i Zigbee fungerar som gateway?",
+      "options": [
+        "End device",
+        "Router",
+        "Coordinator",
+        "Broker"
+      ],
+      "answer": 2,
+      "why": "Coordinator."
+    },
+    {
+      "type": "mc",
+      "q": "Vad bygger Zigbee och Thread på?",
+      "options": [
+        "IEEE 802.15.4 (LR-WPAN)",
+        "Ethernet",
+        "LoRa",
+        "5G"
+      ],
+      "answer": 0,
+      "why": "Low-Rate Wireless Personal Area Network."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en nackdel med stjärntopologi?",
+      "options": [
+        "För många vägar",
+        "Mitten är en single point of failure",
+        "Kräver mesh",
+        "Går inte att felsöka"
+      ],
+      "answer": 1,
+      "why": "Går mitten ner stannar allt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder att ett mesh-nät är självläkande?",
+      "options": [
+        "Det lagar kablar",
+        "Data hittar en ny väg om en nod försvinner",
+        "Det uppdaterar sig själv",
+        "Det byter lösenord"
+      ],
+      "answer": 1,
+      "why": "Flera vägar ger robusthet."
+    },
+    {
+      "type": "mc",
+      "q": "Varför passar LoRa inte för video?",
+      "options": [
+        "För kort räckvidd",
+        "Mycket låg hastighet och små paket",
+        "För dyr ström",
+        "Den är krypterad"
+      ],
+      "answer": 1,
+      "why": "0,3–27 kbit/s."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka frågor ska man ställa när man väljer teknik?",
+      "options": [
+        "Hur långt ska datan?",
+        "Hur ofta skickas den?",
+        "Batteri eller el?",
+        "Vilken färg har enheten?"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Och hur mycket data."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är vanliga misstag vid val av teknik?",
+      "options": [
+        "Att överdimensionera",
+        "Att ignorera energiförbrukningen",
+        "Att ignorera miljön",
+        "Att läsa databladet"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Från föreläsningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är flooding i ett mesh-nät?",
+      "options": [
+        "Ett vattenfel",
+        "Datan skickas till alla grannoder",
+        "En attack",
+        "Kryptering"
+      ],
+      "answer": 1,
+      "why": "Alternativet är routing."
+    },
+    {
+      "type": "text",
+      "q": "Hur många kbit/s klarar Zigbee och LR-WPAN?",
+      "accept": [
+        "250",
+        "250 kbit/s",
+        "250 kbps"
+      ],
+      "placeholder": "kbit/s",
+      "why": "Låg hastighet men väldigt energisnålt."
+    }
+  ]
+}

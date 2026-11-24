@@ -1,0 +1,543 @@
+{
+  "id": "ip-routing",
+  "title": "IP-adressering, subnät och routing",
+  "category": "Nätverk",
+  "minutes": 20,
+  "date": "2026-04-21",
+  "lead": "IPv4 binärt, nätverksdel och värddel, subnätmask och CIDR, att dela upp nät, NAT och ARP, IPv6, och hur en router väljer väg med longest prefix match.",
+  "sources": [
+    "IP-adressering & routing",
+    "Dagens övningar 2026-04-21",
+    "Repetition 2026-05-07 (övning 2)"
+  ],
+  "goals": [
+    "Skriva en IPv4-adress binärt",
+    "Räkna fram nätverksadress, broadcast och värdar med mask och CIDR",
+    "Dela upp ett nät i subnät",
+    "Förklara NAT, ARP och skillnaderna mellan IPv4 och IPv6",
+    "Förkorta och expandera IPv6-adresser",
+    "Välja route med longest prefix match"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "IPv4"
+    },
+    {
+      "type": "p",
+      "html": "En IPv4-adress är <strong>32 bitar</strong> uppdelade i 4 oktetter om 8 bitar: <code>192.168.1.10</code> är <code>11000000.10101000.00000001.00001010</code>."
+    },
+    {
+      "type": "p",
+      "html": "Adressen består av en <strong>nätverksdel</strong> (adressen till ett nät, som en ISP:s eller Googles) och en <strong>värddel</strong> (host) som pekar ut enheter i nätet. Ju mindre värddel, desto färre enheter. Två adresser i varje nät är alltid upptagna: <strong>nätverksadressen</strong> (alla värdbitar 0) och <strong>broadcastadressen</strong> (alla värdbitar 1)."
+    },
+    {
+      "type": "h",
+      "text": "Subnätmask och bitmanipulering"
+    },
+    {
+      "type": "p",
+      "html": "Subnätmasken har ettor för nätverksdelen och nollor för värddelen. AND med masken ger nätverksdelen, AND med den inverterade masken ger värddelen."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "IP:    172.70.19.42    10101100.01000110.00010011.00101010\nmask:  255.255.255.128 11111111.11111111.11111111.10000000\nIP & mask           =  10101100.01000110.00010011.00000000  = 172.70.19.0  nätverksdel\nIP & ~mask          =  00000000.00000000.00000000.00101010  = 0.0.0.42     värddel\n"
+    },
+    {
+      "type": "p",
+      "html": "<strong>CIDR-notation</strong> anger antalet ettor i masken efter ett snedstreck. Det är kortare att skriva."
+    },
+    {
+      "type": "table",
+      "head": [
+        "CIDR",
+        "Mask",
+        "Adresser",
+        "Värdar"
+      ],
+      "rows": [
+        [
+          "/16",
+          "255.255.0.0",
+          "65 536",
+          "65 534"
+        ],
+        [
+          "/24",
+          "255.255.255.0",
+          "256",
+          "254"
+        ],
+        [
+          "/25",
+          "255.255.255.128",
+          "128",
+          "126"
+        ],
+        [
+          "/26",
+          "255.255.255.192",
+          "64",
+          "62"
+        ],
+        [
+          "/28",
+          "255.255.255.240",
+          "16",
+          "14"
+        ],
+        [
+          "/30",
+          "255.255.255.252",
+          "4",
+          "2"
+        ]
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "unsigned int mask      = 0xFFFFFFFFu << (32 - prefix);  // prefix ettor, resten nollor\nunsigned int network   = ip & mask;\nunsigned int broadcast = network | ~mask;               // alla värdbitar satta\nunsigned int hosts     = (1u << (32 - prefix)) - 2;     // minus nät och broadcast\n",
+      "caption": "samma räkning i C"
+    },
+    {
+      "type": "h",
+      "text": "Dela upp ett nät"
+    },
+    {
+      "type": "p",
+      "html": "Man delar i 2-potenser genom att <strong>låna bitar</strong> från värddelen. <code>192.168.50.0/24</code> har 256 adresser. Lånar vi en bit blir det /25: två subnät med 7 värdbitar, alltså 128 adresser var."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Subnät",
+        "Nätverksadress",
+        "Värdar",
+        "Broadcast"
+      ],
+      "rows": [
+        [
+          "192.168.50.0/25",
+          "192.168.50.0",
+          ".1 – .126",
+          "192.168.50.127"
+        ],
+        [
+          "192.168.50.128/25",
+          "192.168.50.128",
+          ".129 – .254",
+          "192.168.50.255"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Två lånade bitar (/26) ger 4 subnät om 64 adresser, tre bitar (/27) ger 8 om 32. Varför subnät? För att organisera nätet och minska trafiken, till exempel så att broadcast bara når en del."
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Du behöver inte veta det ursprungliga nätet för att hitta subnätet. <code>192.168.1.200/26</code>: blocken är 64 stora (0, 64, 128, 192), och 200 ligger i blocket som börjar på 192. Nätet är <code>192.168.1.192/26</code> och broadcast <code>192.168.1.255</code>, oavsett om det ursprungliga nätet var /24 eller /23."
+    },
+    {
+      "type": "h",
+      "text": "NAT och ARP"
+    },
+    {
+      "type": "p",
+      "html": "<strong>NAT</strong> (Network Address Translation): routern översätter IP-adresser och portar när paket går mellan hemnätet och internet. Det sparar publika adresser och ger viss isolering."
+    },
+    {
+      "type": "p",
+      "html": "<strong>ARP</strong> (Address Resolution Protocol) tar fram MAC-adressen till en IP på samma nät. Först kollas ARP-cachen. Saknas adressen skickas en broadcast: <em>Vem har IP X? Svara till Y med MAC Z.</em> Enheten med IP X svarar direkt, och avsändaren uppdaterar sin cache."
+    },
+    {
+      "type": "h",
+      "text": "IPv6"
+    },
+    {
+      "type": "p",
+      "html": "IPv4-adresserna tar slut och IoT-enheterna blir fler. IPv6 har <strong>128 bitar</strong> skrivna som 8 grupper om 16 bitar i hex. Ledande nollor i en grupp skrivs inte, och en serie nollgrupper förkortas med <code>::</code>, max en gång per adress."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "2001:0db8:0000:0000:0000:0000:0000:0001/64\n2001:db8::1/64                              samma adress förkortad\n"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Standarden (RFC 5952) säger: förkorta den <strong>längsta</strong> serien, den vänstra om två är lika långa, och förkorta inte en ensam nollgrupp med <code>::</code>."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Typ",
+        "Prefix",
+        "Motsvarar i IPv4"
+      ],
+      "rows": [
+        [
+          "Global unicast",
+          "2000::/3",
+          "Publika adresser"
+        ],
+        [
+          "Link-local",
+          "fe80::/10",
+          "Bara på samma länk, ej routbar. Alla interface har en"
+        ],
+        [
+          "Unique local (ULA)",
+          "fc00::/7 (i praktiken fd00::/8)",
+          "Privata adresser"
+        ],
+        [
+          "Multicast",
+          "ff00::/8",
+          "Ersätter broadcast"
+        ],
+        [
+          "Anycast",
+          "(vanliga adresser)",
+          "Samma adress på flera noder, närmaste svarar. Används av DNS-servrar"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "IPv4",
+        "IPv6"
+      ],
+      "rows": [
+        [
+          "Storlek",
+          "32 bitar, 4 decimala oktetter",
+          "128 bitar, 8 hexgrupper"
+        ],
+        [
+          "Broadcast",
+          "Ja",
+          "Nej, multicast och anycast"
+        ],
+        [
+          "NAT",
+          "Används",
+          "Behövs inte"
+        ],
+        [
+          "MAC-uppslag",
+          "ARP",
+          "Neighbor Discovery"
+        ],
+        [
+          "IPsec",
+          "Valfritt",
+          "En del av arkitekturen"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Routing"
+    },
+    {
+      "type": "p",
+      "html": "Routing är att välja väg. Routern slår upp nästa hopp i sin <strong>routingtabell</strong>: destination (IP med mask), next hop (grannrouterns IP, eller <em>on-link</em>), interface (eth0, wlan0), metric (kostnad) och hur routen lades till. <strong>Statiska</strong> routes läggs in för hand, <strong>dynamiska</strong> lärs från routingprotokoll."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Ta destinationens IP ur paketet.",
+        "<strong>Longest prefix match:</strong> välj den route som matchar och har längst prefix, alltså den mest specifika.",
+        "Lika långa: välj lägst metric.",
+        "Ingen match: använd <strong>default route</strong> <code>0.0.0.0/0</code> (<code>::/0</code> i IPv6). Finns ingen sådan droppas paketet."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "0.0.0.0/0         → A   (ISP-nivå)\n172.16.0.0/12     → B   (stadsnät)\n172.16.32.0/19    → C   (stadsdel)\n172.16.32.128/25  → D   (skolans router)\n\n172.16.10.5    matchar /12             → B\n172.16.32.50   matchar /12 och /19     → C\n172.16.32.200  matchar /12, /19, /25   → D\n203.0.113.1    matchar bara /0         → A\n"
+    },
+    {
+      "type": "exercise",
+      "title": "Nätverksdel och värddel",
+      "html": "<p>Vad är nätverksdel och värddel för <code>192.168.50.42/24</code>? Vilket subnät och vilken broadcast har <code>192.168.1.130/25</code>?</p>",
+      "solution": "192.168.50.42/24:  nätverk 192.168.50.0, värddel 0.0.0.42\n192.168.1.130/25:  130 >= 128, så nätet är 192.168.1.128/25\n                   broadcast 192.168.1.255, värdar .129-.254\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Dela upp i /26",
+      "html": "<p>Dela <code>192.168.50.0/24</code> i /26-nät.</p>",
+      "solution": "2 lånade bitar = 4 nät om 64 adresser\n192.168.50.0/26     .1-.62     broadcast .63\n192.168.50.64/26    .65-.126   broadcast .127\n192.168.50.128/26   .129-.190  broadcast .191\n192.168.50.192/26   .193-.254  broadcast .255\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Routingtabell",
+      "html": "<p>Tabell: <code>0.0.0.0/0→A</code>, <code>10.0.0.0/8→B</code>, <code>10.1.0.0/16→C</code>, <code>10.1.2.0/24→D</code>, <code>10.1.2.128/25→E</code>, <code>192.168.1.0/24→F</code>. Vart går 10.2.5.7, 10.1.3.4, 10.1.2.10, 10.1.2.200, 192.168.1.45 och 8.8.8.8?</p>",
+      "solution": "10.2.5.7      → B  (bara /8)\n10.1.3.4      → C  (/16, inte 10.1.2.x)\n10.1.2.10     → D  (/24, under 128)\n10.1.2.200    → E  (/25, 200 >= 128)\n192.168.1.45  → F\n8.8.8.8       → A  (default)\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur många bitar har en IPv4-adress?",
+      "options": [
+        "16",
+        "32",
+        "64",
+        "128"
+      ],
+      "answer": 1,
+      "why": "4 oktetter om 8 bitar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad blir 192.168.1.10 AND 255.255.255.0?",
+      "options": [
+        "192.168.1.0",
+        "0.0.0.10",
+        "192.168.1.255",
+        "255.255.255.10"
+      ],
+      "answer": 0,
+      "why": "Nätverksdelen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken mask motsvarar /26?",
+      "options": [
+        "255.255.255.0",
+        "255.255.255.128",
+        "255.255.255.192",
+        "255.255.255.224"
+      ],
+      "answer": 2,
+      "why": "26 ettor: den sista oktetten är 11000000 = 192."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många värdar får plats i ett /24?",
+      "options": [
+        "256",
+        "255",
+        "254",
+        "128"
+      ],
+      "answer": 2,
+      "why": "256 minus nätverksadress och broadcast."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många värdar får plats i ett /28?",
+      "options": [
+        "16",
+        "14",
+        "28",
+        "30"
+      ],
+      "answer": 1,
+      "why": "2⁴ − 2."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket subnät tillhör 192.168.1.200/26?",
+      "options": [
+        "192.168.1.0/26",
+        "192.168.1.128/26",
+        "192.168.1.192/26",
+        "192.168.1.200/26"
+      ],
+      "answer": 2,
+      "why": "Blocken är 0, 64, 128, 192."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är broadcastadressen för 192.168.1.130/25?",
+      "options": [
+        "192.168.1.128",
+        "192.168.1.254",
+        "192.168.1.255",
+        "192.168.1.127"
+      ],
+      "answer": 2,
+      "why": "Alla 7 värdbitar satta."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många /26-nät ryms i ett /24?",
+      "options": [
+        "2",
+        "4",
+        "8",
+        "26"
+      ],
+      "answer": 1,
+      "why": "2 lånade bitar ger 2² = 4."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör NAT?",
+      "options": [
+        "Översätter namn till IP",
+        "Översätter IP-adresser och portar mellan nät, till exempel hemnät och internet",
+        "Delar ut IP-adresser",
+        "Krypterar"
+      ],
+      "answer": 1,
+      "why": "Sparar publika IPv4-adresser."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör ARP?",
+      "options": [
+        "Tar fram MAC-adressen till en IP på samma nät",
+        "Routar paket",
+        "Krypterar",
+        "Delar ut IP"
+      ],
+      "answer": 0,
+      "why": "Med en broadcast om cachen saknar adressen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ersätter ARP i IPv6?",
+      "options": [
+        "DHCP",
+        "Neighbor Discovery",
+        "NAT",
+        "DNS"
+      ],
+      "answer": 1,
+      "why": "Med solicited-node multicast."
+    },
+    {
+      "type": "mc",
+      "q": "Hur skrivs 2001:0db8:0000:0000:0000:0000:0000:0001 kortast?",
+      "options": [
+        "2001:db8::1",
+        "2001:db8:0:0::1",
+        "2001::db8::1",
+        "2001:0db8::0001"
+      ],
+      "answer": 0,
+      "why": "Ledande nollor bort och nollserien blir ::."
+    },
+    {
+      "type": "mc",
+      "q": "Varför är 2001::db8::1 ogiltig?",
+      "options": [
+        "För kort",
+        ":: får bara användas en gång",
+        "Saknar prefix",
+        "Har stora bokstäver"
+      ],
+      "answer": 1,
+      "why": "Annars går det inte att veta hur många nollor varje :: står för."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket prefix har link-local-adresser i IPv6?",
+      "options": [
+        "2000::/3",
+        "fe80::/10",
+        "ff00::/8",
+        "fd00::/8"
+      ],
+      "answer": 1,
+      "why": "Ej routbara, bara på samma länk."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken route väljs med longest prefix match?",
+      "options": [
+        "Den första i tabellen",
+        "Den matchande med längst prefix",
+        "Den med kortast prefix",
+        "Alltid default"
+      ],
+      "answer": 1,
+      "why": "Den mest specifika."
+    },
+    {
+      "type": "mc",
+      "q": "Tabell: 0.0.0.0/0→A, 10.0.0.0/8→B, 10.1.0.0/16→C. Vart går 10.1.3.4?",
+      "options": [
+        "A",
+        "B",
+        "C",
+        "Droppas"
+      ],
+      "answer": 2,
+      "why": "/16 är längst av de som matchar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer om ingen route matchar och det inte finns någon default route?",
+      "options": [
+        "Paketet skickas till alla",
+        "Paketet droppas",
+        "Det skickas tillbaka",
+        "Det skickas till DNS"
+      ],
+      "answer": 1,
+      "why": "Default är 0.0.0.0/0."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken route skickar IPv6-paket som inget annat matchar?",
+      "options": [
+        "::1/128",
+        "::/0",
+        "fe80::/10",
+        "ff00::/8"
+      ],
+      "answer": 1,
+      "why": "Default route i IPv6."
+    },
+    {
+      "type": "text",
+      "q": "Vad är nätverksadressen för 172.70.19.42 med mask 255.255.255.128?",
+      "accept": [
+        "172.70.19.0"
+      ],
+      "placeholder": "a.b.c.d",
+      "why": "42 är under 128, så den sista oktetten blir 0."
+    },
+    {
+      "type": "code",
+      "q": "Räkna ut nät, mask, broadcast och värdar från en adress i CIDR-notation.",
+      "task": "05-ip-1",
+      "why": "AND med masken och OR med den inverterade.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Dela upp ett nät i mindre subnät.",
+      "task": "05-ip-2",
+      "why": "Antal = 2^lånade bitar, storlek = 2^(32 − nytt prefix).",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Välj next hop med longest prefix match.",
+      "task": "05-routing-1",
+      "why": "Matchar om dest &amp; mask == nät, och längst prefix vinner.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Expandera och förkorta IPv6-adresser.",
+      "task": "05-ipv6-1",
+      "why": "Fyll ut :: till 8 grupper och hitta den längsta nollserien.",
+      "web": true
+    }
+  ]
+}

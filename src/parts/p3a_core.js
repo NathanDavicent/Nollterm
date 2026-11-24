@@ -37,8 +37,15 @@ const HERO_CARDS = {
     const cells = [..."00100000"].map((ch, i) => `<div><span class="cell ${ch === "1" ? "z" : ""}" style="animation-delay:${i * 90}ms">${ch}</span><span class="ad">PB${7 - i}</span></div>`).join("");
     return `<div class="memcard" aria-label="Exempel: tänd pin 13 med ett portregister">
         <div class="decl">PORTB |= (<span class="s">1</span> &lt;&lt; PB5);</div>
-        <div class="mem">${cells}</div>
+        <div class="mem bits8">${cells}</div>
         <div class="foot">En bit i ett register, en pinne på kortet.<br>Pin 13 lyser, de andra rörs inte.</div></div>`;
+  },
+  datakom: () => {
+    const cells = [..."11001000"].map((ch, i) => `<div><span class="cell ${i < 2 ? "z" : ""}" style="animation-delay:${i * 90}ms">${ch}</span><span class="ad">b${7 - i}</span></div>`).join("");
+    return `<div class="memcard" aria-label="Exempel: sista oktetten i 192.168.1.200/26">
+        <div class="decl">192.168.1.<span class="s">200</span>/26</div>
+        <div class="mem bits8">${cells}</div>
+        <div class="foot">Sista oktetten: två bitar nät (markerade), sex bitar värd.<br>Subnätet är 192.168.1.192/26.</div></div>`;
   },
 };
 const COURSES = CONTENT.map(c => Object.assign(c, {

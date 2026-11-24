@@ -1,0 +1,365 @@
+{
+  "id": "datakom",
+  "badge": "NET",
+  "title": "Datorkommunikation",
+  "short": "Datorkommunikation",
+  "tag": "IoT · nätverk · protokoll",
+  "description": "Hur IoT-system kommunicerar: OSI-modellen, IP och subnät, routing, TCP, UDP, MQTT och CoAP, UART, SPI och I2C, felsökning och säkerhet.",
+  "headline": "Från <em>sensor</em> till app.",
+  "lessons": [
+    "01-iot-helhet.json",
+    "02-osi.json",
+    "03-fysiskt-natverk.json",
+    "04-natverksteknologier.json",
+    "05-ip-routing.json",
+    "06-protokoll-natverk.json",
+    "07-protokoll-enheter.json",
+    "08-felsokning.json",
+    "09-sakerhet.json",
+    "10-repetition.json"
+  ],
+  "timeline": [
+    {
+      "date": "Tis 7/4",
+      "title": "Kursintroduktion och helhetsbild",
+      "lessons": [
+        "iot-helhet"
+      ]
+    },
+    {
+      "date": "Tors 9/4",
+      "title": "OSI-modellen och nätverksgrunder",
+      "lessons": [
+        "osi"
+      ]
+    },
+    {
+      "date": "Tis 14/4",
+      "title": "Fysiska nätverk och uppkoppling",
+      "lessons": [
+        "fysiskt-natverk"
+      ]
+    },
+    {
+      "date": "Tors 16/4",
+      "title": "Nätverksteknologier",
+      "lessons": [
+        "natverksteknologier"
+      ]
+    },
+    {
+      "date": "Tis 21/4",
+      "title": "IP-adressering och routing",
+      "lessons": [
+        "ip-routing"
+      ]
+    },
+    {
+      "date": "Tors 23/4",
+      "title": "Kommunikationsprotokoll (nätverk) · MQTT",
+      "lessons": [
+        "protokoll-natverk"
+      ]
+    },
+    {
+      "date": "Tis 28/4",
+      "title": "Kommunikationsprotokoll (enhet till enhet/komponent)",
+      "lessons": [
+        "protokoll-enheter"
+      ]
+    },
+    {
+      "date": "Ons 29/4",
+      "title": "Felsökning och diagnostik · Wireshark och logikanalysator",
+      "lessons": [
+        "felsokning",
+        "protokoll-enheter"
+      ]
+    },
+    {
+      "date": "Tis 5/5",
+      "title": "Säkerhet och systemtänk",
+      "lessons": [
+        "sakerhet"
+      ]
+    },
+    {
+      "date": "Tors 7/5",
+      "title": "Repetition och sammanfattning inför tentan",
+      "lessons": [
+        "repetition"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "tentamen",
+      "kind": "Tentamen",
+      "title": "Tentamen (kunskapsmålen)",
+      "intro": "Tentan täcker kunskapsmålen i kursplanen (KUN19–KUN21). Datumet fanns inte i materialet.",
+      "groups": [
+        {
+          "h": "Typiska frågor",
+          "items": [
+            "Vad gör DNS?",
+            "Skillnaden mellan TCP och UDP",
+            "Vad är ett subnät? Räkna nätverksadress och broadcast",
+            "Hur fungerar MQTT?",
+            "Varför I2C i stället för SPI?",
+            "När är UDP bättre än TCP?",
+            "Var uppstår flest problem i ett IoT-system?"
+          ]
+        },
+        {
+          "h": "Räkna",
+          "items": [
+            "Nätverksdel och värddel med mask och CIDR",
+            "Dela upp ett nät i subnät",
+            "Longest prefix match i en routingtabell",
+            "Förkorta och expandera IPv6"
+          ]
+        }
+      ],
+      "topics": [
+        "osi",
+        "ip-routing",
+        "protokoll-natverk",
+        "protokoll-enheter",
+        "felsokning",
+        "sakerhet"
+      ],
+      "hint": "Gör repetitionsövningarna i sista lektionen och räkna subnät tills det går utan att tänka."
+    },
+    {
+      "id": "inlamning",
+      "kind": "Inlämningsuppgift",
+      "title": "Inlämningsuppgift (teoretisk)",
+      "intro": "Inlämningsuppgiften täcker kompetens- och färdighetsmålen (KOM15 och F23) och är teoretisk. Själva uppgiftsbeskrivningen fanns inte i materialet.",
+      "groups": [
+        {
+          "h": "Bra att ha med",
+          "items": [
+            "Ett IoT-system ritat från sensor till app",
+            "Val av nätverksteknik och protokoll, med motivering utifrån räckvidd, energi och datamängd",
+            "Hur systemet felsöks lager för lager",
+            "Säkerhet: CIA, autentisering och kryptering",
+            "Risker, single points of failure och redundans"
+          ]
+        }
+      ],
+      "topics": [
+        "iot-helhet",
+        "natverksteknologier",
+        "protokoll-natverk",
+        "sakerhet"
+      ],
+      "hint": "Övningarna från lektion 4 och 9 (timmerlagret och det säkra systemet) är bra träning."
+    },
+    {
+      "id": "labbar",
+      "kind": "Övningar",
+      "title": "Kursens övningar",
+      "intro": "Övningarna som görs på lektionerna, ofta i grupper om 2–3.",
+      "groups": [
+        {
+          "h": "Nätverk",
+          "items": [
+            "Wireshark-genomgång",
+            "Kartlägg ditt nätverk och testkedjan med ping och tracepath",
+            "Subnät och routingtabeller"
+          ]
+        },
+        {
+          "h": "Protokoll",
+          "items": [
+            "MQTT med MQTT Explorer eller HiveMQ",
+            "Smart lampa på ESP32 med MQTT",
+            "UART och Serial Monitor",
+            "I2C device scanning med flera ESP32:or",
+            "Logikanalysator med PulseView"
+          ]
+        },
+        {
+          "h": "Analys",
+          "items": [
+            "Wireshark-felsökning med tre fångster",
+            "Säkerhetsanalys av ett smart hem",
+            "Distribuerat system och realtidsval"
+          ]
+        }
+      ],
+      "topics": [
+        "osi",
+        "fysiskt-natverk",
+        "ip-routing",
+        "protokoll-natverk",
+        "protokoll-enheter",
+        "felsokning",
+        "sakerhet"
+      ],
+      "hint": "Wokwi kan köra ESP32 med WiFi och MQTT om du saknar hårdvara."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "F1",
+      "title": "Kursintroduktion",
+      "description": "Kursens innehåll, examination och IoT-systemet.",
+      "lessons": [
+        "iot-helhet"
+      ]
+    },
+    {
+      "kind": "F2",
+      "title": "OSI-modellen & nätverksgrunder",
+      "description": "De sju lagren, TCP och UDP, inkapsling, TCP/IP och felsökning.",
+      "lessons": [
+        "osi"
+      ]
+    },
+    {
+      "kind": "F3",
+      "title": "Fysiska nätverk & uppkoppling",
+      "description": "Komponenter, DHCP, portar, gateway, DNS och kommandona.",
+      "lessons": [
+        "fysiskt-natverk"
+      ]
+    },
+    {
+      "kind": "F4",
+      "title": "Nätverksteknologier",
+      "description": "Ethernet, WiFi, BLE, mobilnät, LoRa, Zigbee och topologier.",
+      "lessons": [
+        "natverksteknologier"
+      ]
+    },
+    {
+      "kind": "F5",
+      "title": "IP-adressering & routing",
+      "description": "IPv4, mask, CIDR, subnät, NAT, ARP, IPv6 och longest prefix match.",
+      "lessons": [
+        "ip-routing"
+      ]
+    },
+    {
+      "kind": "F6",
+      "title": "Kommunikationsprotokoll (nätverk)",
+      "description": "Portar, TCP, UDP, HTTP, MQTT och CoAP.",
+      "lessons": [
+        "protokoll-natverk"
+      ]
+    },
+    {
+      "kind": "F7",
+      "title": "Kommunikationsprotokoll (mellan enheter/komponenter)",
+      "description": "Parallellt och seriellt, UART, USART, SPI, I2C och USB.",
+      "lessons": [
+        "protokoll-enheter"
+      ]
+    },
+    {
+      "kind": "F8",
+      "title": "Felsökning & diagnostik",
+      "description": "Metodik, lagren, verktygen och vanliga fel.",
+      "lessons": [
+        "felsokning"
+      ]
+    },
+    {
+      "kind": "F9",
+      "title": "Säkerhet & systemtänk",
+      "description": "Attacker, CIA, distribuerade system och realtid.",
+      "lessons": [
+        "sakerhet"
+      ]
+    },
+    {
+      "kind": "F10",
+      "title": "Kurssammanfattning",
+      "description": "Hela kursen och snabbfrågorna inför tentan.",
+      "lessons": [
+        "repetition"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Dagens övningar",
+      "description": "Övningarna från varje lektion, med lärarens resonemang om Wireshark-fångsterna och subnäten.",
+      "lessons": [
+        "osi",
+        "fysiskt-natverk",
+        "natverksteknologier",
+        "ip-routing",
+        "protokoll-natverk",
+        "protokoll-enheter",
+        "felsokning",
+        "sakerhet",
+        "repetition"
+      ]
+    },
+    {
+      "kind": "pcap",
+      "title": "first, second och third_capture.pcapng",
+      "description": "Tre Wireshark-fångster att para ihop med scenarierna.",
+      "lessons": [
+        "felsokning"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Tool",
+      "title": "Wireshark",
+      "url": "https://www.wireshark.org/",
+      "description": "Fånga och analysera nätverkspaket."
+    },
+    {
+      "kind": "MQTT",
+      "title": "MQTT Explorer",
+      "url": "https://mqtt-explorer.com/",
+      "description": "Klient för att prenumerera och publicera på MQTT."
+    },
+    {
+      "kind": "MQTT",
+      "title": "HiveMQ WebSocket-klient",
+      "url": "https://www.hivemq.com/demos/websocket-client/",
+      "description": "MQTT direkt i webbläsaren."
+    },
+    {
+      "kind": "Spec",
+      "title": "MQTT 5 (OASIS)",
+      "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html",
+      "description": "Standarden, med wildcards, QoS, retain och will."
+    },
+    {
+      "kind": "SPI",
+      "title": "SPI-tutorial",
+      "url": "https://playwithcircuit.com/spi-communication-protocol-tutorial/",
+      "description": "Länken från genomgången om SPI."
+    },
+    {
+      "kind": "Tool",
+      "title": "PulseView (sigrok)",
+      "url": "https://sigrok.org/wiki/PulseView",
+      "description": "Program för logikanalysatorn, med I2C- och SPI-avkodare."
+    },
+    {
+      "kind": "IDF",
+      "title": "ESP-IDF MQTT-exempel",
+      "url": "https://github.com/espressif/esp-idf/tree/master/examples/protocols/mqtt",
+      "description": "Exemplen som övningen med den smarta lampan utgår från."
+    },
+    {
+      "kind": "Sim",
+      "title": "Wokwi",
+      "url": "https://wokwi.com/",
+      "description": "Simulera ESP32 med WiFi och MQTT."
+    },
+    {
+      "kind": "RFC",
+      "title": "RFC 5952: IPv6-adresser som text",
+      "url": "https://www.rfc-editor.org/rfc/rfc5952",
+      "description": "Reglerna för hur IPv6 förkortas."
+    }
+  ]
+}

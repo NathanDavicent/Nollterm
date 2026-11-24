@@ -1,0 +1,422 @@
+{
+  "id": "sakerhet",
+  "title": "Säkerhet och systemtänk",
+  "category": "System",
+  "minutes": 15,
+  "date": "2026-05-05",
+  "lead": "Attacker mot IoT, CIA-triaden, autentisering och kryptering, distribuerade system med single point of failure och redundans, realtidskrav, och hur man analyserar ett system som helhet.",
+  "sources": [
+    "Säkerhet & systemtänk",
+    "Dagens övningar 2026-05-05"
+  ],
+  "goals": [
+    "Ge exempel på attacker mot IoT-system",
+    "Förklara CIA-triaden",
+    "Beskriva säkerhet i MQTT och i lokala protokoll",
+    "Resonera kring single point of failure, redundans och skalbarhet",
+    "Skilja på mjuka och hårda realtidskrav och på latens och jitter",
+    "Analysera risker och trade-offs i ett helt system"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför säkerhet?"
+    },
+    {
+      "type": "p",
+      "html": "IoT-system styr hem, fabriker, fordon och sjukvård. Fel får konsekvenser."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Attack",
+        "Vad det är"
+      ],
+      "rows": [
+        [
+          "Sniffing",
+          "Avlyssning av trafiken"
+        ],
+        [
+          "Spoofing",
+          "Att utge sig för att vara någon annan"
+        ],
+        [
+          "Man-in-the-middle",
+          "Att sitta mellan två parter och läsa eller ändra"
+        ],
+        [
+          "(D)DoS",
+          "Att överbelasta så att tjänsten slutar svara"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Exempel: HTTP i stället för HTTPS gör att datan kan läsas av vem som helst på vägen."
+    },
+    {
+      "type": "h",
+      "text": "CIA-triaden"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Betyder",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Confidentiality (sekretess)",
+          "Bara behöriga kan läsa",
+          "TLS för data i transit, spara bara hashen av lösenord"
+        ],
+        [
+          "Integrity (integritet)",
+          "Data kan inte ändras av obehöriga",
+          "Signaturer och kontrollsummor"
+        ],
+        [
+          "Availability (tillgänglighet)",
+          "Systemet fungerar när det behövs",
+          "Redundans, skydd mot DoS"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<strong>Autentisering</strong> svarar på vem som är vem: lösenord, API-nycklar och certifikat. Certifikat bygger på asymmetrisk kryptering med en publik och en privat nyckel."
+    },
+    {
+      "type": "h",
+      "text": "Säkerhet i protokollen"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>MQTT:</strong> TLS, autentisering och åtkomstkontroll per topic.",
+        "<strong>I2C, SPI och UART:</strong> ofta ingen säkerhet alls. Fysisk åtkomst betyder full åtkomst."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Vanliga misstag: hårdkodade lösenord, öppna portar och ingen kryptering, till exempel lösenord sparade i klartext i stället för som hash."
+    },
+    {
+      "type": "h",
+      "text": "Distribuerade system"
+    },
+    {
+      "type": "p",
+      "html": "Flera enheter som samarbetar, till exempel <code>Sensor → MCU → Gateway → Cloud → App</code>. Problemen är latens, paketförlust, synkronisering och felhantering."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Single point of failure:</strong> en del som får allt att stanna. Går MQTT-brokern ner stannar hela systemet.",
+        "<strong>Redundans:</strong> delarna är kopplade på flera sätt, så att systemet fortsätter om en del går ner. Flera servrar, backup-system.",
+        "<strong>Skalbarhet:</strong> systemet ska fungera med 10 eller 10 000 enheter, i hastighet, datamängd och lagring.",
+        "<strong>Händelsestyrt (event-driven):</strong> systemet reagerar på händelser, till exempel avbrott eller MQTT-meddelanden."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Realtid"
+    },
+    {
+      "type": "p",
+      "html": "I ett realtidssystem är timingen kritisk: bilbromsar, industrirobotar, medicinsk utrustning."
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Mjuka krav",
+        "Hårda krav"
+      ],
+      "rows": [
+        [
+          "Fördröjning",
+          "Okej ibland",
+          "Minsta missade deadline är en katastrof"
+        ],
+        [
+          "Exempel",
+          "Smart lampknapp",
+          "Nödstopp på en industrimaskin"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Hårda krav överallt vore dyrt: större enheter och ett RTOS för värsta fallet, tidsanalys och formell verifiering, längre tid till marknaden, svårare att uppgradera och låg tolerans mot oväntad last."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Latens:</strong> tiden från sändning till mottagning.",
+        "<strong>Jitter:</strong> variationen i latensen."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Över internet är realtid svårt: nätet är oförutsägbart, UDP tappar paket och TCP:s omsändningar ökar latensen. UDP används ofta ändå eftersom det är snabbare med mindre overhead."
+    },
+    {
+      "type": "h",
+      "text": "Systemtänk"
+    },
+    {
+      "type": "p",
+      "html": "Fundera över om delarna passar ihop, vilka risker som finns och om de är värda att mitigera. Behöver realtidskraven gå hela vägen till molnet, eller räcker det på enheten? Vad händer om en del dör? Är det okej att tappa data medan enheten startar om?"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Del",
+        "Risk"
+      ],
+      "rows": [
+        [
+          "Sensor",
+          "Fel data"
+        ],
+        [
+          "MCU",
+          "Går ner eller låser sig"
+        ],
+        [
+          "Nätverk",
+          "Dataförlust, latens"
+        ],
+        [
+          "Moln",
+          "Går ner, överbelastas"
+        ],
+        [
+          "App",
+          "Buggar"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Allt är <strong>trade-offs</strong>: säkerhet mot prestanda och kostnad mot tillförlitlighet. MQTT med TLS är säkert men långsammare än rå UDP."
+    },
+    {
+      "type": "exercise",
+      "title": "Säkerhetsanalys av ett smart hem",
+      "html": "<p>Ett smart hem har lampor, dörrlås och kamera. Identifiera möjliga attacker, svagheter och förbättringar.</p>",
+      "solution": "Attacker:     sniffing av kameraströmmen, spoofing av låskommandon,\n              MITM mot appen, DoS mot lås eller broker\nSvagheter:    standardlösenord, okrypterad trafik, öppna portar,\n              ingen uppdatering av firmware\nFörbättringar: TLS överallt, unika lösenord eller certifikat per enhet,\n              åtkomstkontroll per topic, eget nät (VLAN) för IoT,\n              låset ska fungera lokalt om nätet går ner\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Distribuerat system",
+      "html": "<p>Sensor → MCU → MQTT-broker → moln → app. Vad händer om brokern går ner, nätet bryts eller sensorn skickar fel data? Hur mitigerar man, och behövs det?</p>",
+      "solution": "Brokern nere:  allt stannar (single point of failure). Flera brokers i kluster,\n                eller buffra lokalt på MCU:n och skicka när den är tillbaka.\nNätet bryts:   buffra lokalt, QoS 1 och persistent session, Last Will så att\n                appen ser att enheten är borta.\nFel data:      rimlighetskontroll på MCU:n (inom mätområdet?), flera sensorer,\n                larma vid konstiga värden.\nBehövs det?    Beror på systemet: en temperaturlogg tål bortfall, ett lås gör inte det.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Realtidsval",
+      "html": "<p>Välj kommunikation (TCP eller UDP, MQTT, HTTPS eller CoAP) för: 1. videostreaming till en app, 2. en temperatursensor som skickar till molnet, 3. ett styrsystem för ett ställdon via sensorvärden och app, 4. bromsarna i en bil.</p>",
+      "solution": "1. Video:          UDP-baserat (RTP/QUIC). Tappade bildrutor är bättre än fördröjning.\n2. Temperatur:     MQTT (QoS 0 eller 1) eller CoAP. Lite data, sällan.\n3. Styrsystem:     lokalt beslut på enheten, MQTT eller CoAP för kommandon\n                   från appen, med ack (QoS 1 / confirmable).\n4. Bromsar:        hårda realtidskrav, allt lokalt i bilen på en deterministisk buss.\n                   Aldrig via molnet.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Felsökning och säkerhet",
+      "html": "<p>Kunderna klagar på att systemet fungerar ibland. Loggarna visar många <em>timeouts</em> och <em>connection refused</em>. Vad kan vara fel?</p>",
+      "solution": "Connection refused: inget lyssnar på porten (tjänsten har kraschat, fel port)\n                    eller servern/brandväggen nekar aktivt, t.ex. vid max antal\n                    anslutningar.\nTimeouts:           paket tappas eller kastas av en brandvägg, eller servern är\n                    överbelastad.\nTillsammans:        ofta en server eller broker som inte skalar.\nÅtgärder:           övervakning och loggar, skala ut eller lastbalansera,\n                    retry med backoff på klienterna, kolla brandväggsregler.\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är sniffing?",
+      "options": [
+        "Att överbelasta en server",
+        "Att avlyssna trafiken",
+        "Att utge sig för att vara någon annan",
+        "Att kryptera"
+      ],
+      "answer": 1,
+      "why": "Därför ska trafiken krypteras."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är spoofing?",
+      "options": [
+        "Avlyssning",
+        "Att utge sig för att vara någon annan",
+        "Överbelastning",
+        "Kryptering"
+      ],
+      "answer": 1,
+      "why": "Till exempel att skicka låskommandon som om man vore appen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad står C, I och A för i CIA-triaden?",
+      "options": [
+        "Cloud, Internet, App",
+        "Confidentiality, Integrity, Availability",
+        "Control, Input, Access",
+        "Crypto, Identity, Auth"
+      ],
+      "answer": 1,
+      "why": "Sekretess, integritet och tillgänglighet."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken del av CIA skyddar en DDoS-attack mot?",
+      "options": [
+        "Confidentiality",
+        "Integrity",
+        "Availability",
+        "Ingen"
+      ],
+      "answer": 2,
+      "why": "Tjänsten slutar svara."
+    },
+    {
+      "type": "mc",
+      "q": "Hur ska lösenord sparas?",
+      "options": [
+        "I klartext",
+        "Som hash",
+        "I en textfil på enheten",
+        "I koden"
+      ],
+      "answer": 1,
+      "why": "Hårdkodade lösenord är ett vanligt misstag."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken säkerhet har I2C, SPI och UART?",
+      "options": [
+        "TLS",
+        "Ofta ingen alls",
+        "DTLS",
+        "Certifikat"
+      ],
+      "answer": 1,
+      "why": "Fysisk åtkomst är full åtkomst."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en single point of failure?",
+      "options": [
+        "En del som får hela systemet att stanna om den går ner",
+        "En bugg i appen",
+        "En sensor som mäter fel",
+        "En backup"
+      ],
+      "answer": 0,
+      "why": "Till exempel en ensam MQTT-broker."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är redundans?",
+      "options": [
+        "Onödig kod",
+        "Flera vägar eller kopior så att systemet fortsätter om en del går ner",
+        "Kryptering",
+        "Komprimering"
+      ],
+      "answer": 1,
+      "why": "Flera servrar och backup-system."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan mjuka och hårda realtidskrav?",
+      "options": [
+        "Ingen",
+        "Mjuka tål enstaka förseningar, hårda gör det inte",
+        "Hårda gäller bara mjukvara",
+        "Mjuka kräver RTOS"
+      ],
+      "answer": 1,
+      "why": "Lampknapp mot nödstopp."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är jitter?",
+      "options": [
+        "Latensen",
+        "Variationen i latensen",
+        "Bandbredden",
+        "Paketförlust"
+      ],
+      "answer": 1,
+      "why": "Viktigt för röst, video och styrning."
+    },
+    {
+      "type": "mc",
+      "q": "Varför har man inte hårda realtidskrav överallt?",
+      "options": [
+        "Det går inte att bygga",
+        "Det kostar mer, tar längre tid och är mindre flexibelt",
+        "Det kräver molnet",
+        "Det är förbjudet"
+      ],
+      "answer": 1,
+      "why": "Större enheter, RTOS och formell verifiering."
+    },
+    {
+      "type": "mc",
+      "q": "Var ska en bils bromsstyrning ske?",
+      "options": [
+        "I molnet",
+        "Lokalt i bilen",
+        "Via MQTT",
+        "Via appen"
+      ],
+      "answer": 1,
+      "why": "Hårda realtidskrav går inte över internet."
+    },
+    {
+      "type": "mc",
+      "q": "Loggarna visar <em>connection refused</em>. Vad betyder det oftast?",
+      "options": [
+        "Paket tappades på vägen",
+        "Inget lyssnar på porten, eller anslutningen nekas aktivt",
+        "DNS-fel",
+        "Fel baud rate"
+      ],
+      "answer": 1,
+      "why": "Timeout betyder i stället att inget svar kom."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är vanliga säkerhetsmisstag?",
+      "options": [
+        "Hårdkodade lösenord",
+        "Öppna portar",
+        "Ingen kryptering",
+        "Att använda TLS"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Från föreläsningen."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter attacken där någon sitter mellan två parter och läser eller ändrar trafiken? (engelska)",
+      "accept": [
+        "man-in-the-middle",
+        "man in the middle",
+        "MITM"
+      ],
+      "placeholder": "attack",
+      "why": "MITM. TLS med certifikat skyddar mot det."
+    }
+  ]
+}

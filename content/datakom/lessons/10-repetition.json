@@ -1,0 +1,297 @@
+{
+  "id": "repetition",
+  "title": "Repetition inför tentan",
+  "category": "Repetition",
+  "minutes": 12,
+  "date": "2026-05-07",
+  "lead": "Hela kursen samlad: modellerna, IP och subnät, routing och DNS, protokollen över nätverk och mellan komponenter, felsökning och säkerhet, med tentaövningarna.",
+  "sources": [
+    "Kurssammanfattning",
+    "Dagens övningar 2026-05-07"
+  ],
+  "goals": [
+    "Beskriva hela flödet från sensor till app med protokoll och lager",
+    "Räkna subnät snabbt",
+    "Felsöka utifrån en beskrivning",
+    "Välja protokoll och motivera"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad du ska kunna"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Förstå hur system kommunicerar",
+        "Analysera problem",
+        "Välja rätt teknik",
+        "Resonera kring lösningar"
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Område",
+        "Kärnan"
+      ],
+      "rows": [
+        [
+          "Modeller",
+          "OSI 7 lager, TCP/IP 5 lager. HTTP → Application, TCP → Transport, IP → Network, MAC → Data Link, Ethernet → Physical"
+        ],
+        [
+          "IP",
+          "IPv4 32 bitar, IPv6 128 bitar. Nätverksdel och värddel, mask och CIDR, nätverksadress och broadcast"
+        ],
+        [
+          "Routing",
+          "Routrar känner sina grannar och en router på högre nivå. Longest prefix match, default route"
+        ],
+        [
+          "DNS",
+          "Domännamn → IP-adress"
+        ],
+        [
+          "TCP och UDP",
+          "Tillförlitligt och långsammare, eller snabbt utan garanti"
+        ],
+        [
+          "HTTP(S)",
+          "Webben. HTTPS = HTTP med TLS"
+        ],
+        [
+          "MQTT",
+          "Publish/subscribe via broker, över TCP"
+        ],
+        [
+          "CoAP",
+          "Lätt, över UDP, liknar HTTP"
+        ],
+        [
+          "UART",
+          "Enkel, punkt-till-punkt, asynkron"
+        ],
+        [
+          "SPI",
+          "Snabb, fler kablar, CS för att välja enhet"
+        ],
+        [
+          "I2C",
+          "Två ledningar, riktig adressering, många enheter"
+        ],
+        [
+          "Felsökning",
+          "Vad fungerar, vad fungerar inte, hypotes, testa, dokumentera. Nerifrån och upp"
+        ],
+        [
+          "Säkerhet",
+          "Kryptering döljer, autentisering visar vem, integritet visar att ingen ändrat. CIA"
+        ],
+        [
+          "System",
+          "Latens, jitter, bortfall, beroenden. Trade-offs: säkerhet mot prestanda, enkelhet mot flexibilitet"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Snabbfrågor från föreläsningen"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Vad gör DNS?",
+        "Vad är skillnaden mellan TCP och UDP?",
+        "Vad är ett subnät?",
+        "Hur fungerar MQTT?",
+        "Varför används I2C i stället för SPI ibland?",
+        "När är UDP bättre än TCP?",
+        "Var uppstår flest problem i ett IoT-system?"
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Helhetsförståelse",
+      "html": "<p>Beskriv hela flödet från sensor till app. Nämn protokoll, lager och möjliga fel.</p>",
+      "solution": "Sensor --I2C--> MCU          fel adress, pull-up saknas             (lager 1-2 på kortet)\nMCU --WiFi--> router         svag signal, ingen IP från DHCP        (1-3)\nrouter --internet--> broker  gateway, routing, DNS för brokerns namn  (3, 7)\nTCP + TLS till port 8883     porten blockerad, certifikatfel        (4, 6)\nMQTT PUBLISH sensor/temp     fel topic, fel JSON-format             (7, 6)\nbroker --> app (subscriber)  brokern nere = single point of failure (7)\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Subnät",
+      "html": "<p><code>192.168.1.200/26</code>: vilket subnät, vilken nätverksadress och vilken broadcast? Spelar det roll om det ursprungliga nätet är /24 eller /23?</p>",
+      "solution": "/26 = block om 64: 0, 64, 128, 192. 200 ligger i 192-blocket.\nSubnät:     192.168.1.192/26\nNätverk:    192.168.1.192\nBroadcast:  192.168.1.255\n\nOm ursprunget är /23 blir det 8 subnät (192.168.0.0 - 192.168.1.255),\nmen 200 ligger ändå i 192.168.1.192 - 192.168.1.255: samma svar.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Felsökning",
+      "html": "<p>Du når inte en hemsida. Ping till domännamnet ger inget svar, och inte heller ping till dess IP-adress. Ping till din router och till en annan hemsida fungerar. Var kan felet ligga?</p>",
+      "solution": "Ditt nät, din internetuppkoppling och DNS fungerar (den andra sidan svarar).\nFelet ligger hos den sidan: servern är nere, något på vägen dit är trasigt,\neller den blockerar ping (ICMP). Kolla med traceroute var det tar stopp och\nmed curl om webbservern ändå svarar på port 443.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Protokollval",
+      "html": "<p>Välj protokoll för 1. videostreaming, 2. sensordata och 3. ett styrsystem, och motivera.</p>",
+      "solution": "1. Video:       UDP-baserat (RTP/QUIC) - låg latens, bortfall okej\n2. Sensordata:  MQTT (eller CoAP på mycket små enheter) - lite overhead,\n                pub/sub till många mottagare\n3. Styrsystem:  lokalt på enheten, kommandon med kvittens:\n                MQTT QoS 1 eller CoAP confirmable\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "OSI-modellen",
+      "html": "<p>Placera IP, TCP, HTTP och DNS i rätt lager.</p>",
+      "solution": "IP    → 3 Network\nTCP   → 4 Transport\nHTTP  → 7 Application\nDNS   → 7 Application (går över UDP port 53)\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilket lager hör DNS till?",
+      "options": [
+        "Network",
+        "Transport",
+        "Application",
+        "Data Link"
+      ],
+      "answer": 2,
+      "why": "DNS är ett applikationsprotokoll över UDP port 53."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är broadcastadressen för 192.168.1.200/26?",
+      "options": [
+        "192.168.1.192",
+        "192.168.1.255",
+        "192.168.1.200",
+        "192.168.1.63"
+      ],
+      "answer": 1,
+      "why": "Sista adressen i blocket 192–255."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många subnät ger 3 lånade bitar?",
+      "options": [
+        "3",
+        "6",
+        "8",
+        "9"
+      ],
+      "answer": 2,
+      "why": "2³."
+    },
+    {
+      "type": "mc",
+      "q": "Ping till routern och en annan sida fungerar, men varken domän eller IP för en viss sida. Var ligger felet?",
+      "options": [
+        "I ditt nät",
+        "I DNS",
+        "Hos den sidan eller på vägen dit",
+        "I nätverkskortet"
+      ],
+      "answer": 2,
+      "why": "Allt på din sida fungerar."
+    },
+    {
+      "type": "mc",
+      "q": "Varför används I2C ibland i stället för SPI?",
+      "options": [
+        "Det är snabbare",
+        "Färre ledningar och adressering, bra för många sensorer",
+        "Det är full duplex",
+        "Det kräver inga motstånd"
+      ],
+      "answer": 1,
+      "why": "SPI är snabbare men behöver en CS per enhet."
+    },
+    {
+      "type": "mc",
+      "q": "När är UDP bättre än TCP?",
+      "options": [
+        "Vid filöverföring",
+        "När låg latens är viktigare än att allt kommer fram",
+        "Vid inloggning",
+        "Aldrig"
+      ],
+      "answer": 1,
+      "why": "Video, röst och spel."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket protokoll är publish/subscribe via broker?",
+      "options": [
+        "CoAP",
+        "HTTP",
+        "MQTT",
+        "UART"
+      ],
+      "answer": 2,
+      "why": "Över TCP."
+    },
+    {
+      "type": "mc",
+      "q": "Vad visar integritet i säkerhet?",
+      "options": [
+        "Att data är dold",
+        "Att ingen obehörig har ändrat datan",
+        "Vem du pratar med",
+        "Att systemet är uppe"
+      ],
+      "answer": 1,
+      "why": "Kryptering döljer, autentisering visar vem."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en trade-off mellan säkerhet och prestanda?",
+      "options": [
+        "MQTT med TLS är säkrare men långsammare än rå UDP",
+        "TLS gör allt snabbare",
+        "UDP är säkrare än TCP",
+        "Det finns inga trade-offs"
+      ],
+      "answer": 0,
+      "why": "Allt i systemdesign är avvägningar."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många lager har TCP/IP-modellen enligt kursen?",
+      "options": [
+        "4",
+        "5",
+        "7",
+        "3"
+      ],
+      "answer": 1,
+      "why": "Session och presentation ligger i applikationslagret."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka är steg i kursens felsökningsmetod?",
+      "options": [
+        "Vad fungerar?",
+        "Vad fungerar inte?",
+        "Formulera och testa en hypotes",
+        "Dokumentera"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Börja nerifrån och arbeta systematiskt."
+    },
+    {
+      "type": "text",
+      "q": "Vilket lager hör TCP till? Svara med numret.",
+      "accept": [
+        "4"
+      ],
+      "placeholder": "nummer",
+      "why": "Transport."
+    }
+  ]
+}

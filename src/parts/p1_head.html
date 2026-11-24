@@ -111,6 +111,7 @@ main { min-width: 0; }
 .memcard .decl { color: var(--hl-fn); margin-bottom: 14px; white-space: nowrap; overflow-x: auto; }
 .memcard .decl .k { color: var(--hl-kw); } .memcard .decl .s { color: var(--hl-str); }
 .mem { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.mem.bits8 { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
 .mem div { display: grid; gap: 4px; text-align: center; }
 .mem .cell { border: 1px solid var(--code-line); border-radius: 6px; padding: 10px 0; font-size: 1.1rem; color: var(--code-fg); background: rgba(255,255,255,.03); animation: pop .5s backwards; }
 .mem .cell.z { color: var(--hl-kw); border-color: var(--hl-kw); }

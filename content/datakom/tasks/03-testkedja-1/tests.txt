@@ -1,0 +1,68 @@
+--- in
+ok
+ok
+ok
+ok
+ok
+--- out
+1 ping 127.0.0.1: ok
+2 ping gateway: ok
+3 ping 8.8.8.8: ok
+4 ping dns.google: ok
+5 ping sti.se: ok
+Allt fungerar
+--- in
+ok
+ok
+ok
+fail
+fail
+--- out
+1 ping 127.0.0.1: ok
+2 ping gateway: ok
+3 ping 8.8.8.8: ok
+4 ping dns.google: fail
+Felet ligger i: DNS
+--- in
+ok
+fail
+fail
+fail
+fail
+--- out
+1 ping 127.0.0.1: ok
+2 ping gateway: fail
+Felet ligger i: lokala nätverket eller gatewayen
+--- in
+ok
+ok
+fail
+fail
+fail
+--- out
+1 ping 127.0.0.1: ok
+2 ping gateway: ok
+3 ping 8.8.8.8: fail
+Felet ligger i: internet bortom routern
+--- in
+ok
+ok
+ok
+ok
+fail
+--- out
+1 ping 127.0.0.1: ok
+2 ping gateway: ok
+3 ping 8.8.8.8: ok
+4 ping dns.google: ok
+5 ping sti.se: fail
+Felet ligger i: tjänsten eller dess DNS-server
+--- in
+fail
+fail
+fail
+fail
+fail
+--- out
+1 ping 127.0.0.1: fail
+Felet ligger i: nätverkskortet

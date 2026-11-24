@@ -1,0 +1,48 @@
+--- in
+5
+80
+443
+22
+1883
+50000
+--- out
+80: well-known, HTTP
+443: well-known, HTTPS
+22: well-known, SSH
+1883: registered, MQTT
+50000: dynamic
+--- in
+6
+53
+8883
+5683
+3000
+65535
+70000
+--- out
+53: well-known, DNS
+8883: registered, MQTT över TLS
+5683: registered, CoAP
+3000: registered
+65535: dynamic
+70000: ogiltig
+--- in
+4
+0
+1023
+1024
+49152
+--- out
+0: well-known
+1023: well-known
+1024: registered
+49152: dynamic
+--- in
+3
+5684
+8884
+49151
+--- out
+5684: registered, CoAP över DTLS
+8884: registered, MQTT över WebSocket och TLS
+49151: registered

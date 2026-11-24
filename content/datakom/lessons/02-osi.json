@@ -1,0 +1,430 @@
+{
+  "id": "osi",
+  "title": "OSI-modellen och nätverksgrunder",
+  "category": "Modeller",
+  "minutes": 16,
+  "date": "2026-04-09",
+  "lead": "De sju lagren i OSI-modellen, vad varje lager ansvarar för och vad som går fel där, inkapsling, TCP/IP-modellen och begrepp som latens och bandbredd.",
+  "sources": [
+    "OSI-modellen & nätverksgrunder",
+    "Dagens övningar 2026-04-09"
+  ],
+  "goals": [
+    "Räkna upp OSI-modellens sju lager i ordning",
+    "Förklara vad varje lager ansvarar för och ge exempel",
+    "Skilja på TCP och UDP",
+    "Förklara inkapsling och dekapsling",
+    "Använda lagren för att felsöka strukturerat"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför modeller?"
+    },
+    {
+      "type": "p",
+      "html": "Nätverk är svårt: många tekniker, många nivåer och många protokoll, och det är svårt att felsöka utan struktur. Lösningen är att dela upp problemet i <strong>lager</strong> där varje lager har ett eller några väl definierade ansvar."
+    },
+    {
+      "type": "p",
+      "html": "Varje lager pratar bara med lagret ovanför och lagret under, och är oberoende av de andra. Det kräver ett kontrakt för hur datan ska se ut när den skickas och tas emot. Det kontraktet är ett <strong>protokoll</strong>."
+    },
+    {
+      "type": "h",
+      "text": "OSI-modellen"
+    },
+    {
+      "type": "p",
+      "html": "OSI (Open Systems Interconnection) togs fram av ISO. Det är en <strong>teoretisk</strong> modell med 7 lager som används för att förstå och felsöka. TCP/IP-modellen är den <strong>praktiska</strong> modellen som används i verkligheten."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Lager",
+        "Namn",
+        "Paketterm",
+        "Ansvar",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "7",
+          "Application (applikation)",
+          "Data",
+          "Där kommunikationen börjar och resultatet används",
+          "HTTP(S), MQTT, FTP"
+        ],
+        [
+          "6",
+          "Presentation",
+          "Data",
+          "Dataformat, komprimering, kryptering",
+          "JSON, XML, JPG, MPEG, TLS"
+        ],
+        [
+          "5",
+          "Session",
+          "Data",
+          "Startar, håller igång och avslutar sessioner",
+          "Inloggning, aktiv anslutning"
+        ],
+        [
+          "4",
+          "Transport",
+          "Segment",
+          "Överföring av data, tillförlitlighet vs hastighet",
+          "TCP, UDP"
+        ],
+        [
+          "3",
+          "Network (nätverk)",
+          "Paket",
+          "Routing mellan nätverk med IP-adresser",
+          "Routrar"
+        ],
+        [
+          "2",
+          "Data Link (datalänk)",
+          "Ramar",
+          "Mellan enheter i samma LAN, MAC-adresser, felkontroll",
+          "Switchar"
+        ],
+        [
+          "1",
+          "Physical (fysiska)",
+          "Bitar",
+          "Elektriska, optiska eller radiosignaler",
+          "Kabel, WiFi-radio"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Minnesregel nerifrån och upp: <em>Please Do Not Throw Sausage Pizza Away</em> (Physical, Data Link, Network, Transport, Session, Presentation, Application)."
+    },
+    {
+      "type": "h",
+      "text": "Lager 1–3"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Physical</strong> gör om data till signaler och skickar dem över ett medium. Här finns ingen förståelse av datan, bara ettor och nollor. Det är bara på den här nivån som data faktiskt färdas mellan enheter. Problem: trasig kabel, svag signal eller störningar."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Data Link</strong> skickar ramar mellan enheter i samma nätverk med <strong>MAC-adresser</strong>, kontrollerar fel och styr flödet. En MAC-adress är en unik fysisk adress som sitter på nätverkskortet, till exempel <code>00:1A:2B:3C:4D:5E</code>. Problem: fel MAC-adress, switch-problem, kollisioner."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Network</strong> skickar paket mellan nätverk och väljer väg (routing) med <strong>IP-adresser</strong>, logiska adresser som <code>192.168.0.1</code> eller <code>10.11.12.13/24</code> i CIDR-notation. Problem: fel IP, fel gateway, routingfel."
+    },
+    {
+      "type": "h",
+      "text": "Lager 4: TCP och UDP"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "TCP",
+        "UDP"
+      ],
+      "rows": [
+        [
+          "Tillförlitligt",
+          "Ja, bekräftar mottagning",
+          "Nej, ingen garanti"
+        ],
+        [
+          "Hastighet",
+          "Långsammare, mer overhead",
+          "Snabbt, lite overhead"
+        ],
+        [
+          "Används till",
+          "Webbsidor, filöverföring",
+          "Streaming, sensordata som skickas ofta"
+        ],
+        [
+          "Inom IoT",
+          "MQTT, HTTP/REST, WebSocket",
+          "CoAP, RTP, QUIC, MQTT-SN"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "TCP och UDP togs inte fram med OSI i åtanke, men passar bäst i transportlagret. Problem här: tappade paket, fördröjning och fel val av protokoll."
+    },
+    {
+      "type": "h",
+      "text": "Lager 5–7"
+    },
+    {
+      "type": "p",
+      "html": "Förenklat: <strong>Application</strong> = vad vi vill göra (användargränssnittet), <strong>Presentation</strong> = hur datan ser ut (översättning), <strong>Session</strong> = samtalet som hålls igång. Typiska fel är att servern är nere (7), att datan har fel format eller att krypteringen misslyckas (6), och att sessionen bryts eller får timeout så att du blir utloggad (5)."
+    },
+    {
+      "type": "h",
+      "text": "Inkapsling"
+    },
+    {
+      "type": "p",
+      "html": "När data skickas kapslas den in lager för lager. Varje lager lägger till sin information (en header), så att paketet kan skickas genom nätverket. Mottagaren packar upp det igen lager för lager, <strong>dekapsling</strong>."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Öppna en webbsida:\n7 Application   HTTP-request\n6 Presentation  kryptering (HTTPS)\n5 Session       anslutningen startas\n4 Transport     TCP-segment med portar\n3 Network       IP-paket med IP-adresser\n2 Data Link     ram med MAC-adresser\n1 Physical      signal på kabeln eller i luften\n"
+    },
+    {
+      "type": "h",
+      "text": "TCP/IP-modellen"
+    },
+    {
+      "type": "p",
+      "html": "Originalet hade 4 lager, den uppdaterade versionen 5: Application, Transport, Network, Data Link och Physical. Session och presentation ligger i applikationslagret, eftersom det i verkligheten är applikationen som bestämmer vad som ska göras, hur datan ser ut, krypteringen och att hålla sessionen igång."
+    },
+    {
+      "type": "h",
+      "text": "Begrepp"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Latens:</strong> tiden det tar för data att transporteras. Viktigt för realtidssystem.",
+        "<strong>Bandbredd:</strong> hur mycket data som kan skickas samtidigt.",
+        "<strong>Paket:</strong> data delas upp i mindre delar som skickas separat.",
+        "<strong>Flaskhals:</strong> en begränsning som kan finnas i alla lager, till exempel långsam uppkoppling, överbelastad router, dålig WiFi, överbelastad server eller TCP där UDP hade räckt."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Felsöka med OSI"
+    },
+    {
+      "type": "p",
+      "html": "Identifiera lagret och testa steg för steg, lager för lager i ordning. Felet upptäcks inte alltid där det började. Exempel, ingen internetanslutning: 1. kabel eller WiFi? 2. IP? 3. gateway? 4. DNS?"
+    },
+    {
+      "type": "exercise",
+      "title": "Vilket lager?",
+      "html": "<p>Vilket lager är troligast påverkat?</p><ol><li>Kabeln är urdragen</li><li>Datorn har IP men når inte internet</li><li>Servern är nere</li><li>Du blir utloggad efter en stund</li><li>Datan kommer fram men går inte att läsa, fel format</li><li>Videoströmmen hackar</li></ol>",
+      "solution": "1. Physical (1)\n2. Network (3): gateway eller routing\n3. Application (7)\n4. Session (5): timeout\n5. Presentation (6)\n6. Transport (4): tappade paket eller fördröjning\n   (kan också börja i lager 1 med svag WiFi)\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Följ ett paket",
+      "html": "<p>Beskriv vad som händer i vart och ett av de sju lagren när du öppnar en webbsida, först hos dig (inkapsling) och sedan hos servern (dekapsling).</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Wireshark",
+      "html": "<p>Starta en fångst i Wireshark, öppna en webbsida och stoppa. Filtrera på <code>dns</code>, sedan <code>tcp</code> och sedan <code>http</code> eller <code>tls</code>. Klicka på ett paket och se hur det är uppdelat i Ethernet (lager 2), IP (3), TCP (4) och applikationsdata.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur många lager har OSI-modellen?",
+      "options": [
+        "4",
+        "5",
+        "7",
+        "8"
+      ],
+      "answer": 2,
+      "why": "Physical, Data Link, Network, Transport, Session, Presentation, Application."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket lager är lager 3?",
+      "options": [
+        "Transport",
+        "Network",
+        "Data Link",
+        "Session"
+      ],
+      "answer": 1,
+      "why": "Routing och IP-adresser."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är paketermen i Data Link-lagret?",
+      "options": [
+        "Bitar",
+        "Ramar",
+        "Paket",
+        "Segment"
+      ],
+      "answer": 1,
+      "why": "Frames. Transport har segment och Network har paket."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken adress används i Data Link-lagret?",
+      "options": [
+        "IP-adress",
+        "MAC-adress",
+        "Portnummer",
+        "Domännamn"
+      ],
+      "answer": 1,
+      "why": "En unik fysisk adress på nätverkskortet."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket lager hanterar routing mellan nätverk?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": 2,
+      "why": "Network. Routrar arbetar här."
+    },
+    {
+      "type": "mc",
+      "q": "Var hör TLS-kryptering hemma i OSI-modellen enligt kursen?",
+      "options": [
+        "Physical",
+        "Transport",
+        "Presentation",
+        "Data Link"
+      ],
+      "answer": 2,
+      "why": "Presentation hanterar dataformat och kryptering."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket protokoll är tillförlitligt och bekräftar mottagning?",
+      "options": [
+        "UDP",
+        "TCP",
+        "IP",
+        "Ethernet"
+      ],
+      "answer": 1,
+      "why": "TCP har ACK och omsändning."
+    },
+    {
+      "type": "mc",
+      "q": "När passar UDP bäst?",
+      "options": [
+        "Bankärenden",
+        "Filöverföring",
+        "Streaming och sensordata som skickas ofta",
+        "Inloggning"
+      ],
+      "answer": 2,
+      "why": "När låg latens är viktigare än att varje paket kommer fram."
+    },
+    {
+      "type": "mc",
+      "q": "Du blir utloggad efter en stund. Vilket lager?",
+      "options": [
+        "Physical",
+        "Network",
+        "Session",
+        "Presentation"
+      ],
+      "answer": 2,
+      "why": "Sessionen fick timeout."
+    },
+    {
+      "type": "mc",
+      "q": "Datan kommer fram men är i fel format. Vilket lager?",
+      "options": [
+        "Presentation",
+        "Physical",
+        "Network",
+        "Data Link"
+      ],
+      "answer": 0,
+      "why": "Presentation översätter mellan format."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är inkapsling?",
+      "options": [
+        "Att kryptera allt",
+        "Att varje lager lägger till sin information när datan skickas nedåt",
+        "Att komprimera bilder",
+        "Att stänga en session"
+      ],
+      "answer": 1,
+      "why": "Mottagaren packar upp lager för lager."
+    },
+    {
+      "type": "mc",
+      "q": "Hur många lager har den uppdaterade TCP/IP-modellen?",
+      "options": [
+        "4",
+        "5",
+        "7",
+        "3"
+      ],
+      "answer": 1,
+      "why": "Network Access delades i Data Link och Physical."
+    },
+    {
+      "type": "mc",
+      "q": "Var hamnar session och presentation i TCP/IP-modellen?",
+      "options": [
+        "I transportlagret",
+        "I applikationslagret",
+        "I nätverkslagret",
+        "De finns inte alls"
+      ],
+      "answer": 1,
+      "why": "Applikationen sköter dem."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är latens?",
+      "options": [
+        "Hur mycket data som får plats",
+        "Tiden det tar för data att transporteras",
+        "Antalet enheter",
+        "Signalstyrkan"
+      ],
+      "answer": 1,
+      "why": "Bandbredd är hur mycket data som kan skickas samtidigt."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka hör till Application-lagret?",
+      "options": [
+        "HTTP",
+        "MQTT",
+        "FTP",
+        "MAC"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "MAC hör till Data Link."
+    },
+    {
+      "type": "text",
+      "q": "Vilket lager har paketermen <em>segment</em>? Svara med lagrets nummer.",
+      "accept": [
+        "4"
+      ],
+      "placeholder": "nummer",
+      "why": "Transport."
+    },
+    {
+      "type": "code",
+      "q": "Skriv ut vilket OSI-lager varje term hör till.",
+      "task": "02-osi-1",
+      "why": "En uppslagstabell från term till lagernummer.",
+      "web": true
+    }
+  ]
+}

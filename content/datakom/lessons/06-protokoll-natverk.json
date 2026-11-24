@@ -1,0 +1,485 @@
+{
+  "id": "protokoll-natverk",
+  "title": "Protokoll över nätverk: TCP, UDP, HTTP, MQTT och CoAP",
+  "category": "Protokoll",
+  "minutes": 18,
+  "date": "2026-04-23",
+  "lead": "Transportlagret med portar, TCP:s handskakning och UDP, klient och server, HTTP och HTTPS, MQTT med broker, topics och QoS, och CoAP.",
+  "sources": [
+    "Kommunikationsprotokoll (nätverk)",
+    "Dagens övningar 2026-04-23"
+  ],
+  "goals": [
+    "Förklara portintervallen och några vanliga portar",
+    "Beskriva TCP:s trevägshandskakning",
+    "Jämföra TCP och UDP",
+    "Förklara klient/server och HTTP, och varför HTTP är tungt för IoT",
+    "Förklara MQTT: broker, publish, subscribe, topics, QoS, retain och last will",
+    "Jämföra MQTT och CoAP och välja protokoll"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Transportlagret och portar"
+    },
+    {
+      "type": "p",
+      "html": "Transportlagret ansvarar för kommunikationen mellan applikationer: ordning, tillförlitlighet och <strong>portnummer</strong>. Porten (0–65535) gör att flera program kan använda samma IP-adress samtidigt."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Intervall",
+        "Typ",
+        "Användning"
+      ],
+      "rows": [
+        [
+          "0–1023",
+          "Well-known",
+          "Standardtjänster: 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS"
+        ],
+        [
+          "1024–49151",
+          "Registered",
+          "Registrerade hos IANA för applikationer: 1883 MQTT, 8883 MQTT över TLS, 5683 CoAP"
+        ],
+        [
+          "49152–65535",
+          "Dynamic/private",
+          "Tillfälliga (ephemeral) portar som klienten använder för utgående anslutningar"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "TCP"
+    },
+    {
+      "type": "p",
+      "html": "Transmission Control Protocol är <strong>förbindelseorienterat</strong> och tillförlitligt: ordningen garanteras och tappade paket skickas om. Anslutningen sätts upp med en <strong>trevägshandskakning</strong>:"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Klient                                   Server\n  │── SYN      seq = ISN_C ───────────────▶│\n  │◀────────── SYN-ACK  seq = ISN_S, ack = ISN_C+1 ──│\n  │── ACK      ack = ISN_S+1 ─────────────▶│\n          anslutningen är uppe, data kan skickas\n"
+    },
+    {
+      "type": "p",
+      "html": "Bra för bank, inloggning och filer. Nackdelen är overhead: fler paket och långsammare."
+    },
+    {
+      "type": "h",
+      "text": "UDP"
+    },
+    {
+      "type": "p",
+      "html": "User Datagram Protocol är <strong>förbindelselöst</strong>: inget handslag, ingen omsändning, ingen garanti. Låg latens och enkel. Används till spel, livestreaming, VoIP och ibland sensordata, när låg latens är viktigare än att exakt all data kommer fram."
+    },
+    {
+      "type": "h",
+      "text": "Klient och server"
+    },
+    {
+      "type": "p",
+      "html": "Klienten (webbläsare, app, IoT-enhet) skickar en <strong>request</strong>. Servern (webbsidor, databaser, API:er) bearbetar den och skickar en <strong>response</strong>. Oftast betjänar en server många klienter."
+    },
+    {
+      "type": "h",
+      "text": "HTTP och HTTPS"
+    },
+    {
+      "type": "p",
+      "html": "HTTP är request/response, till exempel <code>GET /index.html</code>. Svaret har en statuskod och data: <strong>200</strong> OK, <strong>404</strong> sidan hittas inte, <strong>500</strong> internt serverfel. <strong>HTTPS</strong> är HTTP med TLS, som ger kryptering, integritet och autentisering."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "POST /temperature HTTP/1.1\nHost: api.example.com\nContent-Type: application/json\n\n{\"temp\":22}\n",
+      "caption": "många byte headers för 11 byte data"
+    },
+    {
+      "type": "p",
+      "html": "För IoT är HTTP tungt: TCP-uppkoppling, headers, request/response och ofta TLS, för små enheter med lite batteri, låg bandbredd och ibland instabil uppkoppling. Tänk 1000 sensorer som skickar 20 byte var tionde sekund."
+    },
+    {
+      "type": "h",
+      "text": "MQTT"
+    },
+    {
+      "type": "p",
+      "html": "MQTT (Message Queue Telemetry Transport) skapades för satellitlänkar med låg bandbredd och instabila nät, och blev sedan standard inom IoT. Det är <strong>publish/subscribe</strong> via en <strong>broker</strong> och går över TCP."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "ESP32 (publisher) ──PUBLISH factory/m1/temp {\"temp\":24}──▶ Broker ──▶ app (subscriber)\n                                                              └──▶ dashboard (subscriber)\n"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Broker</strong> tar emot meddelanden, håller topics och skickar vidare till prenumeranterna. Exempel: Mosquitto, HiveMQ, AWS IoT Core.",
+        "<strong>Publisher</strong> skickar data, till exempel en ESP32 med temperaturen.",
+        "<strong>Subscriber</strong> lyssnar på ett topic och presenterar datan: mobilapp, dashboard, molnbackend.",
+        "<strong>Topics</strong> är hierarkiska: <code>factory/machine1/temp</code>, <code>factory/machine1/humidity</code>, <code>factory/alarm</code>."
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Föreläsningen skriver wildcard som <code>*</code>. I riktig MQTT heter de <code>+</code> (exakt en nivå) och <code>#</code> (resten, sist i filtret). <code>factory/+/temp</code> ger temperaturen för alla maskiner och <code>factory/#</code> ger allt under factory."
+    },
+    {
+      "type": "p",
+      "html": "Flödet: klienten öppnar TCP och skickar <strong>CONNECT</strong> (svar CONNACK), sedan <strong>SUBSCRIBE</strong> med topic-filter och QoS (svar SUBACK). <strong>PUBLISH</strong> skickas till brokern med topic, payload och flaggor, och brokern skickar vidare."
+    },
+    {
+      "type": "table",
+      "head": [
+        "QoS",
+        "Namn",
+        "Hur",
+        "Passar"
+      ],
+      "rows": [
+        [
+          "0",
+          "At most once",
+          "Ingen ack. Snabbast, kan tappas",
+          "Sensordata där enstaka bortfall inte gör något"
+        ],
+        [
+          "1",
+          "At least once",
+          "PUBACK. Garanterad, men kan ge dubbletter",
+          "Det mesta"
+        ],
+        [
+          "2",
+          "Exactly once",
+          "Fyrvägs: PUBLISH, PUBREC, PUBREL, PUBCOMP",
+          "När dubbletter vore fel. Mest overhead"
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Retain:</strong> brokern sparar det senaste meddelandet per topic och skickar det direkt till nya prenumeranter. Bra för en sensor som bara rapporterar en gång i timmen.",
+        "<strong>Persistent session:</strong> brokern sparar prenumerationerna och köar QoS 1 och 2-meddelanden tills en offline-klient kommer tillbaka.",
+        "<strong>Last Will:</strong> ett meddelande som klienten registrerar när den ansluter. Brokern publicerar det om klienten försvinner oväntat.",
+        "<strong>Säkerhet:</strong> TLS och åtkomstkontroll med inloggningsuppgifter."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "MQTT passar sensorer, smarta hem, industri och telemetri, men inte stora filer, video eller realtid med extremt låg latens."
+    },
+    {
+      "type": "h",
+      "text": "CoAP"
+    },
+    {
+      "type": "p",
+      "html": "Constrained Application Protocol är gjort för små enheter med lite energi och bandbredd. Det går över <strong>UDP</strong> (inget handslag, mindre overhead) och liknar HTTP med GET, POST, PUT och DELETE: <code>GET /temperature</code> → <code>22°C</code>. Meddelanden kan vara <em>confirmable</em> (kräver ACK) eller <em>non-confirmable</em> (snabbare, ingen garanti). Med <strong>observe</strong> kan klienter prenumerera på ändringar. Säkerheten är <strong>DTLS</strong>, TLS för UDP."
+    },
+    {
+      "type": "table",
+      "head": [
+        "MQTT",
+        "CoAP"
+      ],
+      "rows": [
+        [
+          "Publish/subscribe",
+          "Request/response"
+        ],
+        [
+          "Broker",
+          "Ingen broker, men en server"
+        ],
+        [
+          "TCP",
+          "UDP"
+        ],
+        [
+          "Molnvänligt",
+          "Enhetsvänligt"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Exempel, smart växthus: sensorerna → MQTT, lokala ställdon → CoAP, dashboard → HTTPS."
+    },
+    {
+      "type": "exercise",
+      "title": "MQTT publish och subscribe",
+      "html": "<p>Installera MQTT Explorer eller använd HiveMQ:s webbklient. Anslut till en broker (i kursen <code>mqtt-dashboard.com</code>, port 8884 för WebSocket med TLS), välj QoS och prenumerera eller publicera på <code>sti/iot25/test</code>.</p>"
+    },
+    {
+      "type": "exercise",
+      "title": "Smart lampa på ESP32",
+      "html": "<p>Utgå från ESP-IDF:s MQTT-exempel (gärna i Wokwi) med brokern <code>mqtts://test.mosquitto.org:8883</code>. Prenumerera på <code>sti/iot25/smart-home</code>. Skriv <code>light on</code> för <code>{\"command\": \"ON\"}</code> och <code>light off</code> för <code>{\"command\": \"OFF\"}</code>.</p>",
+      "solution": "static void handle_data(esp_mqtt_event_handle_t event) {\n    // event->data är inte nollterminerad, så kopiera den till en sträng först\n    char msg[128];\n    int len = event->data_len < (int)sizeof(msg) - 1 ? event->data_len : (int)sizeof(msg) - 1;\n    memcpy(msg, event->data, len);\n    msg[len] = '\\0';\n\n    if (strstr(msg, \"\\\"ON\\\"\")) {\n        printf(\"light on\\n\");\n    } else if (strstr(msg, \"\\\"OFF\\\"\")) {\n        printf(\"light off\\n\");\n    }\n}\n\n// i mqtt_event_handler:\ncase MQTT_EVENT_CONNECTED:\n    esp_mqtt_client_subscribe(client, \"sti/iot25/smart-home\", 1);\n    break;\ncase MQTT_EVENT_DATA:\n    handle_data(event);\n    break;\n",
+      "lang": "c"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilket portintervall är well-known?",
+      "options": [
+        "0–1023",
+        "1024–49151",
+        "49152–65535",
+        "0–65535"
+      ],
+      "answer": 0,
+      "why": "Standardtjänster som 80 och 443."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken port använder HTTPS?",
+      "options": [
+        "80",
+        "22",
+        "443",
+        "1883"
+      ],
+      "answer": 2,
+      "why": "80 är HTTP."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken port använder MQTT utan TLS?",
+      "options": [
+        "1883",
+        "8883",
+        "5683",
+        "443"
+      ],
+      "answer": 0,
+      "why": "8883 är MQTT över TLS."
+    },
+    {
+      "type": "mc",
+      "q": "Vad kallas portarna 49152–65535?",
+      "options": [
+        "Well-known",
+        "Registered",
+        "Dynamic/private (ephemeral)",
+        "Reserverade"
+      ],
+      "answer": 2,
+      "why": "Klienten använder dem för utgående anslutningar."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken ordning har TCP-handskakningen?",
+      "options": [
+        "ACK, SYN, SYN-ACK",
+        "SYN, SYN-ACK, ACK",
+        "SYN, ACK, FIN",
+        "HELLO, OK, ACK"
+      ],
+      "answer": 1,
+      "why": "Trevägshandskakningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad svarar servern i ACK-fältet på klientens SYN?",
+      "options": [
+        "ISN_S",
+        "ISN_C + 1",
+        "0",
+        "ISN_C − 1"
+      ],
+      "answer": 1,
+      "why": "Den bekräftar klientens sekvensnummer plus ett."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är UDP?",
+      "options": [
+        "Förbindelseorienterat",
+        "Förbindelselöst utan garanti",
+        "Ett krypteringsprotokoll",
+        "En MQTT-version"
+      ],
+      "answer": 1,
+      "why": "Ingen handskakning och ingen omsändning."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder HTTP-statuskoden 404?",
+      "options": [
+        "OK",
+        "Sidan hittas inte",
+        "Internt serverfel",
+        "Omdirigering"
+      ],
+      "answer": 1,
+      "why": "200 är OK och 500 serverfel."
+    },
+    {
+      "type": "mc",
+      "q": "Varför är HTTP tungt för IoT?",
+      "options": [
+        "Det saknar kryptering",
+        "TCP-uppkoppling, headers och ofta TLS ger mycket overhead för lite data",
+        "Det kräver Bluetooth",
+        "Det går över UDP"
+      ],
+      "answer": 1,
+      "why": "{\"temp\":22} är bara 11 byte."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en MQTT-broker?",
+      "options": [
+        "Mäter temperatur",
+        "Tar emot meddelanden och skickar vidare till prenumeranterna",
+        "Delar ut IP-adresser",
+        "Krypterar disken"
+      ],
+      "answer": 1,
+      "why": "Mosquitto, HiveMQ och AWS IoT Core."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket topic-filter i MQTT ger temperaturen för alla maskiner?",
+      "options": [
+        "factory/#/temp",
+        "factory/+/temp",
+        "factory/temp",
+        "+/temp"
+      ],
+      "answer": 1,
+      "why": "+ matchar exakt en nivå. # måste stå sist."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken QoS-nivå kan ge dubbletter?",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "Ingen"
+      ],
+      "answer": 1,
+      "why": "At least once."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken QoS-nivå har fyrvägs-handskakning?",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": 2,
+      "why": "PUBREC, PUBREL, PUBCOMP."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör retain-flaggan?",
+      "options": [
+        "Krypterar meddelandet",
+        "Brokern sparar senaste meddelandet per topic och skickar det till nya prenumeranter",
+        "Tar bort meddelandet",
+        "Ger QoS 2"
+      ],
+      "answer": 1,
+      "why": "Bra för sensorer som rapporterar sällan."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är Last Will?",
+      "options": [
+        "Det sista meddelandet klienten skickade",
+        "Ett meddelande brokern publicerar om klienten försvinner oväntat",
+        "Ett lösenord",
+        "En QoS-nivå"
+      ],
+      "answer": 1,
+      "why": "Registreras vid CONNECT."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket transportprotokoll använder CoAP?",
+      "options": [
+        "TCP",
+        "UDP",
+        "Inget",
+        "HTTP"
+      ],
+      "answer": 1,
+      "why": "Därför DTLS i stället för TLS."
+    },
+    {
+      "type": "mc",
+      "q": "Vad liknar CoAP mest?",
+      "options": [
+        "MQTT",
+        "HTTP med GET, POST, PUT och DELETE",
+        "FTP",
+        "SSH"
+      ],
+      "answer": 1,
+      "why": "Request/response, men lättare."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är observe i CoAP?",
+      "options": [
+        "En brandvägg",
+        "Klienten prenumererar på ändringar",
+        "En QoS-nivå",
+        "Ett felmeddelande"
+      ],
+      "answer": 1,
+      "why": "Liknar MQTT:s subscribe."
+    },
+    {
+      "type": "multi",
+      "q": "Vad passar MQTT dåligt för?",
+      "options": [
+        "Stora filer",
+        "Video",
+        "Realtid med extremt låg latens",
+        "Sensordata"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Sensordata är just vad MQTT är gjort för."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter UDP-versionen av TLS som CoAP använder?",
+      "accept": [
+        "DTLS"
+      ],
+      "placeholder": "förkortning",
+      "why": "Datagram TLS."
+    },
+    {
+      "type": "code",
+      "q": "Klassa portnummer och visa kända tjänster.",
+      "task": "06-portar-1",
+      "why": "Tre intervall och en uppslagstabell.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Matcha MQTT-topics mot ett filter med + och #.",
+      "task": "06-mqtt-1",
+      "why": "Jämför nivå för nivå.",
+      "web": true
+    }
+  ]
+}

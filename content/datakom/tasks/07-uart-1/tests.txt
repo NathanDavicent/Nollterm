@@ -1,0 +1,28 @@
+--- in
+8N1
+Hi
+--- out
+H 0x48: 0 00010010 1
+i 0x69: 0 10010110 1
+Totalt 20 bitar
+--- in
+8E1
+AB
+--- out
+A 0x41: 0 10000010 0 1
+B 0x42: 0 01000010 0 1
+Totalt 22 bitar
+--- in
+8O1
+OK
+--- out
+O 0x4F: 0 11110010 0 1
+K 0x4B: 0 11010010 1 1
+Totalt 22 bitar
+--- in
+8N1
+0x
+--- out
+0 0x30: 0 00001100 1
+x 0x78: 0 00011110 1
+Totalt 20 bitar
