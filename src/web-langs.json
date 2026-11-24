@@ -240,5 +240,32 @@
   ],
   "datakom/07-uart-1": [
     "py"
+  ],
+  "testkval/02-burndown-1": [
+    "py"
+  ],
+  "testkval/02-sprint-1": [
+    "py"
+  ],
+  "testkval/04-fmea-1": [
+    "py"
+  ],
+  "testkval/05-celsius-1": [
+    "py"
+  ],
+  "testkval/05-gransvarden-1": [
+    "py"
+  ],
+  "testkval/05-tillstand-1": [
+    "py"
+  ],
+  "testkval/06-defekt-1": [
+    "py"
+  ],
+  "testkval/06-exit-1": [
+    "py"
+  ],
+  "testkval/08-pipeline-1": [
+    "py"
   ]
 }

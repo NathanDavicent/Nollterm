@@ -1,0 +1,32 @@
+--- in
+3
+WiFi 4 3 2
+Batteri 2 5 4
+Broker 3 4 1
+--- out
+1. Batteri: 2 x 5 x 4 = 40
+2. WiFi: 4 x 3 x 2 = 24
+3. Broker: 3 x 4 x 1 = 12
+Testa först: Batteri, WiFi, Broker
+--- in
+5
+Sensor 3 4 3
+Flash 1 5 5
+OTA 2 5 3
+LED 4 1 1
+JSON 3 3 4
+--- out
+1. Sensor: 3 x 4 x 3 = 36
+2. JSON: 3 x 3 x 4 = 36
+3. OTA: 2 x 5 x 3 = 30
+4. Flash: 1 x 5 x 5 = 25
+5. LED: 4 x 1 x 1 = 4
+Testa först: Sensor, JSON, OTA
+--- in
+2
+A 2 2 2
+B 2 2 2
+--- out
+1. A: 2 x 2 x 2 = 8
+2. B: 2 x 2 x 2 = 8
+Testa först: A, B

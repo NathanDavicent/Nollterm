@@ -47,6 +47,13 @@ const HERO_CARDS = {
         <div class="mem bits8">${cells}</div>
         <div class="foot">Sista oktetten: två bitar nät (markerade), sex bitar värd.<br>Subnätet är 192.168.1.192/26.</div></div>`;
   },
+  testkval: () => {
+    const cells = [..."PPPFPPPP"].map((ch, i) => `<div><span class="cell ${ch === "F" ? "z" : ""}" style="animation-delay:${i * 90}ms">${ch === "F" ? "✗" : "✓"}</span><span class="ad">T0${i + 1}</span></div>`).join("");
+    return `<div class="memcard" aria-label="Exempel: en testkörning i CI där ett test failar">
+        <div class="decl">TEST_ASSERT_EQUAL(<span class="s">20</span>, avg);</div>
+        <div class="mem bits8">${cells}</div>
+        <div class="foot">7 av 8 tester gröna. T04 är rött,<br>så pipelinen stoppar mergen till main.</div></div>`;
+  },
 };
 const COURSES = CONTENT.map(c => Object.assign(c, {
   card: HERO_CARDS[c.id] || (() => `<div class="memcard"><div class="decl">${esc(c.badge)}</div><div class="foot">${c.lessons.length} lektioner.</div></div>`),

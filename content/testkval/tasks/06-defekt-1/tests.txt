@@ -1,0 +1,22 @@
+--- in
+3
+wifi 6 1200
+sensor 3 150
+led 1 400
+--- out
+sensor: 20.0 per KLOC  <- över snittet, extra granskning
+wifi: 5.0 per KLOC
+led: 2.5 per KLOC
+Totalt: 5.7 per KLOC
+--- in
+4
+mqtt 10 2500
+json 4 800
+ota 2 2000
+main 0 300
+--- out
+json: 5.0 per KLOC  <- över snittet, extra granskning
+mqtt: 4.0 per KLOC  <- över snittet, extra granskning
+ota: 1.0 per KLOC
+main: 0.0 per KLOC
+Totalt: 2.9 per KLOC

@@ -1,0 +1,448 @@
+{
+  "id": "cicd-xp",
+  "title": "CI/CD, XP och kodgranskning",
+  "category": "Automatisering",
+  "minutes": 15,
+  "date": "2026-06-02",
+  "lead": "Pipeline med build, lint, test och artifact i GitHub Actions, hemligheter och native- mot target-testning, XP med parprogrammering, TDD, kollektivt ägande och YAGNI, och kodgranskning med pull requests.",
+  "sources": [
+    "Dag 8: CI/CD, XP & Kodgranskning",
+    "Genomgång och dagens uppgift 2026-06-02"
+  ],
+  "goals": [
+    "Förklara CI och CD och stegen i en pipeline",
+    "Läsa en GitHub Actions-workflow och hantera hemligheter",
+    "Skilja på native, simulerad och fysisk target-testning",
+    "Beskriva XP:s principer",
+    "Granska kod med en checklista och ge konstruktiv feedback"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "CI/CD"
+    },
+    {
+      "type": "p",
+      "html": "<strong>CI</strong> (Continuous Integration): utvecklarna laddar upp kod ofta och systemet bygger och testar automatiskt. <strong>CD</strong> (Continuous Delivery/Deployment): koden är alltid leveransbar, och i IoT kan det betyda automatiska firmware-releaser. Målet är att upptäcka fel minuter efter att de skrivits, inte veckor."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Build → Lint (statisk analys) → Test → Artifact\n",
+      "caption": "om ett steg failar stannar pipelinen och teamet larmas"
+    },
+    {
+      "type": "p",
+      "html": "Pipelinen är en <strong>kvalitetsgrind</strong>: koden bygger för ESP32-C6 på en ren maskin, enhetstesterna körs vid varje pull request och lintern letar efter farlig C-kod. Kör de snabba testerna först och använd cache för beroenden."
+    },
+    {
+      "type": "h",
+      "text": "GitHub Actions"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Workflows</strong> är YAML-filer i <code>.github/workflows/</code>.",
+        "<strong>Events</strong> styr när de körs, till exempel <code>on: [push, pull_request]</code>.",
+        "<strong>Runners</strong> är maskinerna (Linux, Windows, macOS) som kör jobben."
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "name: Build and test\non: [push, pull_request]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Build firmware\n        uses: espressif/esp-idf-ci-action@v1\n        with:\n          target: esp32c6\n      - name: Run host unit tests\n        run: |\n          cmake -S test -B build-test\n          cmake --build build-test\n          ctest --test-dir build-test --output-on-failure\n",
+      "caption": ".github/workflows/ci.yml (förenklat exempel)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Hemligheter</strong> som WiFi-lösenord och MQTT-tokens checkas aldrig in. De ligger i <strong>GitHub Secrets</strong> och injiceras som miljövariabler under bygget.",
+        "<strong>Artifacts:</strong> den byggda <code>.bin</code>-filen sparas, och det syns vilken commit som gav vilken firmware. Då kan man backa till en stabil version.",
+        "<strong>OTA i CD:</strong> när main uppdateras byggs firmware, laddas upp, och testenheterna i labbet uppdaterar sig själva."
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Testning i CI",
+        "Hur",
+        "Kommentar"
+      ],
+      "rows": [
+        [
+          "Native",
+          "Logiken bruten ut till ren C och testad på byggmaskinen",
+          "Snabbt, fångar de flesta logikfel"
+        ],
+        [
+          "Target i simulator",
+          "Testerna körs på GitHubs server med mockad hårdvara, till exempel Wokwi CI",
+          "Förhållandevis snabbt"
+        ],
+        [
+          "Target fysiskt",
+          "En self-hosted runner i labbet med en ESP32 inkopplad",
+          "Fångar mest, men kräver utrustning"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "En pipeline man inte litar på är värdelös. Flaky tests får teamet att ignorera rött. Laga eller ta bort dem, och när det lyser rött stannar allt annat tills det är fixat. Ingen merge till main utan grön pipeline."
+    },
+    {
+      "type": "h",
+      "text": "Extreme Programming"
+    },
+    {
+      "type": "p",
+      "html": "XP tar bra principer till det extrema: är granskning bra granskar vi hela tiden (parprogrammering), är testning bra testar vi hela tiden (TDD och CI), är enkelhet bra bygger vi alltid det enklaste som fungerar, och är korta iterationer bra släpper vi kod flera gånger om dagen."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Princip",
+        "Innebär"
+      ],
+      "rows": [
+        [
+          "Parprogrammering",
+          "Driver skriver koden, navigator ser helheten och letar buggar. Granskning i realtid och kunskapsspridning"
+        ],
+        [
+          "TDD",
+          "Test, kod, refaktorering. Förhindrar gold plating"
+        ],
+        [
+          "Kollektivt ägande",
+          "Ingen äger en fil, alla får förbättra all kod. Projektet stannar inte om någon blir sjuk"
+        ],
+        [
+          "Refaktorering",
+          "Bättre struktur utan ändrat beteende, i små steg som testerna vaktar"
+        ],
+        [
+          "YAGNI",
+          "You Aren't Gonna Need It: bygg inte för framtida behov som kanske aldrig kommer"
+        ],
+        [
+          "Hållbar takt",
+          "Trötta utvecklare skriver buggar. Övertid är teknisk skuld"
+        ],
+        [
+          "Gemensamt språk",
+          "Heter sensorn AmbientSensor i dokumentationen ska den inte heta temp_mod i koden"
+        ],
+        [
+          "Kodstandard",
+          "Alla skriver likadant, till exempel med .clang-format och en pre-commit-hook"
+        ],
+        [
+          "Kund på plats",
+          "Fråga hellre en gång för mycket om acceptanskriterierna. Att koda fel sak är största slöseriet"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Kodgranskning"
+    },
+    {
+      "type": "p",
+      "html": "Den sista manuella grindvakten: hitta logiska fel som testerna missat, kontrollera standard (MISRA, stilguide), sprida kunskap och kontrollera designen."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "1. Skapa en feature-branch och gör jobbet\n2. Öppna en pull request mot main → CI körs automatiskt\n3. Minst en kollega granskar och godkänner\n4. Först när CI är grön och PR:en godkänd får den mergas\n"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Checklista för IoT-kod",
+        "Leta efter"
+      ],
+      "rows": [
+        [
+          "Minne",
+          "malloc utan free, risk för buffer overflow"
+        ],
+        [
+          "Pekare",
+          "Kontrolleras de mot NULL före användning?"
+        ],
+        [
+          "Resurser",
+          "Stängs sockets och filer även vid fel?"
+        ],
+        [
+          "Blockerande kod",
+          "while(1) utan timeout som låser chippet"
+        ],
+        [
+          "Säkerhet",
+          "Hårdkodade lösenord, HTTP i stället för TLS, för lång MQTT-sträng som spräcker bufferten"
+        ]
+      ]
+    },
+    {
+      "type": "list",
+      "items": [
+        "Det är koden som granskas, inte personen. Säg <em>Jag tror vi kan undvika läckan genom att…</em> i stället för <em>Det här är dåligt</em>.",
+        "Fråga i stället för att kräva: <em>Vad händer om WiFi dör här?</em> Och beröm bra lösningar.",
+        "Låt clang-format och Cppcheck sköta formatering och enkla fel, och granska inte manuellt förrän de är gröna. Undvik nitpicking.",
+        "<strong>Små PR:er:</strong> 10 rader ger 10 hittade buggar, 1000 rader ger <em>Looks good to me</em>.",
+        "<strong>Scoutregeln:</strong> lämna koden lite snyggare än du fann den."
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Metod",
+        "Feedback efter"
+      ],
+      "rows": [
+        [
+          "TDD, parprogrammering",
+          "Sekunder"
+        ],
+        [
+          "Lokal kompilering, enhetstester",
+          "Minuter"
+        ],
+        [
+          "CI-pipeline, kodgranskning",
+          "Timmar"
+        ],
+        [
+          "Integrations- och systemtest",
+          "Dagar"
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "CI och granskning i projektet",
+      "html": "<p>Kopiera workflows från lärarens repo <code>ci-cd_with_github_actions</code> (ta bort <code>dangerjs.yml</code> om ni inte följer Conventional Commits), gör en parprogrammering på 30 minuter för en svår modul, och skapa en pull request som någon annan granskar med checklistan.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är Continuous Integration?",
+      "options": [
+        "Att integrera allt i slutet",
+        "Att ladda upp kod ofta och låta systemet bygga och testa automatiskt",
+        "Att deploya manuellt",
+        "Att skriva dokumentation"
+      ],
+      "answer": 1,
+      "why": "Fel hittas inom minuter."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken ordning har stegen i en pipeline?",
+      "options": [
+        "Test, build, lint",
+        "Build, lint, test, artifact",
+        "Lint, artifact, build",
+        "Artifact, test, build"
+      ],
+      "answer": 1,
+      "why": "Från övningstentan."
+    },
+    {
+      "type": "mc",
+      "q": "Vad händer om ett enhetstest failar i pipelinen?",
+      "options": [
+        "Inget",
+        "Pipelinen blir röd och PR:en blockeras från merge",
+        "Testet hoppas över",
+        "Koden mergas ändå"
+      ],
+      "answer": 1,
+      "why": "Skyddar resten av teamet."
+    },
+    {
+      "type": "mc",
+      "q": "Var ligger GitHub Actions-workflows?",
+      "options": [
+        "I src/",
+        "I .github/workflows/",
+        "I README.md",
+        "I main.c"
+      ],
+      "answer": 1,
+      "why": "YAML-filer."
+    },
+    {
+      "type": "mc",
+      "q": "Var ska WiFi-lösenordet ligga för CI?",
+      "options": [
+        "I koden",
+        "I GitHub Secrets",
+        "I commit-meddelandet",
+        "I en publik fil"
+      ],
+      "answer": 1,
+      "why": "Injiceras som miljövariabel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en artifact i CI?",
+      "options": [
+        "En bugg",
+        "En sparad byggfil, till exempel firmware.bin",
+        "En test",
+        "En branch"
+      ],
+      "answer": 1,
+      "why": "Spårbar till en commit."
+    },
+    {
+      "type": "mc",
+      "q": "Vad krävs för fysisk target-testning i CI?",
+      "options": [
+        "Inget",
+        "En self-hosted runner med en ESP32 inkopplad",
+        "Wokwi",
+        "Postman"
+      ],
+      "answer": 1,
+      "why": "Molnet har inga ESP32:or."
+    },
+    {
+      "type": "mc",
+      "q": "Varför är flaky tests farliga i en pipeline?",
+      "options": [
+        "De är långsamma",
+        "Teamet börjar ignorera röda pipelines",
+        "De tar plats",
+        "De kräver hårdvara"
+      ],
+      "answer": 1,
+      "why": "Laga eller ta bort dem direkt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör navigatorn i parprogrammering?",
+      "options": [
+        "Skriver koden",
+        "Ser helheten, letar buggar och tänker framåt",
+        "Testar hårdvaran",
+        "Ingenting"
+      ],
+      "answer": 1,
+      "why": "Driver skriver."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder YAGNI?",
+      "options": [
+        "You Are Going Nowhere Interesting",
+        "You Aren't Gonna Need It",
+        "Your Algorithm Grows Non-Iteratively",
+        "Yet Another GNU Interface"
+      ],
+      "answer": 1,
+      "why": "Bygg inte för framtida behov."
+    },
+    {
+      "type": "mc",
+      "q": "Vad innebär kollektivt ägande?",
+      "options": [
+        "Alla äger var sin fil",
+        "Hela teamet ansvarar för all kod och får förbättra den",
+        "Kunden äger koden",
+        "Bara seniorer får ändra"
+      ],
+      "answer": 1,
+      "why": "Minskar personberoendet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är syftet med kodgranskning?",
+      "options": [
+        "Att hitta syndabockar",
+        "Hitta fel, kontrollera standard och sprida kunskap",
+        "Att formatera koden",
+        "Att mäta velocity"
+      ],
+      "answer": 1,
+      "why": "Den sista manuella grindvakten."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska PR:er vara små?",
+      "options": [
+        "Git kräver det",
+        "Stora PR:er granskas sämre",
+        "De byggs snabbare",
+        "De är säkrare att merga utan granskning"
+      ],
+      "answer": 1,
+      "why": "1000 rader ger Looks good to me."
+    },
+    {
+      "type": "mc",
+      "q": "Hur ger man bra feedback i en granskning?",
+      "options": [
+        "Det här är dåligt",
+        "Jag tror vi kan undvika läckan genom att använda…",
+        "Skriv om allt",
+        "Säg ingenting"
+      ],
+      "answer": 1,
+      "why": "Koden, inte personen."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ska en granskare av IoT-kod leta efter?",
+      "options": [
+        "malloc utan free",
+        "Pekare som inte kontrolleras mot NULL",
+        "while(1) utan timeout",
+        "Hårdkodade lösenord"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Checklistan från föreläsningen."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken metod ger snabbast feedback?",
+      "options": [
+        "Systemtest",
+        "CI-pipeline",
+        "Parprogrammering",
+        "Sprint Review"
+      ],
+      "answer": 2,
+      "why": "Sekunder."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter regeln att lämna koden lite snyggare än man fann den?",
+      "accept": [
+        "scoutregeln",
+        "Boy Scout Rule",
+        "the boy scout rule",
+        "scoutregel"
+      ],
+      "placeholder": "regel",
+      "why": "The Boy Scout Rule."
+    },
+    {
+      "type": "code",
+      "q": "Simulera en CI-pipeline och avgör om PR:en får mergas.",
+      "task": "08-pipeline-1",
+      "why": "Stanna vid första fel, och kräv både grönt och en godkänd granskning.",
+      "web": true
+    }
+  ]
+}

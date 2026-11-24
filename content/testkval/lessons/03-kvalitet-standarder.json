@@ -1,0 +1,453 @@
+{
+  "id": "kvalitet-standarder",
+  "title": "Kvalitetssäkring, standarder och lagar",
+  "category": "Kvalitet",
+  "minutes": 16,
+  "date": "2026-05-19",
+  "lead": "QA mot test, systemkvalitet i IoT, ETSI EN 303 645, MISRA, CE, RED, RoHS och WEEE, funktionella och icke-funktionella krav, fail-safe, spårbarhet och testmatrisen.",
+  "sources": [
+    "Dag 3: Kvalitetssäkring & Standarder",
+    "Dagens uppgift 2026-05-19",
+    "Embedded Code best practices, LAB Static Code Analyzer och Testing Intro (samma som i Programmering för inbyggda system)"
+  ],
+  "goals": [
+    "Skilja på kvalitetssäkring och test",
+    "Förklara skillnaden mellan mjukvarukvalitet och systemkvalitet",
+    "Redogöra för ETSI EN 303 645, MISRA, CE-märkning, RED, RoHS och WEEE",
+    "Skriva funktionella och icke-funktionella krav",
+    "Bygga en testmatris med spårbarhet"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "QA eller test?"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Kvalitetssäkring</strong> (QA, Quality Assurance) är <strong>proaktivt</strong>: processer, krav, standarder och teststrategier bestäms innan koden skrivs. <strong>Test</strong> (kvalitetskontroll) är <strong>reaktivt</strong>: koden körs och avvikelser letas upp."
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "\"Kvalitetssäkring handlar om att förhindra fel genom att förbättra processen. Testning handlar om att hitta de fel som ändå uppstod.\""
+    },
+    {
+      "type": "h",
+      "text": "Systemkvalitet i IoT"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Mjukvarukvalitet</strong> är trådsäkerhet, minneshantering, algoritmer och API-svar. <strong>Systemkvalitet</strong> är hur mjukvaran möter den fysiska världen: komponenttoleranser, spänningsfall och radiostörningar. Koden kan vara buggfri enligt enhetstesterna och ändå krascha när sensorn ger brus från en dålig lödning."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Minne och ström:</strong> en minnesläcka kraschar enheten efter tre dagar, och ett deep sleep som drar för mycket tömmer batteriet.",
+        "<strong>Avbrott:</strong> interrupts från sensorer kan störa tidskritiska funktioner.",
+        "<strong>Nätverk:</strong> WiFi och BLE tappar anslutningen. Återhämtar sig koden utan att hänga sig?",
+        "<strong>Hårdvaruval:</strong> kraftigare hårdvara är dyrare, alltid en avvägning."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Standarder och regelverk"
+    },
+    {
+      "type": "p",
+      "html": "Standarder skyddar <strong>interoperabilitet</strong> (MQTT, Zigbee, Matter), <strong>cybersäkerhet</strong> (security) och <strong>fysisk säkerhet</strong> (safety). Organen är bland andra ISO/IEC (till exempel ISO/IEC 27001), ETSI (för att sälja elektronik i Europa) och IEEE (802.11 för WiFi, 802.15.4 för Thread och Zigbee)."
+    },
+    {
+      "type": "h",
+      "text": "ETSI EN 303 645"
+    },
+    {
+      "type": "p",
+      "html": "Den viktigaste europeiska standarden för cybersäkerhet i konsument-IoT. Den har 13 krav, bland andra:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Inga universella standardlösenord</strong>, inget admin/admin. Unikt lösenord per enhet eller att användaren väljer ett.",
+        "<strong>Policy för sårbarhetshantering</strong>: en publik kontaktpunkt för buggrapporter.",
+        "<strong>Uppdaterbar mjukvara</strong>: säkra, signerade uppdateringar (FOTA) som verifieras.",
+        "<strong>Dataminimering</strong>: samla inte in mer än funktionen kräver."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "I miljömonitorn betyder det att WiFi-lösenord och MQTT-tokens inte får ligga i klartext på GitHub utan i krypterat NVS på chippet, och MQTTS (MQTT över TLS) i stället för okrypterad MQTT."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "<strong>Mirai</strong> (2016): över 600 000 routrar, kameror och smarta prylar kapades eftersom de hade samma fabrikslösenord. Botnätet sänkte stora delar av internet med DDoS-attacker. Därför finns kraven."
+    },
+    {
+      "type": "h",
+      "text": "MISRA C/C++"
+    },
+    {
+      "type": "p",
+      "html": "Från fordonsindustrin (Motor Industry Software Reliability Association) och i dag guldstandard för säkerhetskritisk kod. MISRA definierar en <strong>säker delmängd</strong> av C och C++ och förbjuder konstruktioner som ofta ger osynliga buggar och odefinierat beteende, till exempel <code>malloc</code> och <code>free</code> efter uppstart. Koden ska bete sig likadant varje gång. Reglerna är <strong>Mandatory</strong> (inga undantag), <strong>Required</strong> (avvikelser dokumenteras) och <strong>Advisory</strong> (rekommendationer). De kontrolleras med statisk analys som Cppcheck eller SonarQube."
+    },
+    {
+      "type": "h",
+      "text": "Lagar och direktiv"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Vad det är"
+      ],
+      "rows": [
+        [
+          "CE-märkning",
+          "En juridisk deklaration, inget betyg, om att produkten uppfyller EU:s krav på säkerhet, hälsa och miljö. Att sälja utan är lagbrott"
+        ],
+        [
+          "RED",
+          "Radioutrustningsdirektivet: effektiv radioanvändning utan att störa annat, elsäkerhet och EMC. Sedan augusti 2025 även cybersäkerhetskrav för trådlösa konsumentprodukter"
+        ],
+        [
+          "RoHS",
+          "Begränsar farliga ämnen som bly och kvicksilver i elektronik"
+        ],
+        [
+          "WEEE",
+          "Insamling och återvinning av elavfall, märkt med den överkorsade soptunnan"
+        ],
+        [
+          "FCC",
+          "Motsvarigheten till radiogodkännandet i USA"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "ESP32-C6-modulen säljs <em>pre-certified</em>: Espressif har redan betalat för FCC- och CE-testerna av radion."
+    },
+    {
+      "type": "h",
+      "text": "Krav"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Funktionellt (vad)",
+        "Icke-funktionellt (hur bra)"
+      ],
+      "rows": [
+        [
+          "Läsa temperaturen från DHT22 var tionde sekund",
+          "Mätavvikelsen får inte överstiga ±0,5 °C"
+        ],
+        [
+          "Skicka data till molnet via WiFi",
+          "Återansluta till WiFi inom 5 sekunder efter ett avbrott"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Icke-funktionella krav blir sällan egna stories. De läggs i <strong>Definition of Done</strong> eller som acceptanskriterier på alla berörda stories: en sensor-story är inte klar förrän den fungerar vid simulerat WiFi-bortfall."
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Fail-safe:</strong> vid fel ska systemet hamna i ett säkert läge. Dör temperatursensorn ska värmen stängas av, inte fastna på full effekt.",
+        "<strong>Watchdog timer:</strong> en hårdvarutimer som mjukvaran måste återställa. Hänger sig koden startar chippet om.",
+        "<strong>Retry-logik:</strong> systemet kraschar inte för att brokern är nere i 10 sekunder.",
+        "<strong>Mått:</strong> MTBF (tid mellan fel), paketförlust och jitter. Fukt, korrosion och termisk stress hanteras med rätt kapsling, till exempel IP65 utomhus."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Spårbarhet och testmatris"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Krav → User story → Källkod → Testfall → Testresultat\n",
+      "caption": "obruten kedja"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>testmatris</strong> mappar krav mot testfall och dokumenterar utförandet. Den ger spårbarhet, repeterbarhet (vem som helst kan köra testet) och bevis på att standarderna följts."
+    },
+    {
+      "type": "table",
+      "head": [
+        "ID",
+        "Steg",
+        "Förväntat resultat",
+        "Utförare",
+        "Resultat"
+      ],
+      "rows": [
+        [
+          "T01",
+          "1. Bryt strömmen till sensorn. 2. Titta på RGB-LED:en.",
+          "LED:en blinkar lila inom 2 sekunder.",
+          "(namn)",
+          "Pass"
+        ],
+        [
+          "T02",
+          "1. Skicka ogiltig JSON via MQTT. 2. Läs seriella loggen.",
+          "ESP32 loggar \"Invalid JSON\" och startar inte om.",
+          "(namn)",
+          "Fail (startade om)"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Skriv testerna tidigt, var specifik (<em>Bryt WiFi under pågående MQTT-publicering</em>, inte <em>Testa WiFi</em>) och skapa en bugg-ticket när ett test failar."
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Föreläsningarna Embedded Code best practices, LAB Static Code Analyzer och Testing Intro är samma som i kursen Programmering för inbyggda system. Läs lektionerna <em>Bra kod och statisk analys</em> och <em>Testning och GoogleTest</em> där."
+    },
+    {
+      "type": "exercise",
+      "title": "Kvalitetssäkra miljömonitorn",
+      "html": "<p>Identifiera minst 3 lagar eller standarder som påverkar produkten, skapa de första 5 raderna i testmatrisen och fördela testerna så att alla äger minst ett. Lägg till icke-funktionella krav: tröskelvärden för RGB-indikeringen, strömkrav (batteritid med deep sleep, eller snittström vid nätdrift), och vad som händer med sensordatan om WiFi är nere i en timme.</p>",
+      "solution": "Lagar/standarder: CE, RED (radio), RoHS, WEEE, ETSI EN 303 645\n\nID   Steg                                          Förväntat\nT01  Starta med fabriksinställning                 Kräver nytt lösenord (ETSI)\nT02  Bryt WiFi i 60 min, återställ                  Buffrade värden skickas, inga luckor\nT03  Sätt CO2 > 1000 ppm (mock)                      LED röd inom 2 s\nT04  Skicka ogiltig JSON till cmd-topic              Loggar fel, ingen omstart\nT05  Wireshark på MQTT-trafiken                      Payload inte läsbar (TLS)\n\nIcke-funktionella krav: batteri >= 30 dagar med deep sleep,\nbuffra max 360 värden i flash (1 h med 10 s intervall).\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan QA och test?",
+      "options": [
+        "Ingen",
+        "QA är proaktivt och förebygger, test är reaktivt och hittar fel",
+        "Test görs före koden",
+        "QA görs bara av kunden"
+      ],
+      "answer": 1,
+      "why": "QA förbättrar processen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är systemkvalitet i IoT?",
+      "options": [
+        "Bara kodkvalitet",
+        "Hur mjukvaran samverkar med hårdvaran och den fysiska omvärlden",
+        "Antalet tester",
+        "Serverns prestanda"
+      ],
+      "answer": 1,
+      "why": "Toleranser, spänningsfall och radiostörningar."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken standard gäller cybersäkerhet för konsument-IoT i Europa?",
+      "options": [
+        "MISRA",
+        "ETSI EN 303 645",
+        "IEEE 802.11",
+        "RoHS"
+      ],
+      "answer": 1,
+      "why": "Inga standardlösenord, sårbarhetspolicy, uppdateringar."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka krav finns i ETSI EN 303 645?",
+      "options": [
+        "Inga universella standardlösenord",
+        "Policy för sårbarhetshantering",
+        "Säkra, signerade uppdateringar",
+        "Blyfritt lödtenn"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Blyet regleras av RoHS."
+    },
+    {
+      "type": "mc",
+      "q": "Varför uppstod Mirai-botnätet?",
+      "options": [
+        "En bugg i Linux",
+        "Hundratusentals enheter hade samma fabrikslösenord",
+        "Ett fel i WiFi",
+        "Ingen CE-märkning"
+      ],
+      "answer": 1,
+      "why": "2016."
+    },
+    {
+      "type": "mc",
+      "q": "Var ska WiFi-lösenordet lagras enligt kursen?",
+      "options": [
+        "I källkoden på GitHub",
+        "I krypterat NVS på chippet",
+        "I en README",
+        "I klartext i flash"
+      ],
+      "answer": 1,
+      "why": "Aldrig i klartext i repot."
+    },
+    {
+      "type": "mc",
+      "q": "Var kommer MISRA ifrån?",
+      "options": [
+        "Rymdindustrin",
+        "Fordonsindustrin",
+        "Bankväsendet",
+        "Spelindustrin"
+      ],
+      "answer": 1,
+      "why": "Motor Industry Software Reliability Association."
+    },
+    {
+      "type": "mc",
+      "q": "Vad förbjuder MISRA efter uppstart?",
+      "options": [
+        "printf",
+        "malloc och free",
+        "for-loopar",
+        "Pekare"
+      ],
+      "answer": 1,
+      "why": "För att undvika läckor och fragmentering."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken MISRA-kategori tillåter dokumenterade avvikelser?",
+      "options": [
+        "Mandatory",
+        "Required",
+        "Advisory",
+        "Ingen"
+      ],
+      "answer": 1,
+      "why": "Mandatory har inga undantag, Advisory är rekommendationer."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är CE-märkning?",
+      "options": [
+        "Ett kvalitetsbetyg",
+        "En juridisk deklaration att produkten uppfyller EU:s krav",
+        "En testmetod",
+        "Ett radioprotokoll"
+      ],
+      "answer": 1,
+      "why": "Krävs för att sälja i EU."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket direktiv gäller en ESP32-C6 med WiFi och BLE?",
+      "options": [
+        "RoHS",
+        "RED",
+        "WEEE",
+        "GDPR"
+      ],
+      "answer": 1,
+      "why": "Radioutrustningsdirektivet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad reglerar RoHS?",
+      "options": [
+        "Radiospektrum",
+        "Farliga ämnen i elektronik",
+        "Återvinning",
+        "Cybersäkerhet"
+      ],
+      "answer": 1,
+      "why": "Till exempel bly. WEEE gäller återvinning."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är ett icke-funktionellt krav?",
+      "options": [
+        "Skicka data via WiFi",
+        "Läsa temperaturen var tionde sekund",
+        "Återansluta inom 5 sekunder efter avbrott",
+        "Visa temperaturen i appen"
+      ],
+      "answer": 2,
+      "why": "Hur bra, inte vad."
+    },
+    {
+      "type": "mc",
+      "q": "Var hamnar icke-funktionella krav oftast?",
+      "options": [
+        "I egna user stories",
+        "I Definition of Done eller som acceptanskriterier",
+        "I README",
+        "Ingenstans"
+      ],
+      "answer": 1,
+      "why": "De gäller många stories."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder fail-safe?",
+      "options": [
+        "Systemet startar aldrig om",
+        "Vid fel hamnar systemet i ett säkert läge",
+        "Alla tester passerar",
+        "Ingen loggning"
+      ],
+      "answer": 1,
+      "why": "Värmen stängs av om sensorn dör."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör en watchdog timer?",
+      "options": [
+        "Mäter temperatur",
+        "Startar om chippet om mjukvaran slutar återställa timern",
+        "Väcker från deep sleep",
+        "Loggar fel"
+      ],
+      "answer": 1,
+      "why": "Skydd mot att koden hänger sig."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ger testmatrisen?",
+      "options": [
+        "Snabbare kod",
+        "Spårbarhet från krav till testresultat",
+        "Kryptering",
+        "Mindre dokumentation"
+      ],
+      "answer": 1,
+      "why": "Plus repeterbarhet och bevis."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är ett bra testfall?",
+      "options": [
+        "Testa WiFi",
+        "Bryt WiFi under pågående MQTT-publicering",
+        "Kolla att allt funkar",
+        "Testa allt"
+      ],
+      "answer": 1,
+      "why": "Var specifik."
+    },
+    {
+      "type": "text",
+      "q": "Vad står MTBF för?",
+      "accept": [
+        "Mean Time Between Failures",
+        "mean time between failures"
+      ],
+      "placeholder": "fyra ord",
+      "why": "Genomsnittlig tid mellan fel."
+    }
+  ]
+}

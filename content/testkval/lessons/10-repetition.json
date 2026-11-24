@@ -1,0 +1,304 @@
+{
+  "id": "repetition",
+  "title": "Repetition och övningstenta",
+  "category": "Repetition",
+  "minutes": 14,
+  "lead": "Kursens röda tråd från metodik till automatisering, och övningstentan med flervalsfrågor, begreppsmatchning och resonerande frågor om isolering, testplanering, buggprioritering och CI.",
+  "sources": [
+    "Repetition & kurssammanfattning",
+    "Interaktiv övningstenta & diskussion"
+  ],
+  "goals": [
+    "Se hur kursens delar hänger ihop i ett projektflöde",
+    "Skilja på närliggande begrepp som acceptanskriterier och DoD",
+    "Motivera val utifrån kvalitet och risk"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Den röda tråden"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Fas",
+        "Innehåll",
+        "Lektion"
+      ],
+      "rows": [
+        [
+          "Metodik",
+          "Agilt, Scrum, Kanban, Lean och XP",
+          "1, 2, 8"
+        ],
+        [
+          "Krav, standarder och lagar",
+          "User stories, ETSI, CE, RED, MISRA",
+          "2, 3"
+        ],
+        [
+          "Strategi",
+          "FMEA, teststrategi och testplan",
+          "4, 6"
+        ],
+        [
+          "Genomförande",
+          "Unity, enhet, integration och E2E",
+          "5"
+        ],
+        [
+          "Validering",
+          "Wireshark, Node-RED, Postman",
+          "7"
+        ],
+        [
+          "Automatisering",
+          "CI/CD och kodgranskning",
+          "8"
+        ],
+        [
+          "Avslut",
+          "Analys och retrospektiv",
+          "9"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "På tentan handlar det om att <strong>motivera val utifrån kvalitet och risk</strong>."
+    },
+    {
+      "type": "h",
+      "text": "Begrepp som blandas ihop"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Begrepp",
+        "Betyder"
+      ],
+      "rows": [
+        [
+          "Acceptanskriterier",
+          "Specifika, testbara villkor för en enskild user story"
+        ],
+        [
+          "Definition of Done",
+          "Global checklista för alla stories: granskad, testad, CI grön, dokumenterad"
+        ],
+        [
+          "Sprint Review",
+          "Visa produkten för intressenter"
+        ],
+        [
+          "Sprint Retrospective",
+          "Förbättra processen och samarbetet"
+        ],
+        [
+          "QA",
+          "Proaktivt, förebygger fel via processen"
+        ],
+        [
+          "Test",
+          "Reaktivt, hittar fel i produkten"
+        ],
+        [
+          "Stub",
+          "Ger ett hårdkodat svar"
+        ],
+        [
+          "Mock",
+          "Kontrollerar också hur den anropades"
+        ],
+        [
+          "Teststrategi",
+          "Långsiktig och generell"
+        ],
+        [
+          "Testplan",
+          "Projektspecifik med tider och namn"
+        ],
+        [
+          "Code coverage",
+          "Procent av koden som testerna kör"
+        ],
+        [
+          "ETSI EN 303 645",
+          "Europeisk cybersäkerhetsstandard för konsument-IoT"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Resonerande frågor"
+    },
+    {
+      "type": "exercise",
+      "title": "Isolering av nätverkskod",
+      "html": "<p>Du ska testa <code>bool network_send_data(float temp)</code> som pratar med molnet via WiFi. Varför är det dåligt att göra riktiga nätverksanrop i ett enhetstest (två skäl)? Hur löser man det tekniskt, och vad kallas komponenten?</p>",
+      "solution": "Skäl: instabilt (testet kan faila av dåligt WiFi fast koden är rätt),\nlångsamt (nätverk tar sekunder, enhetstester ska ta millisekunder),\noch CI-servrar har ingen ESP32 eller tillgång till ert nät.\n\nLösning: ett HAL med ett gränssnitt för nätverket. I testet byts det\nmot en mock eller stub som direkt returnerar true eller false.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Rökdetektorn utan testplan",
+      "html": "<p>Projektledaren vill skippa testplanen och testa så mycket man hinner sista veckan. Vilka risker innebär det att sakna exit-kriterier för en säkerhetskritisk produkt, och varför blir ad hoc-testning i slutet dyrare?</p>",
+      "solution": "Utan exit-kriterier finns inget objektivt kvitto på säkerheten. Missade\nkantfall i en rökdetektor kan vara livsfarliga.\n\nEtt arkitekturfel som upptäcks sista veckan kräver att stora delar skrivs\nom under extrem stress, när felet är som dyrast att laga.\nTest early, test often: fel som hittas tidigt är billigast.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Buggprioritering två dagar före release",
+      "html": "<p>Bugg A: chippet låser sig om man håller in boot-knappen precis vid start. Bugg B: JSON-fältet heter <code>humi</code> i stället för <code>humidity</code>, så backend kan inte spara värdet. Vilken är blocker?</p>",
+      "solution": "B är blocker (P1): kärnfunktionen är trasig, ingen data sparas,\nhela E2E-kedjan fungerar inte.\nA är P2 eller P3: kräver en osannolik handling vid exakt rätt ögonblick.\nDokumentera som känd brist och patcha med OTA senare.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Begreppsmatchning",
+      "html": "<p>Para ihop: 1 acceptanskriterier, 2 ETSI EN 303 645, 3 DoD, 4 kodtäckning, 5 FMEA, 6 E2E med A global checklista, B riskbedömning med RPN, C villkor för en enskild story, D hela flödet från sensor till moln, E europeisk IoT-säkerhetsstandard, F procent av koden som körs.</p>",
+      "solution": "1-C, 2-E, 3-A, 4-F, 5-B, 6-D\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad innebär ett tvärfunktionellt team?",
+      "options": [
+        "Rollerna byts varje sprint",
+        "Teamet har alla kompetenser som behövs för att leverera",
+        "Teamet rapporterar till ledningen",
+        "Testare sitter på en annan avdelning"
+      ],
+      "answer": 1,
+      "why": "Annars uppstår väntan, som är slöseri."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är huvudsyftet med en Sprint Retrospective?",
+      "options": [
+        "Visa produkten för kunden",
+        "Estimera nästa sprint",
+        "Utvärdera samarbetet och processen och hitta förbättringar",
+        "Räkna rader kod"
+      ],
+      "answer": 2,
+      "why": "Review visar produkten."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska en IoT-utvecklare ha koll på RED?",
+      "options": [
+        "Det reglerar molndatabaser",
+        "Det ställer krav på elsäkerhet, EMC och radioprestanda för allt som sänder eller tar emot radio",
+        "Det bestämmer priset",
+        "Det kräver extern kodgranskning"
+      ],
+      "answer": 1,
+      "why": "ESP32-C6 har WiFi och BLE."
+    },
+    {
+      "type": "mc",
+      "q": "Vad innebär steget refactor i TDD?",
+      "options": [
+        "Skriva om testet",
+        "Förbättra strukturen utan att ändra beteendet",
+        "Flytta till produktion",
+        "Lägga till nya funktioner"
+      ],
+      "answer": 1,
+      "why": "Motverkar teknisk skuld."
+    },
+    {
+      "type": "mc",
+      "q": "Hur fungerar parprogrammering?",
+      "options": [
+        "Två skriver på varsin dator och tävlar",
+        "Två vid samma skärm: en skriver, en granskar och tänker strategiskt",
+        "En utvecklare och en testare hela projektet",
+        "Kod för två operativsystem"
+      ],
+      "answer": 1,
+      "why": "Granskning i realtid."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är Definition of Done?",
+      "options": [
+        "Villkor för en enskild story",
+        "En global checklista som gäller alla stories",
+        "En testmetod",
+        "En standard"
+      ],
+      "answer": 1,
+      "why": "Acceptanskriterier är per story."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska enhetstester inte göra riktiga nätverksanrop?",
+      "options": [
+        "Det är förbjudet",
+        "Instabilt, långsamt och otillgängligt i CI",
+        "Nätverket är för snabbt",
+        "Unity stöder inte nätverk"
+      ],
+      "answer": 1,
+      "why": "Använd en mock via HAL."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket påstående om kvalitetssäkring stämmer?",
+      "options": [
+        "QA är bara testning",
+        "QA förebygger fel genom att förbättra processen",
+        "QA görs efter release",
+        "QA är samma som kodgranskning"
+      ],
+      "answer": 1,
+      "why": "Proaktivt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan oscilloskop och logikanalysator?",
+      "options": [
+        "Ingen",
+        "Oscilloskopet visar den fysiska signalen noggrant, logikanalysatorn avkodar digitala protokoll",
+        "Logikanalysatorn mäter ström",
+        "Oscilloskopet kör tester"
+      ],
+      "answer": 1,
+      "why": "Båda ser timing."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ingår i kursens röda tråd?",
+      "options": [
+        "Metodik",
+        "Krav och standarder",
+        "Riskanalys och testplanering",
+        "Automatisering med CI/CD"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Plus genomförande, validering och analys."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ska svar på tentan bygga på enligt läraren?",
+      "options": [
+        "Utantillkunskap",
+        "Motiveringar utifrån kvalitet och risk",
+        "Kodlängd",
+        "Vilket verktyg som är nyast"
+      ],
+      "answer": 1,
+      "why": "Från övningstentan."
+    }
+  ]
+}

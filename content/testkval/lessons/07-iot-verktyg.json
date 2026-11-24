@@ -1,0 +1,343 @@
+{
+  "id": "iot-verktyg",
+  "title": "Verktyg för IoT-test",
+  "category": "Verktyg",
+  "minutes": 12,
+  "date": "2026-05-29",
+  "lead": "Logikanalysatorn och Wireshark som valideringsverktyg, Mosquitto CLI och Node-RED för att mocka backend och felscenarier, Postman och Newman för API-tester och JMeter för belastning.",
+  "sources": [
+    "Dag 7: Verktyg för IoT-test",
+    "Genomgång och dagens uppgift 2026-05-29"
+  ],
+  "goals": [
+    "Använda logikanalysatorn för protokoll, timing och glitchar",
+    "Använda Wireshark för att granska protokoll, kryptering och paketförlust",
+    "Simulera enheter och backend med mosquitto_pub, mosquitto_sub och Node-RED",
+    "Automatisera API-tester med Postman och Newman",
+    "Förklara vad man letar efter i ett stresstest med JMeter"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Gör det osynliga synligt"
+    },
+    {
+      "type": "p",
+      "html": "Exit-kriteriet <em>inga korrupta paket till molnet</em> går inte att bevisa genom att titta på lamporna. Vi måste avlyssna bussen (hårdvara) och nätverket (mjukvara) och skriva in faktiska resultat i testmatrisen."
+    },
+    {
+      "type": "h",
+      "text": "Logikanalysatorn"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Protokollavkodning:</strong> hög och låg spänning blir läsbar hex för I2C, SPI och UART.",
+        "<strong>Timing:</strong> exakt hur många mikrosekunder från avbrott till svar.",
+        "<strong>Glitchar:</strong> dyrare modeller ser om störningar tolkas som ettor och nollor."
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Scenario",
+        "Logikanalysatorn visar",
+        "Felet är"
+      ],
+      "rows": [
+        [
+          "Sensorn ger ESP_ERR_TIMEOUT",
+          "ESP32 skickar adressen men får ingen ACK",
+          "Hårdvara: trasig eller felkopplad sensor"
+        ],
+        [
+          "Sensorn ger ESP_ERR_TIMEOUT",
+          "Ingen aktivitet alls på SDA och SCL",
+          "Mjukvara: fel GPIO-pinnar i koden"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Wireshark"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Protokollefterlevnad:</strong> följer enheten RFC:erna för TCP/IP och MQTT?",
+        "<strong>Säkerhet:</strong> syns payloaden i klartext är det underkänt enligt ETSI EN 303 645.",
+        "<strong>Paketförlust:</strong> <code>TCP Retransmission</code> tyder på svag signal eller en överbelastad nätverksstack."
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Trådlös trafik fångas med ett nätverkskort i <strong>monitor/promiscuous mode</strong>, eller genom att låta datorn vara WiFi-hotspot så att all trafik från ESP32:an passerar dess nätverkskort."
+    },
+    {
+      "type": "h",
+      "text": "Mosquitto CLI"
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "# Lyssna på all data från miljömonitorerna (+ = en valfri nivå)\nmosquitto_sub -h broker.hivemq.com -t \"sti/miljo/+/data\" -v\n\n# Skicka ett fejkat kommando till en enhet\nmosquitto_pub -h broker.hivemq.com -t \"sti/miljo/device123/cmd\" -m '{\"action\": \"reboot\"}'\n"
+    },
+    {
+      "type": "p",
+      "html": "<code>mosquitto_sub</code> agerar testare som lyssnar på vad hårdvaran skickar, <code>mosquitto_pub</code> agerar simulator som skickar kommandon."
+    },
+    {
+      "type": "h",
+      "text": "Node-RED"
+    },
+    {
+      "type": "p",
+      "html": "Ett flödesbaserat verktyg där noder dras ihop till en <strong>fejkad backend</strong>: ta emot MQTT, spara lokalt och svara med JSON. En riktig backend tar månader att bygga, och hårdvaran behöver testas nu. Node-RED kan också tvinga fram felen från FMEA:n:"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Svara <strong>HTTP 500</strong> var femte gång. Startar enheten om eller buffrar den?",
+        "Skicka <strong>trasig JSON</strong> som konfiguration. Kraschar parsern i C-koden?"
+      ]
+    },
+    {
+      "type": "code",
+      "lang": "bash",
+      "code": "idf.py set-target esp32c6\nidf.py menuconfig                                   # WiFi och MQTT-brokerns URI\ntools/node_red/generate_tls_certs.sh <din lokala IP>\nidf.py -p <port> build flash monitor\n\ncd tools/node_red && docker compose up             # backend på http://localhost:1880\n",
+      "caption": "lärarens exempelprojekt testing_mocked_sensor_and_mqtt"
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Exemplet använder server-autentiserad TLS: ESP32:an kontrollerar servern, men brokern kontrollerar inte enheten. I produktion behövs ömsesidig (mutual) TLS så att anonyma enheter inte släpps in."
+    },
+    {
+      "type": "h",
+      "text": "Postman, Newman och JMeter"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Postman</strong> bygger och kör HTTP-anrop och kontrollerar statuskoder och svarstider med JavaScript efter varje anrop. <strong>Newman</strong> är kommandoradsversionen som kör hela samlingar, så att API-testerna kan gå i CI."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\npm.test(\"Response contains device id\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.device_id).to.equal(\"ESP32-C6-MONITOR\");\n});\n",
+      "caption": "test i Postman"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Apache JMeter</strong> simulerar tusentals enheter som publicerar MQTT eller gör HTTP-anrop samtidigt. Det man letar efter är <strong>svarstider</strong> (växer de linjärt eller exponentiellt?), <strong>felprocent</strong> (börjar brokern kasta ut enheter?) och <strong>resursbrist</strong> (tar CPU eller RAM slut?)."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Verktyg",
+        "Används till"
+      ],
+      "rows": [
+        [
+          "Logikanalysator",
+          "Avkoda I2C, SPI och UART, mäta timing"
+        ],
+        [
+          "Oscilloskop",
+          "Den fysiska signalen i detalj"
+        ],
+        [
+          "Multimeter",
+          "Spänning, ström och resistans"
+        ],
+        [
+          "Wireshark",
+          "Nätverkspaket, TLS och paketförlust"
+        ],
+        [
+          "Mosquitto CLI",
+          "Lyssna och skicka på MQTT"
+        ],
+        [
+          "Node-RED",
+          "Mocka en backend och felscenarier"
+        ],
+        [
+          "Postman/Newman",
+          "API-tester, manuellt och i CI"
+        ],
+        [
+          "JMeter",
+          "Belastnings- och stresstest"
+        ]
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Validera MQTT-trafiken",
+      "html": "<p>Starta <code>mosquitto_sub</code> mot er broker och logga minst 10 meddelanden i rad från miljömonitorn. Stämmer JSON-strukturen med specifikationen? Skriv in resultatet i testmatrisen. Har ni egen backend: gör en Postman-samling med minst två tester med assertions.</p>",
+      "solution": "mosquitto_sub -h <broker> -p 8883 --cafile ca.crt -t \"miljo/+/data\" -v -C 10\n\n-C 10 avslutar efter 10 meddelanden. Kontrollera för varje rad:\n  - topic följer mönstret\n  - alla fält finns (temperature, humidity, ...) med rätt typ\n  - värdena är rimliga och tidsstämplarna ökar\n\nTestmatris: T07 | Logga 10 meddelanden | Alla har giltig JSON | (namn) | Pass\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad gör protokollavkodning i en logikanalysator?",
+      "options": [
+        "Krypterar",
+        "Översätter spänningsnivåer till läsbar data för I2C, SPI och UART",
+        "Mäter temperatur",
+        "Skickar MQTT"
+      ],
+      "answer": 1,
+      "why": "Plus timing."
+    },
+    {
+      "type": "mc",
+      "q": "ESP32 skickar I2C-adressen men får ingen ACK. Vad är troligast?",
+      "options": [
+        "Mjukvarufel i GPIO",
+        "Hårdvarufel: trasig eller felkopplad sensor",
+        "Fel baud rate",
+        "DNS-fel"
+      ],
+      "answer": 1,
+      "why": "Ingen aktivitet alls hade pekat på mjukvaran."
+    },
+    {
+      "type": "mc",
+      "q": "Det syns ingen aktivitet alls på SDA och SCL. Vad är troligast?",
+      "options": [
+        "Trasig sensor",
+        "Felkonfigurerade GPIO-pinnar i koden",
+        "För många pull-ups",
+        "Fel topic"
+      ],
+      "answer": 1,
+      "why": "Mjukvarufel."
+    },
+    {
+      "type": "mc",
+      "q": "Payloaden syns i klartext i Wireshark. Vad betyder det?",
+      "options": [
+        "Allt är bra",
+        "Underkänt enligt ETSI EN 303 645: trafiken är inte krypterad",
+        "Wireshark är trasigt",
+        "Paketförlust"
+      ],
+      "answer": 1,
+      "why": "Använd TLS."
+    },
+    {
+      "type": "mc",
+      "q": "Vad tyder TCP Retransmission på?",
+      "options": [
+        "Kryptering",
+        "Svag signal eller överbelastad nätverksstack",
+        "Rätt konfiguration",
+        "DNS"
+      ],
+      "answer": 1,
+      "why": "Paket fick skickas om."
+    },
+    {
+      "type": "mc",
+      "q": "Hur fångar man trafiken från en trådlös ESP32 enkelt?",
+      "options": [
+        "Med en kabel i ESP32:an",
+        "Låt datorn vara hotspot, eller använd monitor mode",
+        "Det går inte",
+        "Med en multimeter"
+      ],
+      "answer": 1,
+      "why": "Då passerar trafiken datorns nätverkskort."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör mosquitto_sub?",
+      "options": [
+        "Skickar kommandon",
+        "Lyssnar på ett topic",
+        "Startar en broker",
+        "Krypterar"
+      ],
+      "answer": 1,
+      "why": "mosquitto_pub skickar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad används Node-RED till i kursen?",
+      "options": [
+        "Kompilera C",
+        "Mocka en backend och tvinga fram felscenarier",
+        "Rita kretsar",
+        "Logikanalys"
+      ],
+      "answer": 1,
+      "why": "Till exempel HTTP 500 var femte gång."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är Newman?",
+      "options": [
+        "En broker",
+        "Kommandoradsversionen av Postman",
+        "Ett testramverk för C",
+        "En router"
+      ],
+      "answer": 1,
+      "why": "Kör samlingar i CI."
+    },
+    {
+      "type": "mc",
+      "q": "Vad används JMeter till?",
+      "options": [
+        "Enhetstester",
+        "Belastnings- och stresstester",
+        "Kodgranskning",
+        "Statisk analys"
+      ],
+      "answer": 1,
+      "why": "Tusentals virtuella enheter."
+    },
+    {
+      "type": "multi",
+      "q": "Vad letar man efter i ett stresstest?",
+      "options": [
+        "Svarstider som växer",
+        "Ökande felprocent",
+        "Resursbrist i CPU eller RAM",
+        "Stavfel"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Var går gränsen?"
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan server-autentiserad och mutual TLS?",
+      "options": [
+        "Ingen",
+        "Med mutual TLS kontrollerar även brokern enheten",
+        "Mutual TLS är okrypterad",
+        "Server-TLS kräver två servrar"
+      ],
+      "answer": 1,
+      "why": "I produktion ska anonyma enheter inte släppas in."
+    },
+    {
+      "type": "text",
+      "q": "Vilket verktyg mäter spänning, ström och resistans?",
+      "accept": [
+        "multimeter",
+        "multimetern",
+        "en multimeter"
+      ],
+      "placeholder": "verktyg",
+      "why": "Logikanalysatorn och oscilloskopet visar signaler."
+    }
+  ]
+}

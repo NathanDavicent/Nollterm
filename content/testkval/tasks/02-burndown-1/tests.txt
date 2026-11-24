@@ -1,0 +1,30 @@
+--- in
+20 5
+3 5 4 6 2
+--- out
+Dag 1: kvar 17, ideal 16.0 (efter)
+Dag 2: kvar 12, ideal 12.0
+Dag 3: kvar 8, ideal 8.0
+Dag 4: kvar 2, ideal 4.0
+Dag 5: kvar 0, ideal 0.0
+Sprintmålet nått
+--- in
+30 6
+0 0 5 8 8 4
+--- out
+Dag 1: kvar 30, ideal 25.0 (efter)
+Dag 2: kvar 30, ideal 20.0 (efter)
+Dag 3: kvar 25, ideal 15.0 (efter)
+Dag 4: kvar 17, ideal 10.0 (efter)
+Dag 5: kvar 9, ideal 5.0 (efter)
+Dag 6: kvar 5, ideal 0.0 (efter)
+Kvar vid sprintslut: 5 p
+--- in
+16 4
+4 4 4 2
+--- out
+Dag 1: kvar 12, ideal 12.0
+Dag 2: kvar 8, ideal 8.0
+Dag 3: kvar 4, ideal 4.0
+Dag 4: kvar 2, ideal 0.0 (efter)
+Kvar vid sprintslut: 2 p

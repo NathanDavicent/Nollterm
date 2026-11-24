@@ -1,0 +1,40 @@
+--- in
+ok ok ok ok
+1
+--- out
+Build: ok
+Lint: ok
+Test: ok
+Artifact: ok
+Pipeline: grön
+Merge: ja
+--- in
+ok ok fail ok
+2
+--- out
+Build: ok
+Lint: ok
+Test: fail
+Artifact: hoppas över
+Pipeline: röd (stannade vid Test)
+Merge: nej (röd pipeline)
+--- in
+ok ok ok ok
+0
+--- out
+Build: ok
+Lint: ok
+Test: ok
+Artifact: ok
+Pipeline: grön
+Merge: nej (ingen godkänd granskning)
+--- in
+fail ok ok ok
+1
+--- out
+Build: fail
+Lint: hoppas över
+Test: hoppas över
+Artifact: hoppas över
+Pipeline: röd (stannade vid Build)
+Merge: nej (röd pipeline)

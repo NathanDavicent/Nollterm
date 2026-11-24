@@ -1,0 +1,359 @@
+{
+  "id": "testkval",
+  "badge": "QA",
+  "title": "Test och kvalitetssäkring",
+  "short": "Test och QA",
+  "tag": "IoT · agilt · test",
+  "description": "Agil metodik och Scrum, user stories och estimering, standarder och lagar för IoT, riskanalys med FMEA, Unity-tester från enhet till E2E, testplanering, verktyg, CI/CD och kodgranskning.",
+  "headline": "Bygg in <em>kvaliteten</em> från början.",
+  "lessons": [
+    "01-agil-metodik.json",
+    "02-agila-koncept.json",
+    "03-kvalitet-standarder.json",
+    "04-riskanalys.json",
+    "05-enhetstest-e2e.json",
+    "06-testplanering.json",
+    "07-iot-verktyg.json",
+    "08-cicd-xp.json",
+    "09-analys.json",
+    "10-repetition.json"
+  ],
+  "timeline": [
+    {
+      "date": "Tis 12/5",
+      "title": "Projektmetodik och teamroller",
+      "lessons": [
+        "agil-metodik"
+      ]
+    },
+    {
+      "date": "Ons 13/5",
+      "title": "Agila koncept och projektverktyg · sprint 0",
+      "lessons": [
+        "agila-koncept"
+      ]
+    },
+    {
+      "date": "Tis 19/5",
+      "title": "Introduktion till kvalitetssäkring och standarder",
+      "lessons": [
+        "kvalitet-standarder"
+      ]
+    },
+    {
+      "date": "Tors 21/5",
+      "title": "Riskanalys och teststrategi",
+      "lessons": [
+        "riskanalys"
+      ]
+    },
+    {
+      "date": "Fre 22/5",
+      "title": "Testmetoder: från enhet till E2E",
+      "lessons": [
+        "enhetstest-e2e"
+      ]
+    },
+    {
+      "date": "Tis 26/5",
+      "title": "Testplanering och ansvar",
+      "lessons": [
+        "testplanering"
+      ]
+    },
+    {
+      "date": "Fre 29/5",
+      "title": "Verktyg och metoder för IoT-test",
+      "lessons": [
+        "iot-verktyg"
+      ]
+    },
+    {
+      "date": "Tis 2/6",
+      "title": "CI/CD, XP och kodgranskning",
+      "lessons": [
+        "cicd-xp"
+      ]
+    },
+    {
+      "date": "Juni",
+      "title": "Praktiskt projektarbete",
+      "lessons": [
+        "cicd-xp",
+        "testplanering"
+      ]
+    },
+    {
+      "date": "Juni",
+      "title": "Analys och förbättringsarbete",
+      "lessons": [
+        "analys"
+      ]
+    },
+    {
+      "date": "Juni",
+      "title": "Repetition, övningstenta och presentation",
+      "lessons": [
+        "repetition"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "id": "projekt",
+      "kind": "Grupprojekt",
+      "title": "Kvalitetssäkrad miljömonitor på ESP32-C6",
+      "intro": "Varje grupp arbetar som ett självständigt Scrum-team och bygger en miljömonitor som kvalitetssäkras enligt kursens principer. Själva produkten är mindre viktig än hur ni arbetar. Läraren bjuds in till repot och projektverktyget.",
+      "groups": [
+        {
+          "h": "Individuell bedömning",
+          "items": [
+            "Mötesprotokoll: närvaro, beslut och vem som fick vilka tasks",
+            "Testmatris med ägaransvar: varje testfall har en namngiven utförare som signerar resultatet",
+            "Loggbok: dina tekniska val och hur du verifierade din kod",
+            "Hög kvalitet i testdokumentationen krävs för VG"
+          ]
+        },
+        {
+          "h": "Under kursen",
+          "items": [
+            "Sprint 0: team charter, verktyg, repo och minst 5 estimerade user stories",
+            "Minst 3 lagar eller standarder och de första 5 raderna i testmatrisen",
+            "FMEA med minst 5 risker och test för de 3 viktigaste",
+            "Unity-tester, entry- och exit-kriterier och severity per testfall",
+            "Validering med mosquitto_sub (och Postman om ni har egen backend)",
+            "GitHub Actions, parprogrammering och granskade pull requests"
+          ]
+        },
+        {
+          "h": "Presentation",
+          "items": [
+            "15–30 minuter per grupp, cirka 5 minuter per person",
+            "Visa testerna och en bugg ni hittade tack vare kvalitetssäkringen",
+            "Visa processen och reflektera över vad som inte gick som planerat"
+          ]
+        }
+      ],
+      "topics": [
+        "agila-koncept",
+        "kvalitet-standarder",
+        "riskanalys",
+        "enhetstest-e2e",
+        "testplanering",
+        "iot-verktyg",
+        "cicd-xp",
+        "analys"
+      ],
+      "hint": "Skriv testfallen samtidigt som user stories, och fyll i matrisen löpande med namn och datum."
+    },
+    {
+      "id": "tentamen",
+      "kind": "Tentamen",
+      "title": "Tentamen",
+      "intro": "Tentan har flervalsfrågor, begreppsmatchning och resonerande frågor. Det viktiga är att motivera val utifrån kvalitet och risk. Datumet fanns inte i materialet.",
+      "groups": [
+        {
+          "h": "Övningstentans ämnen",
+          "items": [
+            "Tvärfunktionella team och retrospektiv",
+            "RED-direktivet",
+            "Sänka RPN i en FMEA",
+            "Refactor i TDD och parprogrammering",
+            "Acceptanskriterier mot DoD",
+            "Isolering av nätverkskod med mocks",
+            "Testplan och exit-kriterier",
+            "Buggprioritering",
+            "CI-pipelinens steg"
+          ]
+        }
+      ],
+      "topics": [
+        "agil-metodik",
+        "agila-koncept",
+        "kvalitet-standarder",
+        "riskanalys",
+        "enhetstest-e2e",
+        "testplanering",
+        "cicd-xp",
+        "repetition"
+      ],
+      "hint": "Gör övningstentan i sista lektionen och förklara svaren högt för dig själv."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "F1",
+      "title": "Dag 1: Agil metodik och teamroller",
+      "description": "Projekt, vattenfall, agilt, Scrum, Kanban, Lean och Tuckman.",
+      "lessons": [
+        "agil-metodik"
+      ]
+    },
+    {
+      "kind": "F2",
+      "title": "Dag 2: Agila koncept och projektverktyg",
+      "description": "User stories, INVEST, estimering, velocity, verktyg och retrospektiv.",
+      "lessons": [
+        "agila-koncept"
+      ]
+    },
+    {
+      "kind": "F3",
+      "title": "Dag 3: Kvalitetssäkring och standarder",
+      "description": "QA, ETSI EN 303 645, MISRA, CE, RED, RoHS, WEEE och testmatrisen.",
+      "lessons": [
+        "kvalitet-standarder"
+      ]
+    },
+    {
+      "kind": "F3+",
+      "title": "Best practices, Static Code Analyzer och Testing Intro",
+      "description": "Samma föreläsningar som i Programmering för inbyggda system.",
+      "lessons": [
+        "kvalitet-standarder"
+      ]
+    },
+    {
+      "kind": "F4",
+      "title": "Dag 4: Riskanalys och teststrategi",
+      "description": "RPN, FMEA, åtgärdsstrategier, testnivåer, HAL och täckning.",
+      "lessons": [
+        "riskanalys"
+      ]
+    },
+    {
+      "kind": "F5",
+      "title": "Dag 5: Enhetstest till E2E",
+      "description": "Unity, AAA, mocks, integration, E2E, TDD och gränsvärden.",
+      "lessons": [
+        "enhetstest-e2e"
+      ]
+    },
+    {
+      "kind": "F6",
+      "title": "Dag 6: Testplanering och strategiskt ansvar",
+      "description": "IEEE 829, roller, entry och exit, buggprioritering och defect density.",
+      "lessons": [
+        "testplanering"
+      ]
+    },
+    {
+      "kind": "F7",
+      "title": "Dag 7: Verktyg för IoT-test",
+      "description": "Logikanalysator, Wireshark, Mosquitto, Node-RED, Postman och JMeter.",
+      "lessons": [
+        "iot-verktyg"
+      ]
+    },
+    {
+      "kind": "F8",
+      "title": "Dag 8: CI/CD, XP och kodgranskning",
+      "description": "Pipelines, GitHub Actions, XP-principer och pull requests.",
+      "lessons": [
+        "cicd-xp"
+      ]
+    },
+    {
+      "kind": "F10",
+      "title": "Dag 10: Analys och förbättringsarbete",
+      "description": "Utvärdering, retrospektiv och inför presentationen.",
+      "lessons": [
+        "analys"
+      ]
+    },
+    {
+      "kind": "Rep",
+      "title": "Repetition och kurssammanfattning",
+      "description": "Den röda tråden genom hela kursen.",
+      "lessons": [
+        "repetition"
+      ]
+    },
+    {
+      "kind": "Tenta",
+      "title": "Interaktiv övningstenta",
+      "description": "Flervalsfrågor, matchning och resonerande frågor med svar.",
+      "lessons": [
+        "repetition",
+        "testplanering",
+        "riskanalys"
+      ]
+    },
+    {
+      "kind": "Övn",
+      "title": "Dagens övningar och uppgifter",
+      "description": "Pappersflygplansfabriken, sprint 0 och projektuppgifterna varje dag.",
+      "lessons": [
+        "agil-metodik",
+        "agila-koncept",
+        "kvalitet-standarder",
+        "riskanalys",
+        "enhetstest-e2e",
+        "iot-verktyg",
+        "cicd-xp"
+      ]
+    }
+  ],
+  "links": [
+    {
+      "kind": "Agile",
+      "title": "Atlassian: Agile project management",
+      "url": "https://www.atlassian.com/agile/project-management",
+      "description": "User stories, sprintplanering och Scrum, som läraren hänvisar till."
+    },
+    {
+      "kind": "Tool",
+      "title": "ZenHub",
+      "url": "https://www.zenhub.com/",
+      "description": "Tillägg till GitHub som liknar Jira men är enklare."
+    },
+    {
+      "kind": "Std",
+      "title": "ETSI EN 303 645",
+      "url": "https://www.etsi.org/technologies/consumer-iot-security",
+      "description": "Standarden för cybersäkerhet i konsument-IoT."
+    },
+    {
+      "kind": "Test",
+      "title": "ESP-IDF: Unit testing",
+      "url": "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/unit-tests.html",
+      "description": "Espressifs guide till Unity-tester på ESP32."
+    },
+    {
+      "kind": "Test",
+      "title": "Unity",
+      "url": "https://github.com/ThrowTheSwitch/Unity",
+      "description": "Testramverket för C."
+    },
+    {
+      "kind": "Mock",
+      "title": "fff (Fake Function Framework)",
+      "url": "https://github.com/meekrosoft/fff",
+      "description": "Mocking-ramverk för C som nämns i testintrot."
+    },
+    {
+      "kind": "Tool",
+      "title": "Node-RED",
+      "url": "https://nodered.org/docs/",
+      "description": "Dokumentation, kör lokalt eller i Docker."
+    },
+    {
+      "kind": "CI",
+      "title": "GitHub Actions quickstart",
+      "url": "https://docs.github.com/en/actions/get-started/quickstart",
+      "description": "Kom igång med workflows."
+    },
+    {
+      "kind": "CI",
+      "title": "Wokwi CI",
+      "url": "https://docs.wokwi.com/wokwi-ci/getting-started",
+      "description": "Kör ESP32-tester i simulator i CI."
+    },
+    {
+      "kind": "Git",
+      "title": "Conventional Commits",
+      "url": "https://www.conventionalcommits.org/en/v1.0.0/",
+      "description": "Konventionen som dangerjs.yml kontrollerar."
+    }
+  ]
+}

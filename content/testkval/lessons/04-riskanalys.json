@@ -1,0 +1,403 @@
+{
+  "id": "riskanalys",
+  "title": "Riskanalys och teststrategi",
+  "category": "Strategi",
+  "minutes": 14,
+  "date": "2026-05-21",
+  "lead": "Risk som sannolikhet gånger konsekvens, FMEA och RPN, de fyra åtgärdsstrategierna, teststrategins delar, testnivåerna, HAL och mocks, kodtäckning och white och black box.",
+  "sources": [
+    "Dag 4: Riskanalys & Teststrategi",
+    "Dagens uppgift 2026-05-21"
+  ],
+  "goals": [
+    "Räkna RPN och prioritera risker med FMEA",
+    "Välja åtgärdsstrategi: undvika, reducera, överföra eller acceptera",
+    "Beskriva vad en teststrategi innehåller",
+    "Förklara varför HAL behövs och var mocks har sina begränsningar",
+    "Skilja på statement och branch coverage och på white och black box"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför riskanalys?"
+    },
+    {
+      "type": "p",
+      "html": "Tid och budget är alltid begränsade, så vi kan inte testa allt. Riskanalysen visar var testerna gör mest nytta och hjälper oss att designa robust (fail-safe)."
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "RPN = Sannolikhet (P) × Konsekvens (I)  [× Upptäckbarhet (D)]      varje faktor 1–5\n",
+      "caption": "Risk Priority Number"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>P (probability):</strong> hur ofta inträffar felet?",
+        "<strong>I (impact):</strong> hur allvarligt är det?",
+        "<strong>D (detectability):</strong> hur <em>svårt</em> är det för systemet att märka felet? Högt D är dåligt."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "FMEA"
+    },
+    {
+      "type": "p",
+      "html": "Failure Mode and Effects Analysis går igenom varje komponent: <strong>failure mode</strong> (hur kan den sluta fungera?), <strong>effect</strong> (vad händer med systemet?), <strong>cause</strong> (varför?) och <strong>detection</strong> (hur märker vi det innan användaren gör det?)."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Komponent",
+        "Feltyp",
+        "Effekt",
+        "P × I"
+      ],
+      "rows": [
+        [
+          "WiFi-modul",
+          "Tappar anslutningen",
+          "Ingen data når molnet",
+          "4 × 3 = 12"
+        ],
+        [
+          "Batteri",
+          "Underspänning",
+          "ESP32 startar om i loop",
+          "2 × 5 = 10"
+        ],
+        [
+          "MQTT-broker",
+          "Server nere",
+          "Luckor i databasen",
+          "3 × 4 = 12"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "Strategi",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Undvika",
+          "Ändra designen så att risken försvinner, till exempel nätström i stället för batteri"
+        ],
+        [
+          "Reducera",
+          "Kontroller och redundans: watchdog, buffring av data"
+        ],
+        [
+          "Överföra",
+          "Låt någon annan bära risken: en molntjänst med SLA i stället för egen server"
+        ],
+        [
+          "Acceptera",
+          "Risken är låg och åtgärden för dyr"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Konsekvensen går ofta inte att ändra, men upptäckbarheten gör det. En batterivarning i mjukvaran plus ett systemtest av strömförbrukningen sänker D och därmed RPN. Att bara sänka siffran i dokumentet är fusk."
+    },
+    {
+      "type": "h",
+      "text": "Teststrategi"
+    },
+    {
+      "type": "p",
+      "html": "Ett övergripande dokument om hur vi testar: vilka <strong>testnivåer</strong>, vilka <strong>verktyg</strong>, vilka <strong>entry- och exit-kriterier</strong> (förutsättningar för att börja och villkor för att vara klar), och vem som ansvarar. Alla skriver sina egna enhetstester, men någon testansvarig ser till att integrations- och systemtester faktiskt blir gjorda."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Nivå",
+        "Testar"
+      ],
+      "rows": [
+        [
+          "Enhetstest",
+          "Enskilda C-funktioner, till exempel konvertering av sensordata, isolerat från hårdvaran"
+        ],
+        [
+          "Integrationstest",
+          "Samspelet mellan moduler: kan mjukvaran prata med WiFi-drivrutinen?"
+        ],
+        [
+          "Systemtest (E2E)",
+          "Hela flödet från sensor till moln och app på riktig hårdvara"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Testa inte bara happy path. Vad händer om MQTT-paketet tar 8 sekunder i stället för 20 ms: låser sig main-loopen (blockerande kod)? En lokal router med OpenWrt kan strypa bandbredden eller slumpmässigt tappa 30 % av paketen."
+    },
+    {
+      "type": "h",
+      "text": "Testbar arkitektur: HAL"
+    },
+    {
+      "type": "p",
+      "html": "Om <code>esp_wifi_connect()</code> och register-anrop ligger överallt går koden inte att testa på en dator. Lösningen är ett <strong>hårdvaruabstraktionslager</strong> (HAL): en egen funktion som <code>read_environment_sensor(SensorData *data)</code> mappas mot DHT22-biblioteket på ESP32:an och mot en <strong>mock</strong> med hårdkodade värden på datorn."
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "En mock är bara så smart som den som skrev den. Missar mocken att den riktiga sensorn behöver 400 ms för att starta, visar testet Pass medan det kraschar i verkligheten. Drivrutiner går inte att testa med mocks alls, eftersom man då tar bort just det man ville testa."
+    },
+    {
+      "type": "h",
+      "text": "Hur mycket ska vi testa?"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Statement coverage:</strong> har varje rad körts? Sikta på omkring 80 % för affärslogik.",
+        "<strong>Branch coverage:</strong> har varje <code>if</code>- och <code>else</code>-gren körts? Kritiskt för felhantering: grenen <code>if (wifi_failed)</code> måste köras i något test.",
+        "100 % täckning garanterar inte att systemet fungerar med felaktig hårdvara."
+      ]
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "White box",
+        "Black box"
+      ],
+      "rows": [
+        [
+          "Testaren ser",
+          "Koden: vägar, loopar, villkor",
+          "Bara input och output"
+        ],
+        [
+          "Typiskt för",
+          "Enhetstester",
+          "Acceptanstester"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<strong>Regressionstestning</strong> svarar på om vi förstört något som fungerade. Kör alla gamla tester i CI vid varje push, och skriv nya tester för varje nytt fel så att det fångas nästa gång."
+    },
+    {
+      "type": "exercise",
+      "title": "FMEA för miljömonitorn",
+      "html": "<p>Identifiera minst 5 tekniska risker, gradera dem med P × I (× D), välj de 3 viktigaste och bestäm hur ni testar att motåtgärderna fungerar. Tänk på: orimliga sensorvärden (500 grader), ändrat WiFi-lösenord och strömavbrott under en firmware-uppdatering.</p>",
+      "solution": "Risk                         P  I  D  RPN  Åtgärd (strategi)               Test\nStröm bryts under OTA        2  5  3  30   A/B-partitioner + rollback (red.) Dra ur under OTA\nSensor ger 500 grader        3  4  3  36   Rimlighetskontroll (reducera)     Mock returnerar 500\nWiFi-lösenordet ändras       2  3  2  12   Provisioning-läge (reducera)      Byt lösen på routern\nBroker nere                  3  4  1  12   Buffra i flash (reducera)         Stoppa brokern 10 min\nBatteri tar slut              2  4  4  32   Batterivarning (sänker D)         Mät ström i deep sleep\n\nTesta först: sensorvärden, batteri, OTA.\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Hur räknas RPN?",
+      "options": [
+        "P + I + D",
+        "P × I (× D)",
+        "I − P",
+        "P / I"
+      ],
+      "answer": 1,
+      "why": "Risk Priority Number."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder ett högt D (upptäckbarhet)?",
+      "options": [
+        "Felet är lätt att upptäcka",
+        "Felet är svårt att upptäcka",
+        "Felet är ofarligt",
+        "Felet är vanligt"
+      ],
+      "answer": 1,
+      "why": "Högt D ger högre RPN."
+    },
+    {
+      "type": "mc",
+      "q": "WiFi: P = 4, I = 3. Vad blir P × I?",
+      "options": [
+        "7",
+        "12",
+        "1",
+        "43"
+      ],
+      "answer": 1,
+      "why": "4 × 3."
+    },
+    {
+      "type": "mc",
+      "q": "Vad står FMEA för?",
+      "options": [
+        "Failure Mode and Effects Analysis",
+        "Fast Memory Error Allocation",
+        "Final Module Evaluation and Audit",
+        "Function Mock Embedded Architecture"
+      ],
+      "answer": 0,
+      "why": "En systematisk metod för feltyper."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken strategi är det att använda en molntjänst med SLA i stället för egen server?",
+      "options": [
+        "Undvika",
+        "Reducera",
+        "Överföra",
+        "Acceptera"
+      ],
+      "answer": 2,
+      "why": "Någon annan bär risken."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken strategi är det att införa en watchdog och buffring?",
+      "options": [
+        "Undvika",
+        "Reducera",
+        "Överföra",
+        "Acceptera"
+      ],
+      "answer": 1,
+      "why": "Kontroller och redundans."
+    },
+    {
+      "type": "mc",
+      "q": "Ett smart lås har hög konsekvens om batteriet tar slut. Hur sänker du RPN bäst?",
+      "options": [
+        "Sänker konsekvensen i dokumentet",
+        "Lägger till batterivarning och ett systemtest av strömförbrukningen",
+        "Ignorerar det",
+        "Skriver en bättre manual"
+      ],
+      "answer": 1,
+      "why": "Bättre upptäckbarhet sänker RPN. Från övningstentan."
+    },
+    {
+      "type": "multi",
+      "q": "Vad innehåller en teststrategi?",
+      "options": [
+        "Testnivåer",
+        "Verktyg",
+        "Entry- och exit-kriterier",
+        "Ansvarsfördelning"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Ett övergripande dokument."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken testnivå testar enskilda funktioner isolerat från hårdvaran?",
+      "options": [
+        "Systemtest",
+        "Integrationstest",
+        "Enhetstest",
+        "Acceptanstest"
+      ],
+      "answer": 2,
+      "why": "Snabba och billiga."
+    },
+    {
+      "type": "mc",
+      "q": "Varför behövs ett HAL?",
+      "options": [
+        "För att koden ska gå fortare",
+        "För att kunna byta hårdvaran mot en mock och testa på datorn",
+        "För att slippa tester",
+        "För att kryptera"
+      ],
+      "answer": 1,
+      "why": "Hardware Abstraction Layer."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en begränsning hos mocks?",
+      "options": [
+        "De är långsamma",
+        "De är bara så smarta som den som skrev dem och missar verkligt beteende",
+        "De kräver hårdvara",
+        "De fungerar inte i C"
+      ],
+      "answer": 1,
+      "why": "Till exempel en uppstartstid på 400 ms."
+    },
+    {
+      "type": "mc",
+      "q": "Vad mäter branch coverage?",
+      "options": [
+        "Antal rader",
+        "Om varje if- och else-gren har körts",
+        "Antal tester",
+        "Antal buggar"
+      ],
+      "answer": 1,
+      "why": "Viktigt för felhantering."
+    },
+    {
+      "type": "mc",
+      "q": "Garanterar 100 % kodtäckning att systemet fungerar?",
+      "options": [
+        "Ja",
+        "Nej, bara att all kod har körts",
+        "Ja, om testerna är gröna",
+        "Bara på ESP32"
+      ],
+      "answer": 1,
+      "why": "Felaktig hårdvara syns inte."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är black box-testning?",
+      "options": [
+        "Testaren ser koden",
+        "Testaren ser bara input och output",
+        "Test i mörker",
+        "Test av flygplan"
+      ],
+      "answer": 1,
+      "why": "Typiskt för acceptanstester."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är regressionstestning?",
+      "options": [
+        "Att testa ny kod",
+        "Att köra om gamla tester för att se att inget som fungerade gått sönder",
+        "Att ta bort tester",
+        "Att testa prestanda"
+      ],
+      "answer": 1,
+      "why": "Automatiseras i CI."
+    },
+    {
+      "type": "text",
+      "q": "Vad heter lagret som isolerar hårdvaran bakom egna gränssnitt? Svara med förkortningen.",
+      "accept": [
+        "HAL",
+        "hal"
+      ],
+      "placeholder": "förkortning",
+      "why": "Hardware Abstraction Layer."
+    },
+    {
+      "type": "code",
+      "q": "Räkna RPN och prioritera riskerna.",
+      "task": "04-fmea-1",
+      "why": "Sortera stabilt med högst RPN först.",
+      "web": true
+    }
+  ]
+}

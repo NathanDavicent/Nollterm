@@ -1,0 +1,391 @@
+{
+  "id": "testplanering",
+  "title": "Testplanering och ansvar",
+  "category": "Strategi",
+  "minutes": 12,
+  "date": "2026-05-26",
+  "lead": "Teststrategi mot testplan, Master Test Plan enligt IEEE 829, roller i ett testteam, entry- och exit-kriterier, buggprioritering, defect density, explorativ testning och testrapporten.",
+  "sources": [
+    "Dag 6: Testplanering & strategiskt ansvar",
+    "Quiz 2026-05-26"
+  ],
+  "goals": [
+    "Skilja på teststrategi och testplan",
+    "Räkna upp delarna i en Master Test Plan",
+    "Beskriva rollerna Test Manager, testare och utvecklare",
+    "Formulera entry- och exit-kriterier",
+    "Prioritera buggar P1–P3 och räkna defect density"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Strategi eller plan?"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Teststrategi",
+        "Testplan"
+      ],
+      "rows": [
+        [
+          "Karaktär",
+          "Statisk, långsiktig",
+          "Dynamisk, projektspecifik"
+        ],
+        [
+          "Beskriver",
+          "Organisationens syn på test: verktyg, arkitektur (HAL) och testnivåer",
+          "Exakt vad som ska göras i projektet eller sprinten: tider, resurser och namngivna ansvariga"
+        ],
+        [
+          "Ändras",
+          "Sällan",
+          "Ofta"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Master Test Plan (IEEE 829)"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Scope:</strong> vad ska testas, och vad ska inte testas",
+        "<strong>Resurser:</strong> hårdvara (ESP32-C6-kit, sensorer) och personer",
+        "<strong>Miljöer:</strong> labb, fältförsök, simulerat moln",
+        "<strong>Leverabler:</strong> testmatriser, buggrapporter och testprotokoll"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "I IoT måste planen också hantera logistik: har alla tillgång till sensorerna, finns det strömaggregat, hur simulerar vi fukt och kyla?"
+    },
+    {
+      "type": "h",
+      "text": "Roller"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Roll",
+        "Ansvar"
+      ],
+      "rows": [
+        [
+          "Test Manager/QA-ansvarig",
+          "Planerar resurser och strategi, följer framdriften och godkänner releaser"
+        ],
+        [
+          "Testare/QA Engineer",
+          "Designar testfall, bygger testriggar, kör manuella tester och analyserar"
+        ],
+        [
+          "Utvecklare",
+          "Skriver enhetstester, fixar buggar och gör koden testbar"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "I grupprojektet skriver alla sina egna enhetstester, men en person är QA-ansvarig och ser till att integrationstesterna körs och att inga rader i testmatrisen är tomma, utan att själv behöva köra dem."
+    },
+    {
+      "type": "h",
+      "text": "Kvalitetsgrindar"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Entry criteria (får vi börja?)",
+        "Exit criteria (är vi klara?)"
+      ],
+      "rows": [
+        [
+          "Koden kompilerar utan varningar eller enligt MISRA",
+          "Alla planerade testfall i matrisen har körts"
+        ],
+        [
+          "Alla enhetstester är gröna",
+          "Noll kända blockers"
+        ],
+        [
+          "Testmiljön (router, broker) är stabil och tillgänglig",
+          "Kodtäckningen har nått målet, till exempel 80 %"
+        ],
+        [
+          "",
+          "Hårdvaran klarade 24 timmars fältförsök utan oplanerade omstarter"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Buggprioritering"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Nivå",
+        "Beskrivning",
+        "Åtgärd"
+      ],
+      "rows": [
+        [
+          "P1 Blocker",
+          "Kraschar, bootar om i loop, läcker känslig data, eller kärnfunktionen är trasig",
+          "Fixas direkt. Releasen stoppas"
+        ],
+        [
+          "P2 Major",
+          "En funktion saknas eller fungerar inte, men det finns en workaround",
+          "Fixas före release om tiden räcker"
+        ],
+        [
+          "P3 Minor",
+          "Kosmetiskt: felstavad logg, fel färg på LED:en",
+          "Kan vänta till nästa version"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "Svårighetsgraden avgörs av effekten, inte av hur stor ändringen är. Att JSON-fältet heter <code>humi</code> i stället för <code>humidity</code> är ett stavfel, men om backend inte kan spara värdet är hela kedjan trasig: P1. Att chippet låser sig om man håller in boot-knappen vid exakt rätt ögonblick är osannolikt i normal drift: P2 eller P3."
+    },
+    {
+      "type": "h",
+      "text": "Defect density"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Defect density = antal buggar / (antal rader / 1000)        buggar per KLOC\n\n3 / (150 / 1000) = 20        rätt\n3 / 150 / 1000   = 0,00002   fel parenteser\n"
+    },
+    {
+      "type": "p",
+      "html": "Moduler med hög densitet tyder på strukturella problem och behöver djupare kodgranskning och fler integrationstester."
+    },
+    {
+      "type": "h",
+      "text": "Explorativ testning och rapporten"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Explorativ testning</strong> är motsatsen till skriptad: en tidsboxad session (till exempel 2 timmar) med ett fokus, som <em>försök krascha WiFi-anslutningen</em>. Buggar som hittas förs in som permanenta testfall i matrisen."
+    },
+    {
+      "type": "p",
+      "html": "När exit-kriterierna är uppfyllda skriver Test Manager en <strong>Test Summary Report</strong>, beviset på att produkten håller utlovad kvalitet. I medicinteknik och fordonsindustri krävs den enligt lag."
+    },
+    {
+      "type": "exercise",
+      "title": "Projektets testplan",
+      "html": "<p>Utse en QA-ansvarig, definiera entry- och exit-kriterier för systemtestfasen och lägg till en kolumn för severity (Blocker, Major, Minor) i testmatrisen. Sätt rimliga mål: sista veckan är till för analys och presentation.</p>",
+      "solution": "Entry: main bygger utan varningar, alla enhetstester gröna i CI,\n       brokern och routern i labbet fungerar.\nExit:  alla testfall i matrisen körda och signerade,\n       0 öppna blockers, täckning >= 70 % för logiken,\n       enheten har skickat data i 24 h utan omstart.\n\nSeverity: T02 (WiFi-bortfall) Blocker, T03 (LED-färg) Minor, ...\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan teststrategi och testplan?",
+      "options": [
+        "Ingen",
+        "Strategin är långsiktig och generell, planen projektspecifik med tider och namn",
+        "Planen skrivs först",
+        "Strategin gäller bara en sprint"
+      ],
+      "answer": 1,
+      "why": "Strategin ändras sällan."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken standard beskriver testdokumentation och Master Test Plan?",
+      "options": [
+        "IEEE 802.11",
+        "IEEE 829",
+        "ISO 9001",
+        "MISRA"
+      ],
+      "answer": 1,
+      "why": "En klassisk industristandard."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ingår i en Master Test Plan?",
+      "options": [
+        "Scope",
+        "Resurser",
+        "Miljöer",
+        "Leverabler"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Plus tidsplan och risker."
+    },
+    {
+      "type": "mc",
+      "q": "Vem godkänner releaser?",
+      "options": [
+        "Utvecklaren",
+        "Test Manager/QA-ansvarig",
+        "Kunden alltid",
+        "Scrum Master"
+      ],
+      "answer": 1,
+      "why": "Planerar och övervakar också."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör den QA-ansvarige i grupprojektet?",
+      "options": [
+        "Kör alla tester själv",
+        "Ser till att integrationstester körs och att matrisen är komplett",
+        "Skriver all kod",
+        "Ingenting"
+      ],
+      "answer": 1,
+      "why": "Ansvarar för att det händer."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är ett entry-kriterium?",
+      "options": [
+        "Noll blockers",
+        "Alla enhetstester är gröna",
+        "24 timmars fältförsök",
+        "80 % täckning"
+      ],
+      "answer": 1,
+      "why": "De andra är exit-kriterier."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket är ett exit-kriterium?",
+      "options": [
+        "Koden kompilerar",
+        "Testmiljön är uppe",
+        "Noll kända blockers",
+        "Teamet har möte"
+      ],
+      "answer": 2,
+      "why": "När produkten kan levereras."
+    },
+    {
+      "type": "mc",
+      "q": "Enheten bootar om i loop. Vilken prioritet?",
+      "options": [
+        "P1 Blocker",
+        "P2 Major",
+        "P3 Minor",
+        "Ingen"
+      ],
+      "answer": 0,
+      "why": "Releasen stoppas."
+    },
+    {
+      "type": "mc",
+      "q": "En LED blinkar i fel färg. Vilken prioritet?",
+      "options": [
+        "P1",
+        "P2",
+        "P3",
+        "Ingen"
+      ],
+      "answer": 2,
+      "why": "Kosmetiskt."
+    },
+    {
+      "type": "mc",
+      "q": "JSON-fältet heter humi i stället för humidity och backend kan inte spara värdet. Prioritet?",
+      "options": [
+        "P3, bara ett stavfel",
+        "P1, kärnfunktionen är trasig",
+        "P2",
+        "Ingen"
+      ],
+      "answer": 1,
+      "why": "Effekten avgör. Från övningstentan."
+    },
+    {
+      "type": "mc",
+      "q": "En modul har 3 buggar på 150 rader. Vad är defect density?",
+      "options": [
+        "0,02",
+        "20 per KLOC",
+        "450",
+        "0,00002"
+      ],
+      "answer": 1,
+      "why": "3 / (150 / 1000)."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är explorativ testning?",
+      "options": [
+        "Att följa testmatrisen",
+        "Tidsboxad fri utforskning med ett fokus",
+        "Automatiserade tester",
+        "Kodgranskning"
+      ],
+      "answer": 1,
+      "why": "Fynd blir nya testfall."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en Test Summary Report?",
+      "options": [
+        "En buggrapport",
+        "Slutrapporten som visar att produkten håller utlovad kvalitet",
+        "Testmatrisen",
+        "En user story"
+      ],
+      "answer": 1,
+      "why": "Lagkrav i reglerade branscher."
+    },
+    {
+      "type": "mc",
+      "q": "Projektledaren vill skippa testplanen och testa sista veckan. Vad är risken?",
+      "options": [
+        "Ingen",
+        "Inget objektivt kvitto på säkerheten, och arkitekturfel upptäcks när de är dyrast",
+        "Det blir för många tester",
+        "Kunden blir glad"
+      ],
+      "answer": 1,
+      "why": "Test early, test often."
+    },
+    {
+      "type": "text",
+      "q": "Vad kallas buggar på nivå P1?",
+      "accept": [
+        "Blocker",
+        "Blockers",
+        "blocker"
+      ],
+      "placeholder": "ord",
+      "why": "De stoppar releasen."
+    },
+    {
+      "type": "code",
+      "q": "Räkna defect density per modul och flagga de sämsta.",
+      "task": "06-defekt-1",
+      "why": "buggar / (rader / 1000).",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Kontrollera exit-kriterierna och avgör om releasen får gå.",
+      "task": "06-exit-1",
+      "why": "Alla körda, inga blockers och täckningen nådd.",
+      "web": true
+    }
+  ]
+}

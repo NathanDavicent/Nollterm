@@ -1,0 +1,440 @@
+{
+  "id": "agil-metodik",
+  "title": "Projektmetodik och teamroller",
+  "category": "Metodik",
+  "minutes": 15,
+  "date": "2026-05-12",
+  "lead": "Vad ett projekt är, vattenfall och V-modellen, agila manifestet, Scrum med roller och ceremonier, Kanban och Lean, och hur ett team växer enligt Tuckman.",
+  "sources": [
+    "Dag 1: Agil metodik & teamroller",
+    "Dagens övningar 2026-05-12"
+  ],
+  "goals": [
+    "Förklara vad som definierar ett projekt",
+    "Jämföra vattenfall och agilt, och förklara varför agilt passar IoT",
+    "Beskriva Scrums roller och ceremonier",
+    "Förklara Kanban (WIP) och Lean (slöseri)",
+    "Beskriva Tuckmans fyra faser och psykologisk trygghet"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Vad är ett projekt?"
+    },
+    {
+      "type": "p",
+      "html": "En <strong>temporär</strong> insats för att skapa en unik produkt eller tjänst: ett definierat start- och slutdatum, ett unikt mål och en grupp som samlas för just det. Utmaningen är att nå målet inom ramen för <strong>tid, kostnad och kvalitet</strong>."
+    },
+    {
+      "type": "p",
+      "html": "Metodiken är projektets operativsystem. Den ger struktur (vem beslutar och när), förutsägbarhet (hur mäter vi framsteg) och kvalitet (att testningen inte glöms bort i stressen)."
+    },
+    {
+      "type": "h",
+      "text": "Vattenfall och V-modellen"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Kravanalys → Design → Kod → Test → Underhåll\n",
+      "caption": "vattenfall: varje fas avslutas helt innan nästa"
+    },
+    {
+      "type": "p",
+      "html": "Grundprincipen är att planera allt i förväg och sedan följa planen, med dokumentation från varje fas. I IoT, där hårdvara och mjukvara möts, blir det riskabelt: ändrade krav blir extremt dyra, testningen sker sist så att svag hårdvara upptäcks för sent, och en <em>big bang</em>-leverans kan misslyckas helt."
+    },
+    {
+      "type": "p",
+      "html": "<strong>V-modellen</strong> (slutet av 80-talet) var ett första steg mot något mer agilt: varje testnivå på högra sidan av V:et hör ihop med en designnivå på vänstra, och vid fel går man bara tillbaka till den nivån."
+    },
+    {
+      "type": "h",
+      "text": "Agila manifestet (2001)"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Vi värderar…",
+        "…mer än"
+      ],
+      "rows": [
+        [
+          "Individer och interaktioner",
+          "processer och verktyg"
+        ],
+        [
+          "Fungerande mjukvara",
+          "omfattande dokumentation"
+        ],
+        [
+          "Kundsamarbete",
+          "kontraktsförhandling"
+        ],
+        [
+          "Att reagera på förändring",
+          "att följa en plan"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Det till höger är fortfarande bra, men det till vänster är viktigare. I ett IoT-projekt betyder det <strong>vertikala skivor</strong>: sensordata ska nå molnet vecka 2, inte vecka 20. Kraven får ändras när vi lär oss mer om hårdvaran (efter omförhandling med kunden), och vi levererar små, testade delar hela tiden."
+    },
+    {
+      "type": "h",
+      "text": "Scrum"
+    },
+    {
+      "type": "p",
+      "html": "Det populäraste agila ramverket. Det bygger på empirism: <strong>transparens</strong> (alla ser vad som händer), <strong>inspektion</strong> (vi granskar ofta) och <strong>anpassning</strong> (vi korrigerar direkt)."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Roll",
+        "Äger",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "Product Owner (PO)",
+          "VAD: vision och backlog",
+          "Prioriterar backloggen efter affärsnytta, länken till kunden"
+        ],
+        [
+          "Scrum Master (SM)",
+          "HUR: processen",
+          "Servant leader som tar bort hinder och coachar i agila värderingar"
+        ],
+        [
+          "Utvecklingsteamet",
+          "BYGGET",
+          "Självorganiserande och tvärfunktionellt (kod, test, hårdvara). Ansvarar gemensamt för leveransen"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "En <strong>sprint</strong> är en tidsboxad period, ofta 1–4 veckor."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Ceremoni",
+        "Innehåll"
+      ],
+      "rows": [
+        [
+          "Sprint Planning",
+          "Teamet och PO kommer överens om sprintmålet, vilka backlog-poster som tas in och hur de ska göras"
+        ],
+        [
+          "Daily Scrum",
+          "Max 15 minuter: vad gjorde jag igår, vad gör jag idag, har jag några hinder?"
+        ],
+        [
+          "Sprint Review",
+          "Visa upp det som byggts för intressenter och samla feedback. Handlar om produkten"
+        ],
+        [
+          "Sprint Retrospective",
+          "Vad fungerade, vad fungerade mindre bra, vilken sak ändrar vi nästa sprint? Handlar om processen"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Kanban och Lean"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Kanban</strong> fokuserar på flöde i stället för tidsboxar: visualisera arbetet på en tavla, <strong>begränsa WIP</strong> (work in progress) och hitta flaskhalsar. <em>Stop starting, start finishing!</em> Med begränsad WIP tvingas teamet hjälpa varandra att avsluta."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Lean</strong> optimerar hela värdeflödet: ta bort allt som inte ger kunden värde, bygg in kvalitet från början och leverera snabbt för feedback. Slöseri i kod är dokumentation som ingen läser, funktioner som aldrig används, väntan på hårdvara, och buggar som kräver omarbete."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Metod",
+        "Fokus",
+        "Passar när"
+      ],
+      "rows": [
+        [
+          "Vattenfall",
+          "Planering",
+          "Stabila, enkla projekt, ofta stora företag och myndigheter"
+        ],
+        [
+          "Scrum",
+          "Iterativt värde",
+          "Komplex utveckling där förändringar väntas, som IoT"
+        ],
+        [
+          "Kanban",
+          "Flöde",
+          "Support och löpande uppgifter"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Teamet"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Fas (Tuckman)",
+        "Kännetecken"
+      ],
+      "rows": [
+        [
+          "Forming",
+          "Osäkerhet och artighet, man letar roller och förstår uppdraget"
+        ],
+        [
+          "Storming",
+          "Åsikter krockar. Nödvändigt för att bli ett bra team: lös konflikterna i stället för att undvika dem"
+        ],
+        [
+          "Norming",
+          "Gemensamma regler och tillit, till exempel tider för möten"
+        ],
+        [
+          "Performing",
+          "Teamet fungerar självständigt och hjälper varandra över kompetensgränser"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<strong>Psykologisk trygghet</strong> är enligt Googles Project Aristotle den viktigaste faktorn för framgångsrika team: vågar jag ställa en dum fråga eller erkänna ett fel i koden? Utan trygghet döljs misstag, och misstag i IoT blir dyra."
+    },
+    {
+      "type": "h",
+      "text": "Kvalitet från dag ett"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Testpyramiden:</strong> många snabba enhetstester i botten, integrations- och regressionstester i mitten, få tunga end-to-end-tester i toppen.",
+        "<strong>Definition of Done:</strong> koden granskad, enhetstesterna gröna, dokumentationen uppdaterad, kunden har godkänt.",
+        "<strong>Alla är testare:</strong> utvecklaren skriver testbar kod, PO ser till att kraven går att testa, teamet levererar inget otestat.",
+        "<strong>MVP</strong> (Minimal Viable Product): få grunden att fungera stabilt först, inga guldpläterade funktioner.",
+        "<strong>Teknisk skuld:</strong> genvägar utan tester är ett lån med ränta. Betala av med refaktorering. <em>There's nothing as permanent as a temporary fix.</em>",
+        "<strong>Korta feedback-loopar:</strong> parprogrammering (direkt), CI (minuter), Sprint Review (veckor)."
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Pappersflygplansfabriken",
+      "html": "<p>Runda 1: skriv en extremt detaljerad kravspecifikation och ritning i 4 minuter, vik sedan så många flygplan ni hinner på 5 minuter. Runda 2: tre sprintar om 2 minuter, med 1 minut efter varje för att testa och justera. Vilka metoder representerade rundorna, och vilken gav flest fungerande plan?</p>",
+      "solution": "Runda 1 är vattenfall: allt planeras i förväg och testas först i slutet.\nRunda 2 är Scrum: korta sprintar med test och justering (inspektion och\nanpassning) efter varje. Oftast flyger planen i runda 2 bättre, eftersom\nfelen upptäcks efter två minuter i stället för efter fem.\n",
+      "lang": "text"
+    },
+    {
+      "type": "exercise",
+      "title": "Marshmallow challenge och det tysta pusslet",
+      "html": "<p>Bygg det högsta fristående tornet av 20 spaghettistrån, 1 meter tejp och en maräng på toppen (15 minuter). I det tysta pusslet ska alla bygga en figur utan att prata, och man får bara ge bort bitar. Vad säger övningarna om teamarbete?</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad definierar ett projekt?",
+      "options": [
+        "Löpande arbete utan slut",
+        "En temporär insats för att skapa något unikt",
+        "En avdelning på företaget",
+        "Ett verktyg"
+      ],
+      "answer": 1,
+      "why": "Start- och slutdatum, unikt mål och en särskild organisation."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är den största risken med vattenfall i IoT?",
+      "options": [
+        "För många möten",
+        "Testningen sker sist, så fel i hårdvaran upptäcks för sent",
+        "Ingen dokumentation",
+        "För korta sprintar"
+      ],
+      "answer": 1,
+      "why": "Plus att ändrade krav blir väldigt dyra."
+    },
+    {
+      "type": "mc",
+      "q": "Vad värderar agila manifestet högre än omfattande dokumentation?",
+      "options": [
+        "Kontrakt",
+        "Fungerande mjukvara",
+        "Processer",
+        "Planer"
+      ],
+      "answer": 1,
+      "why": "Dokumentation är fortfarande bra, men fungerande mjukvara viktigare."
+    },
+    {
+      "type": "mc",
+      "q": "Vem äger VAD, alltså visionen och backloggen?",
+      "options": [
+        "Scrum Master",
+        "Product Owner",
+        "Utvecklingsteamet",
+        "Kunden"
+      ],
+      "answer": 1,
+      "why": "PO prioriterar efter affärsnytta."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör Scrum Mastern?",
+      "options": [
+        "Prioriterar backloggen",
+        "Tar bort hinder och coachar teamet i processen",
+        "Skriver all kod",
+        "Godkänner releaser"
+      ],
+      "answer": 1,
+      "why": "En servant leader som äger HUR."
+    },
+    {
+      "type": "mc",
+      "q": "Hur långt är Daily Scrum som mest?",
+      "options": [
+        "5 minuter",
+        "15 minuter",
+        "1 timme",
+        "En halv dag"
+      ],
+      "answer": 1,
+      "why": "Igår, idag, hinder."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan Sprint Review och Retrospective?",
+      "options": [
+        "Ingen",
+        "Review handlar om produkten, Retrospective om processen och samarbetet",
+        "Review är daglig",
+        "Retrospective visar produkten för kunden"
+      ],
+      "answer": 1,
+      "why": "En klassisk tentafråga."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder att begränsa WIP i Kanban?",
+      "options": [
+        "Fler uppgifter samtidigt",
+        "Färre pågående uppgifter så att saker blir klara",
+        "Kortare sprintar",
+        "Mer dokumentation"
+      ],
+      "answer": 1,
+      "why": "Stop starting, start finishing."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är slöseri enligt Lean?",
+      "options": [
+        "Tester",
+        "Kod som aldrig används och dokumentation som ingen läser",
+        "Kodgranskning",
+        "Retrospektiv"
+      ],
+      "answer": 1,
+      "why": "Plus väntan och buggar som kräver omarbete."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken metod passar support och löpande uppgifter?",
+      "options": [
+        "Vattenfall",
+        "Scrum",
+        "Kanban",
+        "V-modellen"
+      ],
+      "answer": 2,
+      "why": "Flöde i stället för sprintar."
+    },
+    {
+      "type": "mc",
+      "q": "I vilken Tuckman-fas krockar åsikterna?",
+      "options": [
+        "Forming",
+        "Storming",
+        "Norming",
+        "Performing"
+      ],
+      "answer": 1,
+      "why": "Nödvändig för att bli ett bra team."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är enligt Project Aristotle viktigast för framgångsrika team?",
+      "options": [
+        "Lön",
+        "Psykologisk trygghet",
+        "Antal möten",
+        "Verktyg"
+      ],
+      "answer": 1,
+      "why": "Att våga ställa dumma frågor och erkänna fel."
+    },
+    {
+      "type": "mc",
+      "q": "Vad betyder tvärfunktionellt team?",
+      "options": [
+        "Alla byter roll varje sprint",
+        "Teamet har alla kompetenser som behövs för att leverera",
+        "Utvecklare och testare sitter på olika avdelningar",
+        "Teamet rapporterar till ledningen"
+      ],
+      "answer": 1,
+      "why": "Från övningstentan."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är teknisk skuld?",
+      "options": [
+        "En faktura",
+        "Genvägar i koden som kostar mer senare",
+        "En sorts bugg-rapport",
+        "Antalet tester"
+      ],
+      "answer": 1,
+      "why": "Ett lån med ränta som betalas av med refaktorering."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka ingår i en typisk Definition of Done?",
+      "options": [
+        "Koden är granskad",
+        "Enhetstesterna passerar",
+        "Dokumentationen är uppdaterad",
+        "Koden är skriven på fredag"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Plus att kunden har godkänt."
+    },
+    {
+      "type": "text",
+      "q": "Vad står MVP för?",
+      "accept": [
+        "Minimal Viable Product",
+        "minimum viable product",
+        "minimal viable product"
+      ],
+      "placeholder": "tre ord",
+      "why": "Den minsta produkten som ger värde."
+    }
+  ]
+}

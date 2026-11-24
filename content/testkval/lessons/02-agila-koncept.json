@@ -1,0 +1,392 @@
+{
+  "id": "agila-koncept",
+  "title": "User stories, estimering och projektverktyg",
+  "category": "Metodik",
+  "minutes": 15,
+  "date": "2026-05-13",
+  "lead": "Krav som user stories med INVEST och acceptanskriterier, estimering med story points och planning poker, velocity och sprintplanering, tavlor, burndown och retrospektiv.",
+  "sources": [
+    "Dag 2: Agila koncept & projektverktyg",
+    "Dagens uppgift 2026-05-13"
+  ],
+  "goals": [
+    "Skriva en user story med roll, handling och nytta",
+    "Bedöma en story med INVEST och skriva binära acceptanskriterier",
+    "Estimera med story points, Fibonacci och planning poker",
+    "Använda velocity och kapacitet i sprintplaneringen",
+    "Läsa ett burndown chart och hålla en retrospektiv"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "User stories"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Som en [roll] vill jag [handling] så att [nytta].\n",
+      "caption": "mallen"
+    },
+    {
+      "type": "p",
+      "html": "En user story beskriver en funktion ur användarens perspektiv och fokuserar på <strong>värdet</strong> och <em>varför</em>, inte på den tekniska lösningen. Utan varför vet teamet inte hur det ska prioritera eller om det finns en smartare lösning. Kravspecifikationer blir ofta statiska dokument som ingen läser, medan stories bjuder in till samtal."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Dålig (tekniskt fokus)",
+        "Bra (värdefokus)"
+      ],
+      "rows": [
+        [
+          "Systemet ska använda MQTT för att skicka temperaturdata till databasen.",
+          "Som villaägare vill jag se temperaturen i realtid i appen så att jag kan justera värmen och spara pengar."
+        ],
+        [
+          "Implementera en sensor-drivrutin för DHT22.",
+          "Som användare vill jag få en notis om luftfuktigheten i källaren blir för hög så att jag undviker fuktskador."
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Ron Jeffries tre C:n: <strong>Card</strong> (texten på lappen), <strong>Conversation</strong> (samtalet med PO) och <strong>Confirmation</strong> (acceptanskriterierna)."
+    },
+    {
+      "type": "table",
+      "head": [
+        "INVEST",
+        "Betyder"
+      ],
+      "rows": [
+        [
+          "Independent",
+          "Kan byggas oberoende av andra stories"
+        ],
+        [
+          "Negotiable",
+          "Inte huggen i sten, kan diskuteras"
+        ],
+        [
+          "Valuable",
+          "Ger användaren värde"
+        ],
+        [
+          "Estimable",
+          "Teamet förstår omfattningen"
+        ],
+        [
+          "Small",
+          "Blir klar inom en sprint"
+        ],
+        [
+          "Testable",
+          "Går att verifiera"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "<strong>Acceptanskriterier</strong> beskriver förväntat beteende under givna förhållanden, är <strong>binära</strong> (uppfyllda eller inte) och blir grunden för testfallen. Exempel: <em>Notis skickas inom 2 sekunder om fuktigheten &gt; 70 %.</em>"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "<strong>Definition of Ready</strong> skyddar teamet från otydliga krav: en story får inte tas in i sprinten om den inte är estimerad, har acceptanskriterier och teamet förstår vad som ska byggas. <strong>Definition of Done</strong> gäller i stället när något är klart."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Backlog refinement</strong> (tidigare <em>grooming</em>) sker löpande: bryt ner stora stories (epics), ta bort det som blivit inaktuellt, lägg till detaljer och prioritera om."
+    },
+    {
+      "type": "h",
+      "text": "Estimering"
+    },
+    {
+      "type": "p",
+      "html": "Människor gissar fel på tid: optimism-bias, okända faktorer (en hårdvarubugg kan ta 10 minuter eller 10 timmar) och olika erfarenhet. Agil estimering frågar i stället <em>hur stort är detta jämfört med något annat?</em>"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Story points</strong> är en abstrakt siffra för komplexitet, risk och ansträngning. De översätts inte till timmar.",
+        "<strong>Fibonacci:</strong> 1, 2, 3, 5, 8, 13, 21. Hoppen växer med osäkerheten. 13 eller mer är en epic som måste brytas ner, till exempel efter arbetsflöde, en sensortyp i taget, eller den enkla versionen först (happy path).",
+        "<strong>Planning poker:</strong> storyn läses upp, alla väljer dolt, alla visar samtidigt, och de med lägst och högst förklarar. Samtalet är värt mer än siffran. Dolda röster motverkar <strong>anchoring</strong>, att den mest seniora säger en siffra först.",
+        "<strong>Spike:</strong> en tidsboxad research- eller prototypuppgift när vi vet för lite för att estimera. Resultatet är kunskap, inte kod."
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Velocity och sprintplanering"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Velocity</strong> är summan av story points teamet levererar per sprint. Den stabiliseras efter 3–4 sprintar och används för att planera nästa sprint. Den går inte att jämföra mellan team, och används den som betyg blir det story point-inflation och mindre experimenterande."
+    },
+    {
+      "type": "p",
+      "html": "I sprintplaneringen presenterar PO målet, teamet väljer stories upp till sin <strong>kapacitet</strong> (tillgänglig tid minus möten och ledighet, jämförd med velocity), och bryter ner dem i <strong>tasks</strong> som tar mindre än en dag. Sedan är sprint backloggen låst och teamets."
+    },
+    {
+      "type": "h",
+      "text": "Verktyg och uppföljning"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Verktyg",
+        "Passar"
+      ],
+      "rows": [
+        [
+          "Trello",
+          "Enkelt och visuellt, små projekt och Kanban"
+        ],
+        [
+          "Jira",
+          "Branschstandard, kraftfullt och komplext, byggt för Scrum"
+        ],
+        [
+          "GitHub Projects",
+          "Där koden bor, populärt i små och halvstora team"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Tavlan ska ha minst <strong>To Do</strong>, <strong>In Progress</strong> (bevaka WIP), <strong>Peer Review/Testing</strong> och <strong>Done</strong> (uppfyller DoD). Verktygen kan flytta kort automatiskt när koden mergas."
+    },
+    {
+      "type": "p",
+      "html": "Ett <strong>burndown chart</strong> visar hur mycket arbete som är kvar. Den ideala linjen går rakt ner mot noll. Är linjen platt i början har teamet svårt att få saker klara."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Retrospektivet</strong> är ingen klagomur utan processförbättring med 1–2 konkreta ändringar. Format: <em>Glad/Ledsen/Arg</em>, <em>Start/Stop/Continue</em> och <em>Segelbåten</em> (vind i seglen och ankare). <strong>Kaizen</strong>: små ständiga förbättringar."
+    },
+    {
+      "type": "exercise",
+      "title": "Sprint 0",
+      "html": "<p>I projektgruppen: välj Product Owner och Scrum Master (rollerna roterar varje vecka), sätt upp kommunikationskanal, GitHub-repo och projektverktyg, skriv ett team charter (tider för stand-up, hur ni beslutar vid oenighet, förväntningar), och skapa en produkt-backlog med minst 5 estimerade user stories.</p>",
+      "solution": "Exempel för miljömonitorn:\n\nUS1 Som boende vill jag se temperatur och luftfuktighet i appen\n    så att jag vet hur inomhusklimatet är.                         5 p\n    AK: värdena uppdateras minst var 10:e sekund.\nUS2 Som boende vill jag att lampan lyser rött när luften är dålig\n    så att jag vet när jag ska vädra.                               3 p\n    AK: röd vid CO2 > 1000 ppm, grön under 800 ppm.\nUS3 Som boende vill jag att mätvärden sparas när WiFi är nere\n    så att jag inte får luckor i historiken.                        8 p\nUS4 Som admin vill jag uppdatera firmware över nätet (FOTA)\n    så att säkerhetsfixar når alla enheter.                         13 p -> bryt ner\nUS5 Som boende vill jag ange egna gränsvärden                       2 p\n",
+      "lang": "text"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vilken är mallen för en user story?",
+      "options": [
+        "Om X så Y",
+        "Som en [roll] vill jag [handling] så att [nytta]",
+        "Given, when, then",
+        "Krav, design, kod"
+      ],
+      "answer": 1,
+      "why": "Vem, vad och varför."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken story är bäst?",
+      "options": [
+        "Implementera en DHT22-drivrutin",
+        "Använd MQTT till databasen",
+        "Som villaägare vill jag se temperaturen i appen så att jag kan spara pengar",
+        "Fixa sensorn"
+      ],
+      "answer": 2,
+      "why": "Fokus på värdet för användaren."
+    },
+    {
+      "type": "mc",
+      "q": "Vad står T för i INVEST?",
+      "options": [
+        "Timeboxed",
+        "Testable",
+        "Technical",
+        "Tracked"
+      ],
+      "answer": 1,
+      "why": "Vi måste kunna verifiera att den fungerar."
+    },
+    {
+      "type": "mc",
+      "q": "Vilka är de tre C:na?",
+      "options": [
+        "Code, Check, Commit",
+        "Card, Conversation, Confirmation",
+        "Cost, Can, Customer",
+        "Create, Check, Close"
+      ],
+      "answer": 1,
+      "why": "Ron Jeffries."
+    },
+    {
+      "type": "mc",
+      "q": "Hur ska acceptanskriterier vara?",
+      "options": [
+        "Vaga",
+        "Binära: uppfyllda eller inte",
+        "Skrivna i kod",
+        "Valfria"
+      ],
+      "answer": 1,
+      "why": "De blir grunden för testfallen."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är skillnaden mellan Definition of Ready och Definition of Done?",
+      "options": [
+        "Ingen",
+        "DoR: när en story får tas in i sprinten. DoD: när den är klar",
+        "DoR gäller bara buggar",
+        "DoD skrivs av kunden"
+      ],
+      "answer": 1,
+      "why": "DoR skyddar mot otydliga krav."
+    },
+    {
+      "type": "mc",
+      "q": "Varför estimerar man i story points i stället för timmar?",
+      "options": [
+        "Det är snabbare att räkna",
+        "Människor gissar bättre relativ storlek än tid",
+        "Timmar är förbjudna",
+        "Kunden vill det"
+      ],
+      "answer": 1,
+      "why": "Optimism-bias och okända faktorer."
+    },
+    {
+      "type": "mc",
+      "q": "Vad gör man med en story på 13 eller mer?",
+      "options": [
+        "Tar in den direkt",
+        "Bryter ner den",
+        "Stryker den",
+        "Ger den till PO"
+      ],
+      "answer": 1,
+      "why": "Den är en epic."
+    },
+    {
+      "type": "mc",
+      "q": "Varför visar alla sina kort samtidigt i planning poker?",
+      "options": [
+        "För att det är roligare",
+        "För att undvika anchoring",
+        "För att det går snabbare",
+        "Det gör man inte"
+      ],
+      "answer": 1,
+      "why": "Annars påverkar den första siffran alla andra."
+    },
+    {
+      "type": "mc",
+      "q": "Två röstar 3 och 13 på samma story. Vad gör man?",
+      "options": [
+        "Tar medelvärdet",
+        "Låter de två förklara sina perspektiv",
+        "Väljer det högsta",
+        "Låter PO bestämma"
+      ],
+      "answer": 1,
+      "why": "Någon ser antingen en enkel lösning eller en risk som den andra missat."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är velocity?",
+      "options": [
+        "Antalet commits",
+        "Summan av story points teamet levererar per sprint",
+        "Kodens hastighet",
+        "Antal timmar per vecka"
+      ],
+      "answer": 1,
+      "why": "Ett planeringsverktyg, inte ett effektivitetsmått."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ska velocity inte jämföras mellan team?",
+      "options": [
+        "Det är hemligt",
+        "Story points är relativa inom varje team",
+        "Det är olagligt",
+        "Velocity är alltid lika"
+      ],
+      "answer": 1,
+      "why": "Ett internt mått."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en spike?",
+      "options": [
+        "En bugg",
+        "En tidsboxad research-uppgift när man vet för lite för att estimera",
+        "En toppbelastning",
+        "En sorts test"
+      ],
+      "answer": 1,
+      "why": "Resultatet är kunskap."
+    },
+    {
+      "type": "mc",
+      "q": "Burndown-linjen är platt de första dagarna. Vad betyder det?",
+      "options": [
+        "Allt går bra",
+        "Teamet har svårt att få saker klara",
+        "Sprinten är slut",
+        "Velocity är hög"
+      ],
+      "answer": 1,
+      "why": "Scrum Mastern ser problemet tidigt."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket retrospektiv-format handlar om vad vi ska börja, sluta och fortsätta med?",
+      "options": [
+        "Segelbåten",
+        "Glad/Ledsen/Arg",
+        "Start/Stop/Continue",
+        "Planning poker"
+      ],
+      "answer": 2,
+      "why": "Konkreta handlingar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är Kaizen?",
+      "options": [
+        "En estimeringsmetod",
+        "Små ständiga förbättringar",
+        "Ett Jira-tillägg",
+        "En testnivå"
+      ],
+      "answer": 1,
+      "why": "En Lean-term."
+    },
+    {
+      "type": "text",
+      "q": "Vilket tal kommer efter 8 i Fibonacci-skalan för story points?",
+      "accept": [
+        "13"
+      ],
+      "placeholder": "tal",
+      "why": "1, 2, 3, 5, 8, 13, 21."
+    },
+    {
+      "type": "code",
+      "q": "Planera en sprint utifrån velocity och story points.",
+      "task": "02-sprint-1",
+      "why": "Hoppa över epics och ogiltiga estimat, ta med det som ryms.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Rita ett burndown chart som text.",
+      "task": "02-burndown-1",
+      "why": "Ideal = total − total · dag / antal dagar.",
+      "web": true
+    }
+  ]
+}

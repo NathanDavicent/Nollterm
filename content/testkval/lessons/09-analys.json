@@ -1,0 +1,211 @@
+{
+  "id": "analys",
+  "title": "Analys och förbättringsarbete",
+  "category": "Analys",
+  "minutes": 9,
+  "lead": "Att utvärdera teststrategin, metodiken och testresultaten kritiskt, ta ställning till den tekniska skulden, hålla den sista retrospektiven och förbereda inlämning och presentation.",
+  "sources": [
+    "Dag 10: Analys & Förbättringsarbete"
+  ],
+  "goals": [
+    "Utvärdera teststrategin mot FMEA:n",
+    "Analysera testmatrisens resultat",
+    "Identifiera teknisk skuld",
+    "Hålla en Start/Stop/Continue-retrospektiv",
+    "Förbereda en presentation som visar tester och process"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Varför analysera?"
+    },
+    {
+      "type": "note",
+      "kind": "tip",
+      "html": "\"Utan analys är erfarenhet bara tid som har gått. Med analys blir erfarenhet till kompetens.\""
+    },
+    {
+      "type": "p",
+      "html": "Skilj på vad ni trodde skulle hända och vad som faktiskt hände, hitta flaskhalsar i samarbetet och de tekniska flödena, och kontrollera att exit-kriterierna verkligen är uppfyllda."
+    },
+    {
+      "type": "table",
+      "head": [
+        "Utvärdera",
+        "Frågor"
+      ],
+      "rows": [
+        [
+          "Teststrategin",
+          "Testade ni riskerna med högst RPN? Vilka tester hittade flest buggar? Fanns det fel som mockarna missade men E2E hittade?"
+        ],
+        [
+          "Metodiken",
+          "Blev stand-ups bara statusrapporter, och hur ofta hölls de? Använde ni parprogrammering för de svåra delarna? Hittade granskningarna faktiska fel?"
+        ],
+        [
+          "Testmatrisen",
+          "Hur stor andel passerade på första försöket? Hittades flest buggar tidigt eller sent? Är varje test kopplat till en person?"
+        ],
+        [
+          "Teknisk skuld",
+          "Vilken kod saknar tester? Följs standarderna? Vad skulle skrivas om först om projektet fortsatte tre månader?"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "En testmatris med bara Pass och inga kommentarer ser misstänkt ut. Det normala är att några tester failar första gången och sedan fixas. Visa var det blev problem, men fejka inga."
+    },
+    {
+      "type": "h",
+      "text": "Den sista retrospektiven"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Fråga",
+        "Exempel"
+      ],
+      "rows": [
+        [
+          "Start",
+          "Vad borde vi ha gjort?",
+          "Fler integrationstester"
+        ],
+        [
+          "Stop",
+          "Vad gav inget värde?",
+          "Onödiga möten, för komplex arkitektur"
+        ],
+        [
+          "Continue",
+          "Vad fungerade och ska med till nästa projekt?",
+          "Små PR:er med grön pipeline"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "Inlämning och presentation"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>GitHub:</strong> snygg historik, tydliga PR-beskrivningar och grön pipeline",
+        "<strong>Testmatrisen:</strong> ID, steg, förväntat och faktiskt resultat, utförare och datum",
+        "<strong>Mötesprotokoll:</strong> beslut och närvaro under de fyra veckorna",
+        "<strong>Loggbok:</strong> ditt eget arbete, tekniska val och hur du verifierade din kod"
+      ]
+    },
+    {
+      "type": "p",
+      "html": "Presentationen är 15–30 minuter per grupp, cirka 5 minuter per person. Visa testerna, inte bara systemet, och berätta om en bugg ni hittade tack vare kvalitetssäkringen. Visa hur ni arbetat som team och individuellt, och var inte rädda för att berätta vad som inte gick som planerat."
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad är syftet med att utvärdera projektet?",
+      "options": [
+        "Att hitta syndabockar",
+        "Att förvandla erfarenhet till kompetens genom analys",
+        "Att skriva mer dokumentation",
+        "Att höja velocity"
+      ],
+      "answer": 1,
+      "why": "Planerat mot verkligt."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ska ni kontrollera om teststrategin?",
+      "options": [
+        "Att alla tester är gröna",
+        "Att riskerna med högst RPN faktiskt testades",
+        "Antalet rader kod",
+        "Färgen på tavlan"
+      ],
+      "answer": 1,
+      "why": "Täckning av riskerna."
+    },
+    {
+      "type": "mc",
+      "q": "Varför ser en testmatris med bara Pass misstänkt ut?",
+      "options": [
+        "Den är för kort",
+        "Normalt failar några tester först och fixas sedan",
+        "Pass är fel ord",
+        "Den saknar färger"
+      ],
+      "answer": 1,
+      "why": "Visa var det blev problem."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är Success Rate i testanalysen?",
+      "options": [
+        "Andelen tester som passerade på första försöket",
+        "Antalet buggar",
+        "Velocity",
+        "Kodtäckning"
+      ],
+      "answer": 0,
+      "why": "Ett mått på hur det gick."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken fråga hör till Stop i Start/Stop/Continue?",
+      "options": [
+        "Vad borde vi ha gjort?",
+        "Vad gjorde vi som inte gav värde?",
+        "Vad fungerade bra?",
+        "Vem gjorde mest?"
+      ],
+      "answer": 1,
+      "why": "Till exempel onödiga möten."
+    },
+    {
+      "type": "mc",
+      "q": "Vad ska presentationen fokusera på?",
+      "options": [
+        "Bara produktens funktioner",
+        "Hur ni arbetat med tester och kvalitetssäkring, plus produkten",
+        "Lärarens slides",
+        "Andra gruppers fel"
+      ],
+      "answer": 1,
+      "why": "Berätta om en bugg ni hittade."
+    },
+    {
+      "type": "multi",
+      "q": "Vad ska vara klart inför inlämningen?",
+      "options": [
+        "Grön pipeline och tydliga PR:er",
+        "Komplett testmatris",
+        "Mötesprotokoll",
+        "Loggbok"
+      ],
+      "answers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "why": "Allt signerat och daterat."
+    },
+    {
+      "type": "mc",
+      "q": "Hur identifierar man teknisk skuld?",
+      "options": [
+        "Räknar commits",
+        "Letar efter kod utan tester och kod som bryter mot standarderna",
+        "Tittar på velocity",
+        "Frågar kunden"
+      ],
+      "answer": 1,
+      "why": "Och vad som skulle skrivas om först."
+    }
+  ]
+}

@@ -1,0 +1,485 @@
+{
+  "id": "enhetstest-e2e",
+  "title": "Från enhetstest till E2E med Unity",
+  "category": "Testning",
+  "minutes": 20,
+  "date": "2026-05-22",
+  "lead": "Unity i ESP-IDF med setUp, tearDown och assertions, AAA och namngivning, mocks och stubs via HAL, integrationstester, E2E, TDD, flaky tests, host och target, gränsvärden och mutationstestning.",
+  "sources": [
+    "Dag 5: Enhetstest till E2E",
+    "Genomgång och dagens övningar 2026-05-22"
+  ],
+  "goals": [
+    "Skriva ett Unity-test med rätt assertion",
+    "Strukturera tester med AAA och bra namn",
+    "Injicera en mock via ett HAL och skilja på mock och stub",
+    "Förklara integrationstest och E2E i ett IoT-system",
+    "Arbeta med TDD: red, green, refactor",
+    "Använda gränsvärdesanalys och känna igen flaky tests"
+  ],
+  "blocks": [
+    {
+      "type": "h",
+      "text": "Enhetstest"
+    },
+    {
+      "type": "p",
+      "html": "Ett enhetstest testar den minsta delen av programmet i total <strong>isolering</strong>: logiken, inte sensorn eller databasen. Hundratals tester ska gå på några sekunder, och testerna blir levande dokumentation av hur funktionen ska bete sig."
+    },
+    {
+      "type": "h",
+      "text": "Unity"
+    },
+    {
+      "type": "p",
+      "html": "Unity är det vanligaste testramverket i ESP-IDF och PlatformIO: litet, skrivet i C och gjort för inbyggda system. En testfil har <code>setUp()</code> (körs före varje test), <code>tearDown()</code> (efter varje test) och testfunktionerna."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "#include \"unity.h\"\n#include \"logic.h\"\n\nvoid setUp(void) {}\nvoid tearDown(void) {}\n\nvoid test_when_converting_zero_raw_adc_should_return_zero_celsius(void) {\n    TEST_ASSERT_EQUAL_FLOAT(0.0, convert_to_celsius(0));\n}\n\nvoid test_when_converting_negative_raw_adc_should_return_error_code(void) {\n    TEST_ASSERT_EQUAL_FLOAT(-999.0, convert_to_celsius(-10));\n}\n\nint main(void) {\n    UNITY_BEGIN();\n    RUN_TEST(test_when_converting_zero_raw_adc_should_return_zero_celsius);\n    RUN_TEST(test_when_converting_negative_raw_adc_should_return_error_code);\n    return UNITY_END();\n}\n",
+      "caption": "test_logic.c"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "float convert_to_celsius(int raw_adc) {\n    if (raw_adc < 0) {\n        return -999.0f;                        // egen felkod\n    }\n    return raw_adc * (3.3f / 4095.0f) * 100.0f;  // 12-bitars ADC, 3,3 V, 10 mV/°C\n}\n",
+      "caption": "logic.c"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Assertion",
+        "Används till"
+      ],
+      "rows": [
+        [
+          "TEST_ASSERT_EQUAL(exp, act)",
+          "Heltal"
+        ],
+        [
+          "TEST_ASSERT_EQUAL_FLOAT(exp, act)",
+          "Flyttal, tål avrundningsfel"
+        ],
+        [
+          "TEST_ASSERT_FLOAT_WITHIN(delta, exp, act)",
+          "Flyttal med egen tolerans"
+        ],
+        [
+          "TEST_ASSERT_EQUAL_STRING(exp, act)",
+          "Strängar, med tydlig felrapport i stället för strcmp"
+        ],
+        [
+          "TEST_ASSERT_NOT_NULL(ptr)",
+          "Att en pekare är giltig"
+        ],
+        [
+          "TEST_ASSERT_TRUE(cond)",
+          "Generella villkor"
+        ]
+      ]
+    },
+    {
+      "type": "h",
+      "text": "AAA och namn"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Arrange</strong> (förbered), <strong>Act</strong> (anropa), <strong>Assert</strong> (kontrollera). Namnet ska vara en mening: <code>test_temp_sensor_should_return_error_when_disconnected</code>, inte <code>test_func1</code>."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "void test_averaging_filter_given_ten_twenty_thirty_should_return_twenty(void) {\n    // Arrange\n    int input_data[] = {10, 20, 30};\n    int expected = 20;\n    // Act\n    int result = calculate_average(input_data, 3);\n    // Assert\n    TEST_ASSERT_EQUAL(expected, result);\n}\n"
+    },
+    {
+      "type": "h",
+      "text": "Mocks via HAL"
+    },
+    {
+      "type": "p",
+      "html": "Hur testar vi logik som anropar <code>i2c_read()</code> utan sensor? Vi lägger hårdvaruanropet bakom ett gränssnitt och skickar in en fejkad funktion i testet. Då går testerna på en vanlig dator (host-side testing)."
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "// sensor_interface.h\ntypedef struct {\n    int (*read_raw)(void);          // funktionspekare: riktig drivrutin eller mock\n} sensor_hal_t;\n\nfloat get_temperature(const sensor_hal_t *hal) {\n    return convert_to_celsius(hal->read_raw());\n}\n\n// test_sensor_interface.c\nstatic int mock_read_250(void) { return 250; }\n\nvoid test_get_temperature_should_return_20point15(void) {\n    sensor_hal_t mock_hal = { .read_raw = mock_read_250 };\n    TEST_ASSERT_FLOAT_WITHIN(0.001f, 20.15f, get_temperature(&mock_hal));\n}\n"
+    },
+    {
+      "type": "table",
+      "head": [
+        "",
+        "Stub",
+        "Mock"
+      ],
+      "rows": [
+        [
+          "Gör",
+          "Ger ett förbestämt svar: här är 22 grader",
+          "Kontrollerar också att anropet skedde, med vilka argument och hur många gånger"
+        ],
+        [
+          "Används när",
+          "Koden bara behöver ett värde",
+          "Interaktionen är viktig: skickades larmet exakt en gång?"
+        ]
+      ]
+    },
+    {
+      "type": "note",
+      "kind": "warn",
+      "html": "Föreläsningens setUp/tearDown-exempel har två fällor: Unity anropar <code>tearDown</code> (stort D), inte <code>teardown</code>, och att tilldela en strängliteral till en malloc:ad pekare läcker minnet och ger <code>free</code> en ogiltig pekare. Kopiera in texten med <code>strcpy</code> i stället."
+    },
+    {
+      "type": "h",
+      "text": "Integrationstest"
+    },
+    {
+      "type": "p",
+      "html": "Verifierar att två eller flera moduler fungerar ihop: gränssnitten och dataflödet, <em>limmet</em> i koden. Kan temperaturläsaren skicka korrekt JSON till MQTT-klienten? Triggar ett tröskelvärde rätt anrop? Går enheten i deep sleep och vaknar på rätt avbrott?"
+    },
+    {
+      "type": "code",
+      "lang": "c",
+      "code": "// En fake av WiFi-modulen tvingar fram felet\nwifi_status_t fake_status = CONNECTED;\nwifi_status_t get_status(void) { return fake_status; }\n\nvoid test_logic_reacts_to_wifi_drop(void) {\n    fake_status = DISCONNECTED;\n    run_main_logic_once();\n    // Kommer vi inte hit har koden låst sig i en busy wait under återanslutningen\n    TEST_ASSERT_EQUAL(STATE_OFFLINE_BUFFERING, current_state);\n}\n"
+    },
+    {
+      "type": "p",
+      "html": "Det viktigaste i integrationstester är vad som händer när grannen går sönder: WiFi rapporterar DISCONNECTED mitt i en sändning, eller sensormodulen returnerar <code>ESP_ERR_INVALID_STATE</code> för en hängd I2C-buss. Även <em>när</em> är viktigt: svarstider på avbrott mäts med logikanalysator eller oscilloskop."
+    },
+    {
+      "type": "h",
+      "text": "End-to-end"
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "code": "Sensor → ESP32 → WiFi → MQTT-broker → Databas → App\n",
+      "caption": "E2E testar hela kedjan som en svart låda"
+    },
+    {
+      "type": "p",
+      "html": "<em>Om jag värmer sensorn med en hårtork, ser jag då en röd varning i appen?</em> E2E-tester är långsamma och bräckliga men avslöjar det inget annat test hittar: TLS som tar 300 ms så att WiFi-timeouten löser ut, strömspikar när WiFi startar som ger fel sensorvärden, och JSON-format som inte matchar (<code>{\"temp\": 22}</code> mot <code>{\"temperature\": 22.0}</code>). Verifiera med <code>mosquitto_sub</code> eller Node-RED, kontrollera tidsstämplarna och låt systemet gå i 24 timmar."
+    },
+    {
+      "type": "p",
+      "html": "I inbyggda system blir pyramiden ibland ett <strong>timglas</strong>: många enhetstester på PC, många systemtester på hårdvara och få integrationstester däremellan. Målet är ändå att flytta så mycket som möjligt ner till enhetstesterna."
+    },
+    {
+      "type": "h",
+      "text": "TDD"
+    },
+    {
+      "type": "table",
+      "head": [
+        "Steg",
+        "Gör"
+      ],
+      "rows": [
+        [
+          "RED",
+          "Skriv ett test som misslyckas"
+        ],
+        [
+          "GREEN",
+          "Skriv minsta möjliga kod som får testet att passera"
+        ],
+        [
+          "REFACTOR",
+          "Snygga till koden utan att ändra beteendet, med testerna som skydd"
+        ]
+      ]
+    },
+    {
+      "type": "p",
+      "html": "TDD tvingar fram testbar, löst kopplad kod och undviker spagettifiler där logik och hårdvaruanrop är blandade. Kod som är lätt att testa är nästan alltid välskriven."
+    },
+    {
+      "type": "h",
+      "text": "Mer om tester"
+    },
+    {
+      "type": "list",
+      "items": [
+        "<strong>Flaky tests</strong> passerar ibland och failar ibland utan kodändring, ofta på grund av timing, nätverk eller brus. Lita aldrig på dem: hitta orsaken eller isolera med en mock.",
+        "<strong>Host eller target:</strong> på datorn är det snabbt med bra debugging, men arkitekturskillnader (32 mot 64 bitar) syns inte. På ESP32:an testas riktig hårdvara och kompilator, men flashningen tar tid. ESP-IDF kör Unity på chippet och skickar resultaten över UART.",
+        "<strong>Edge cases:</strong> sensorn returnerar 0, bufferten är full, negativt mätvärde.",
+        "<strong>Gränsvärdesanalys:</strong> de flesta buggar sitter vid gränserna, så testa min, min+1, max−1 och max, plus strax utanför.",
+        "<strong>Mutationstestning:</strong> ett verktyg ändrar koden med flit, till exempel <code>&gt;</code> till <code>&lt;</code>. Passerar testerna ändå är de för svaga.",
+        "<strong>Minnesläckor:</strong> jämför <code>esp_get_free_heap_size()</code> före och efter en operation.",
+        "<strong>POST</strong> (Power-On Self-Test): enheten testar minne, sensor-ID och nätverkschip vid start och går i säkert läge om något fallerar."
+      ]
+    },
+    {
+      "type": "exercise",
+      "title": "Unity på ESP32",
+      "html": "<p>Skapa ett ESP-IDF-projekt från exemplet <em>unit test</em> och följ README. Klona sedan <code>esp32_testing_with_unity</code>: den första övningen har en bugg som ska hittas med utskrifterna från build, flash och monitor, och i den andra ska du skriva testerna i <code>test_led.c</code> enligt kommentarerna.</p>"
+    }
+  ],
+  "questions": [
+    {
+      "type": "mc",
+      "q": "Vad testar ett enhetstest?",
+      "options": [
+        "Hela systemet",
+        "Den minsta delen av programmet i isolering",
+        "Nätverket",
+        "Databasen"
+      ],
+      "answer": 1,
+      "why": "Logiken, inte hårdvaran."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket testramverk är vanligast i ESP-IDF?",
+      "options": [
+        "GoogleTest",
+        "Unity",
+        "JUnit",
+        "pytest"
+      ],
+      "answer": 1,
+      "why": "Litet och skrivet i C."
+    },
+    {
+      "type": "mc",
+      "q": "När körs setUp()?",
+      "options": [
+        "En gång i början",
+        "Före varje test",
+        "Efter varje test",
+        "Aldrig"
+      ],
+      "answer": 1,
+      "why": "tearDown körs efter varje test."
+    },
+    {
+      "type": "mc",
+      "q": "Vilken assertion passar för flyttal?",
+      "options": [
+        "TEST_ASSERT_EQUAL",
+        "TEST_ASSERT_EQUAL_FLOAT",
+        "TEST_ASSERT_NOT_NULL",
+        "TEST_ASSERT_TRUE"
+      ],
+      "answer": 1,
+      "why": "Den tål små avrundningsfel."
+    },
+    {
+      "type": "mc",
+      "q": "Hur jämför man strängar i Unity?",
+      "options": [
+        "Med ==",
+        "TEST_ASSERT_EQUAL_STRING",
+        "TEST_ASSERT_TRUE(strcmp(...))",
+        "Det går inte"
+      ],
+      "answer": 1,
+      "why": "Ger en tydlig felrapport."
+    },
+    {
+      "type": "mc",
+      "q": "Vad står AAA för?",
+      "options": [
+        "Assert, Act, Arrange",
+        "Arrange, Act, Assert",
+        "Always Assert All",
+        "Add, Assert, Approve"
+      ],
+      "answer": 1,
+      "why": "Förbered, anropa, kontrollera."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket testnamn är bäst?",
+      "options": [
+        "test1",
+        "test_func",
+        "test_temp_sensor_should_return_error_when_disconnected",
+        "testa"
+      ],
+      "answer": 2,
+      "why": "En hel mening."
+    },
+    {
+      "type": "mc",
+      "q": "Vad skiljer en mock från en stub?",
+      "options": [
+        "Ingenting",
+        "Mocken kontrollerar också att anropet skedde och hur",
+        "Stubben är alltid långsammare",
+        "Mocken kräver hårdvara"
+      ],
+      "answer": 1,
+      "why": "Stubben ger bara ett svar."
+    },
+    {
+      "type": "mc",
+      "q": "Med sensor_hal_t och mock_read_250, vad returnerar get_temperature?",
+      "options": [
+        "250",
+        "20,15",
+        "0",
+        "-999"
+      ],
+      "answer": 1,
+      "why": "250 · 3,3 / 4095 · 100."
+    },
+    {
+      "type": "mc",
+      "q": "Vad testar ett integrationstest?",
+      "options": [
+        "En funktion",
+        "Samspelet och gränssnitten mellan moduler",
+        "Bara hårdvaran",
+        "Kodstilen"
+      ],
+      "answer": 1,
+      "why": "Limmet i koden."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är viktigast i integrationstester enligt kursen?",
+      "options": [
+        "Happy path",
+        "Hur moduler reagerar när grannen går sönder",
+        "Kodstil",
+        "Antal rader"
+      ],
+      "answer": 1,
+      "why": "Till exempel WiFi som försvinner mitt i en sändning."
+    },
+    {
+      "type": "mc",
+      "q": "Vilket fel hittas oftast först i E2E?",
+      "options": [
+        "Fel i en enskild funktion",
+        "JSON-fält som heter olika i enheten och i molnet",
+        "Stavfel i kommentarer",
+        "Fel indentering"
+      ],
+      "answer": 1,
+      "why": "{\"temp\"} mot {\"temperature\"}."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ordningen i TDD?",
+      "options": [
+        "Green, red, refactor",
+        "Red, green, refactor",
+        "Refactor, red, green",
+        "Code, test, ship"
+      ],
+      "answer": 1,
+      "why": "Testet först."
+    },
+    {
+      "type": "mc",
+      "q": "Vad innebär refactor-steget?",
+      "options": [
+        "Skriva om testet",
+        "Förbättra strukturen utan att ändra beteendet",
+        "Lägga till funktioner",
+        "Flytta till produktion"
+      ],
+      "answer": 1,
+      "why": "Testerna skyddar."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är ett flaky test?",
+      "options": [
+        "Ett långsamt test",
+        "Ett test som ibland passerar och ibland failar utan kodändring",
+        "Ett test utan assertion",
+        "Ett test som alltid failar"
+      ],
+      "answer": 1,
+      "why": "Lita aldrig på det."
+    },
+    {
+      "type": "mc",
+      "q": "Vilka värden testas i gränsvärdesanalys för intervallet 0..4095?",
+      "options": [
+        "0 och 4095",
+        "−1, 0, 1, 4094, 4095, 4096",
+        "100 och 200",
+        "Bara 2048"
+      ],
+      "answer": 1,
+      "why": "Strax under, på och strax över."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är mutationstestning?",
+      "options": [
+        "Att testa genetik",
+        "Att ändra koden med flit och se om testerna märker det",
+        "Att skriva om tester",
+        "Att köra tester slumpvis"
+      ],
+      "answer": 1,
+      "why": "Testar testernas kvalitet."
+    },
+    {
+      "type": "mc",
+      "q": "Vad är en fördel med att testa på host (PC)?",
+      "options": [
+        "Riktig hårdvara",
+        "Snabbt och bra debugging",
+        "Rätt kompilator",
+        "Testar 32-bitars arkitektur"
+      ],
+      "answer": 1,
+      "why": "Target testar hårdvaran men är långsamt."
+    },
+    {
+      "type": "multi",
+      "q": "Vilka fel avslöjar E2E-tester som enhetstester missar?",
+      "options": [
+        "Strömspikar när WiFi startar",
+        "TLS-fördröjning som löser ut timeouts",
+        "Felaktiga JSON-format mellan enhet och moln",
+        "En felstavad variabel"
+      ],
+      "answers": [
+        0,
+        1,
+        2
+      ],
+      "why": "Det verkliga systemet."
+    },
+    {
+      "type": "text",
+      "q": "Vilken Unity-funktion körs efter varje test? (exakt namn)",
+      "accept": [
+        "tearDown",
+        "tearDown()",
+        "void tearDown(void)"
+      ],
+      "placeholder": "funktion",
+      "why": "Med stort D."
+    },
+    {
+      "type": "code",
+      "q": "Implementera convert_to_celsius med felkod och räkna medelvärdet.",
+      "task": "05-celsius-1",
+      "why": "Fel utanför 0..4095, annars raw · 3,3 / 4095 · 100.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Gränsvärdesanalys: generera testvärdena för ett intervall.",
+      "task": "05-gransvarden-1",
+      "why": "lo−1, lo, lo+1, hi−1, hi, hi+1.",
+      "web": true
+    },
+    {
+      "type": "code",
+      "q": "Testa en tillståndsmaskin för en IoT-enhet.",
+      "task": "05-tillstand-1",
+      "why": "En tabell över (tillstånd, händelse) → nytt tillstånd.",
+      "web": true
+    }
+  ]
+}

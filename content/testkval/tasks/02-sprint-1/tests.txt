@@ -1,0 +1,49 @@
+--- in
+3
+18 22 23
+6
+US1 5
+US2 8
+US3 3
+US4 13
+US5 5
+US6 2
+--- out
+Velocity: 21
+US1: med (5 p)
+US2: med (8 p)
+US3: med (3 p)
+US4: för stor, bryt ner (13 p)
+US5: med (5 p)
+US6: får inte plats (2 p)
+Planerat 21 av 21 p
+--- in
+2
+10 12
+5
+A 3
+B 4
+C 8
+D 1
+E 2
+--- out
+Velocity: 11
+A: med (3 p)
+B: ogiltig estimering (4 p)
+C: med (8 p)
+D: får inte plats (1 p)
+E: får inte plats (2 p)
+Planerat 11 av 11 p
+--- in
+1
+8
+3
+X 21
+Y 8
+Z 1
+--- out
+Velocity: 8
+X: för stor, bryt ner (21 p)
+Y: med (8 p)
+Z: får inte plats (1 p)
+Planerat 8 av 8 p

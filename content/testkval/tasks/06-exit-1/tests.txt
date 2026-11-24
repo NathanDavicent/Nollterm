@@ -1,0 +1,37 @@
+--- in
+80 83
+4
+T01 Pass Blocker
+T02 Pass Major
+T03 Fail Minor
+T04 Pass Major
+--- out
+Alla testfall körda: ja
+Öppna blockers: 0
+Öppna major: 0
+Kodtäckning: 83 % (mål 80 %): ja
+Release: ja
+--- in
+80 72
+3
+T01 Pass Blocker
+T02 Fail Blocker
+T03 Skip Minor
+--- out
+Alla testfall körda: nej (T03)
+Öppna blockers: 1 (T02)
+Öppna major: 0
+Kodtäckning: 72 % (mål 80 %): nej
+Release: nej
+--- in
+70 90
+3
+T01 Fail Major
+T02 Pass Blocker
+T03 Pass Minor
+--- out
+Alla testfall körda: ja
+Öppna blockers: 0
+Öppna major: 1 (T01)
+Kodtäckning: 90 % (mål 70 %): ja
+Release: ja

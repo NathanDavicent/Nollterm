@@ -1,0 +1,41 @@
+--- in
+1
+0 4095
+--- out
+Intervall 0..4095
+  -1: ogiltig
+  0: giltig
+  1: giltig
+  4094: giltig
+  4095: giltig
+  4096: ogiltig
+--- in
+2
+18 65
+-40 85
+--- out
+Intervall 18..65
+  17: ogiltig
+  18: giltig
+  19: giltig
+  64: giltig
+  65: giltig
+  66: ogiltig
+Intervall -40..85
+  -41: ogiltig
+  -40: giltig
+  -39: giltig
+  84: giltig
+  85: giltig
+  86: ogiltig
+--- in
+1
+1 100
+--- out
+Intervall 1..100
+  0: ogiltig
+  1: giltig
+  2: giltig
+  99: giltig
+  100: giltig
+  101: ogiltig
